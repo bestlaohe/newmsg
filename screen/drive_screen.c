@@ -45,10 +45,8 @@ int DEV_Module_Init(void)
     SPI_FullDuplex_Init();
     LCD_DC_0;
     LCD_CS_0 ;
-
     TIM_CtrlPWMOutputs(TIM1, ENABLE);
-
-        return 0;
+    return 0;
 }
 //*Slave:SPI1_NSS(PC1)¡¢SPI1_SCK(PC5)¡¢SPI1_MISO(PC7)¡¢SPI1_MOSI(PC6).
 

@@ -7,7 +7,8 @@
 
 #ifndef ENCODE_ENCODE_H_
 #define ENCODE_ENCODE_H_
-void TIM1_Encoder_Init();
+#include "time_app.h"
 
+void Encoder_Init();
 
 #endif /* ENCODE_ENCODE_H_ */
