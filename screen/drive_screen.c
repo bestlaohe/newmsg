@@ -16,42 +16,10 @@
  */
 void SPI_FullDuplex_Init(void)
 {
-    GPIO_InitTypeDef GPIO_InitStructure = {0}; // GPIO 初始化结构体
     SPI_InitTypeDef  SPI_InitStructure = {0};   // SPI 初始化结构体
 
     // 使能 GPIOC 和 SPI1 的时钟
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC |RCC_APB2Periph_GPIOD| RCC_APB2Periph_SPI1, ENABLE);
-
-
-
-    //LCD_DC_1   LCD_CS_1
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1|GPIO_Pin_4;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; // 复用推挽输出模式
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz; // GPIO 速度设置为 30MHz
-    GPIO_Init(GPIOC, &GPIO_InitStructure); // 初始化 GPIOC
-
-    //LCD_0IN85_RST_1
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz; // GPIO 速度设置为 30MHz
-    GPIO_Init(GPIOD, &GPIO_InitStructure);
-
-
-    //  LCD_SCK_1;  SPI_SDA_1;
-    GPIO_InitStructure.GPIO_Pin =  GPIO_Pin_5|GPIO_Pin_6;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-
-
-
-    //留着和lora通信
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, ENABLE);
 
     // 配置 SPI 参数
     SPI_InitStructure.SPI_Direction = SPI_Direction_1Line_Tx; // 设置为全双工模式
