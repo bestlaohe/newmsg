@@ -70,10 +70,23 @@ void TIM2_Init(u16 arr, u16 psc){
         TIM_SetCounter(TIM2, 0);
         TIM_Cmd(TIM2, ENABLE);
 
+}
+void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void TIM2_IRQHandler()
+{
 
+  volatile uint16_t tempcnt = TIM2->CNT, temparr = TIM2->ATRLR;
+  if (TIM_GetITStatus(TIM2, TIM_IT_Update))
+  {
 
-
-
-
-
+      if (tempcnt < temparr / 2)
+      {
+          circle += 1;
+      }
+      else
+      {
+          circle -= 1;
+      }
+  }
+  TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 }

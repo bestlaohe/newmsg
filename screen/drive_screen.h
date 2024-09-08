@@ -1,7 +1,7 @@
 /*
  * drive_screen.h
  *
- *  Created on: 2024Äê8ÔÂ30ÈÕ
+ *  Created on: 2024Ã„Ãª8Ã”Ã‚30ÃˆÃ•
  *      Author: 12630
  */
 
@@ -39,7 +39,7 @@
 #define LCD_BL_1   GPIO_SetBits(GPIOC, GPIO_Pin_3)
 
 
-//*Slave:SPI1_NSS(PC1)¡¢SPI1_SCK(PC5)¡¢SPI1_MISO(PC7)¡¢SPI1_MOSI(PC6).
+//*Slave:SPI1_NSS(PC1)Â¡Â¢SPI1_SCK(PC5)Â¡Â¢SPI1_MISO(PC7)Â¡Â¢SPI1_MOSI(PC6).
 /* SPI Mode Definition */
 #define HOST_MODE     0
 #define SLAVE_MODE    1

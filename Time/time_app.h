@@ -11,6 +11,6 @@
 
 void TIM1_Init(u16 arr, u16 psc, u16 ccp);
 void TIM2_Init(u16 arr, u16 psc);
-
+extern volatile int circle;
 
 #endif /* TIME_TIME_APP_H_ */

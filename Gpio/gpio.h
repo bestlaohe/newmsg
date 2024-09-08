@@ -10,5 +10,8 @@
 #include "ch32v00x_gpio.h"
 
 void My_GPIO_Init();
+#define MOTOR_ON   GPIO_ResetBits(GPIOA, GPIO_Pin_2)
+#define MOTOR_OFF   GPIO_SetBits(GPIOA, GPIO_Pin_2)
+
 
 #endif /* GPIO_GPIO_H_ */
