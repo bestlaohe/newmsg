@@ -56,24 +56,24 @@
      {
 
 
-//   if(SX1278_LoRaTxPacket(buf,10))
-//         {
-//             printf("TX fail \r\n");
-//         }
+   if(SX1278_LoRaTxPacket(buf,10))
+         {
+             printf("TX fail \r\n");
+         }
 
 
-//         res = SX1278_LoRaRxPacket(buf,&len,3000);
-//         if(res == 0)
-//         {
-//             printf("RX sucess \r\n");
-//             Delay_Ms(500);
-//         }else if(res == 1)
-//         {
-//             printf("Time out!\r\n");
-//         }else if(res == 2)
-//         {
-//             printf("CRC eeror!\r\n");
-//         }
+         res = SX1278_LoRaRxPacket(buf,&len,3000);
+         if(res == 0)
+         {
+             printf("RX sucess \r\n");
+             Delay_Ms(500);
+         }else if(res == 1)
+         {
+             printf("Time out!\r\n");
+         }else if(res == 2)
+         {
+             printf("CRC eeror!\r\n");
+         }
 
 
         printf("µÈµÈ½áÊø\r\n");
@@ -84,19 +84,19 @@
         LCD_0IN85_SetBackLight(50);
         Delay_Ms(1000);
 
-        //  if (precircle != circle || (precnt != TIM2->CNT && TIM2->CNT % 4 == 0))
-        //  {
-        //      printf("Encoder position= %d circle %d step\r\n", circle, TIM2->CNT);
-        //      if (encodetime != 0)
-        //          printf("Encoder speed= %f\r\n", -(float)(precircle * 80 + precnt - (circle * 80 + TIM2->CNT)) / (float)encodetime * 1000.0/(float)SpeedSampleTimeMs / 80.0);
-        //      else
-        //          printf("Encoder speed null!!\r\n");
-        //      encodetime = 0;
-        //      precircle = circle;
-        //      precnt = TIM2->CNT;
-        //  }
-        //  encodetime++;
-        //  Delay_Ms(SpeedSampleTimeMs);
+          if (precircle != circle || (precnt != TIM2->CNT && TIM2->CNT % 4 == 0))
+          {
+              printf("Encoder position= %d circle %d step\r\n", circle, TIM2->CNT);
+              if (encodetime != 0)
+                  printf("Encoder speed= %f\r\n", -(float)(precircle * 80 + precnt - (circle * 80 + TIM2->CNT)) / (float)encodetime * 1000.0/(float)SpeedSampleTimeMs / 80.0);
+              else
+                  printf("Encoder speed null!!\r\n");
+              encodetime = 0;
+              precircle = circle;
+              precnt = TIM2->CNT;
+          }
+          encodetime++;
+          Delay_Ms(SpeedSampleTimeMs);
      }
  }
 
