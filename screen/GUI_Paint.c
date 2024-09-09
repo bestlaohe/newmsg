@@ -16,7 +16,7 @@
 * 1.Fix: 
 *       Paint_DrawNum
 *         Fixed a BUG where the Paint_DrawNum function failed to display 0
-* 2.Addï¼š Paint_DrawFloatNum
+* 2.Add£º Paint_DrawFloatNum
 *     Can display FloatNum   
 *
 * -----------------------------------------------------------------------------
@@ -292,11 +292,11 @@ void Paint_DrawPoint( UWORD Xpoint,       UWORD Ypoint, UWORD Color,
 /******************************************************************************
 function:	Draw a line of arbitrary slope
 parameter:
-    Xstart ï¼šStarting Xpoint point coordinates
-    Ystart ï¼šStarting Xpoint point coordinates
-    Xend   ï¼šEnd point Xpoint coordinate
-    Yend   ï¼šEnd point Ypoint coordinate
-    Color  ï¼šThe color of the line segment
+    Xstart £ºStarting Xpoint point coordinates
+    Ystart £ºStarting Xpoint point coordinates
+    Xend   £ºEnd point Xpoint coordinate
+    Yend   £ºEnd point Ypoint coordinate
+    Color  £ºThe color of the line segment
 ******************************************************************************/
 void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, 
                     UWORD Color, DOT_PIXEL Line_width, LINE_STYLE Line_Style)
@@ -348,12 +348,12 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
 /******************************************************************************
 function:	Draw a rectangle
 parameter:
-    Xstart ï¼šRectangular  Starting Xpoint point coordinates
-    Ystart ï¼šRectangular  Starting Xpoint point coordinates
-    Xend   ï¼šRectangular  End point Xpoint coordinate
-    Yend   ï¼šRectangular  End point Ypoint coordinate
-    Color  ï¼šThe color of the Rectangular segment
-    Filled : Whether it is filled--- 1 solid 0ï¼šempty
+    Xstart £ºRectangular  Starting Xpoint point coordinates
+    Ystart £ºRectangular  Starting Xpoint point coordinates
+    Xend   £ºRectangular  End point Xpoint coordinate
+    Yend   £ºRectangular  End point Ypoint coordinate
+    Color  £ºThe color of the Rectangular segment
+    Filled : Whether it is filled--- 1 solid 0£ºempty
 ******************************************************************************/
 void Paint_DrawRectangle( UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, 
                           UWORD Color, DOT_PIXEL Line_width, DRAW_FILL Filled )
@@ -381,11 +381,11 @@ void Paint_DrawRectangle( UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
 function:	Use the 8-point method to draw a circle of the
             specified size at the specified position->
 parameter:
-    X_Center  ï¼šCenter X coordinate
-    Y_Center  ï¼šCenter Y coordinate
-    Radius    ï¼šcircle Radius
-    Color     ï¼šThe color of the ï¼šcircle segment
-    Filled    : Whether it is filled: 1 filling 0ï¼šDo not
+    X_Center  £ºCenter X coordinate
+    Y_Center  £ºCenter Y coordinate
+    Radius    £ºcircle Radius
+    Color     £ºThe color of the £ºcircle segment
+    Filled    : Whether it is filled: 1 filling 0£ºDo not
 ******************************************************************************/
 void Paint_DrawCircle(  UWORD X_Center, UWORD Y_Center, UWORD Radius, 
                         UWORD Color, DOT_PIXEL Line_width, DRAW_FILL Draw_Fill )
@@ -449,10 +449,10 @@ void Paint_DrawCircle(  UWORD X_Center, UWORD Y_Center, UWORD Radius,
 /******************************************************************************
 function:	Show English characters
 parameter:
-    Xpoint           ï¼šX coordinate
-    Ypoint           ï¼šY coordinate
-    Acsii_Char       ï¼šTo display the English characters
-    Font             ï¼šA structure pointer that displays a character size
+    Xpoint           £ºX coordinate
+    Ypoint           £ºY coordinate
+    Acsii_Char       £ºTo display the English characters
+    Font             £ºA structure pointer that displays a character size
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
@@ -498,10 +498,10 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
 /******************************************************************************
 function:	Display the string
 parameter:
-    Xstart           ï¼šX coordinate
-    Ystart           ï¼šY coordinate
-    pString          ï¼šThe first address of the English string to be displayed
-    Font             ï¼šA structure pointer that displays a character size
+    Xstart           £ºX coordinate
+    Ystart           £ºY coordinate
+    pString          £ºThe first address of the English string to be displayed
+    Font             £ºA structure pointer that displays a character size
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
@@ -542,11 +542,11 @@ void Paint_DrawString_EN(UWORD Xstart, UWORD Ystart, const char * pString,
 /******************************************************************************
 function:	Display the string
 parameter:
-    Xstart           ï¼šX coordinate
-    Ystart           ï¼šY coordinate
-    pString          ï¼šThe first address of the Chinese string and English
+    Xstart           £ºX coordinate
+    Ystart           £ºY coordinate
+    pString          £ºThe first address of the Chinese string and English
                         string to be displayed
-    Font             ï¼šA structure pointer that displays a character size
+    Font             £ºA structure pointer that displays a character size
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
@@ -637,10 +637,10 @@ void Paint_DrawString_CN(UWORD Xstart, UWORD Ystart, const char * pString, cFONT
 /******************************************************************************
 function:	Display nummber
 parameter:
-    Xstart           ï¼šX coordinate
+    Xstart           £ºX coordinate
     Ystart           : Y coordinate
     Nummber          : The number displayed
-    Font             ï¼šA structure pointer that displays a character size
+    Font             £ºA structure pointer that displays a character size
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
@@ -677,11 +677,11 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
 /******************************************************************************
 function:	Display float number
 parameter:
-    Xstart           ï¼šX coordinate
+    Xstart           £ºX coordinate
     Ystart           : Y coordinate
     Nummber          : The float data that you want to display
 	Decimal_Point	 : Show decimal places
-    Font             ï¼šA structure pointer that displays a character size
+    Font             £ºA structure pointer that displays a character size
     Color            : Select the background color of the English character
 ******************************************************************************/
 void Paint_DrawFloatNum(UWORD Xpoint, UWORD Ypoint, double Nummber,  UBYTE Decimal_Point, 
@@ -704,10 +704,10 @@ void Paint_DrawFloatNum(UWORD Xpoint, UWORD Ypoint, double Nummber,  UBYTE Decim
 /******************************************************************************
 function:	Display time
 parameter:
-    Xstart           ï¼šX coordinate
+    Xstart           £ºX coordinate
     Ystart           : Y coordinate
     pTime            : Time-related structures
-    Font             ï¼šA structure pointer that displays a character size
+    Font             £ºA structure pointer that displays a character size
     Color            : Select the background color of the English character
 ******************************************************************************/
 void Paint_DrawTime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font,
@@ -731,10 +731,10 @@ void Paint_DrawTime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font,
 /******************************************************************************
 function:	Display image
 parameter:
-    image            ï¼šImage start address
+    image            £ºImage start address
     xStart           : X starting coordinates
     yStart           : Y starting coordinates
-    xEnd             ï¼šImage width
+    xEnd             £ºImage width
     yEnd             : Image height
 ******************************************************************************/
 void Paint_DrawImage(const unsigned char *image, UWORD xStart, UWORD yStart, UWORD W_Image, UWORD H_Image) 
