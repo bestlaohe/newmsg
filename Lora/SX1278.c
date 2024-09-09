@@ -38,7 +38,6 @@ u8 Lora_ErrorCoding   = ERROR_CODING_4_5;         //  前向纠错4/5 4/6 4/7 4/8
 #define SX1278_MISO             GPIO_Pin_7   //引脚定义
 #define SX1278_SCK              GPIO_Pin_5   //引脚定义
 #define SX1278_SDNN             GPIO_Pin_1   //引脚定义
-
 #define SX1278_NIRQ             GPIO_Pin_6   //引脚定义
 
 #define SET_SX1278_NSEL() 		GPIO_SetBits(SX1278_GPIO,SX1278_NSEL)
@@ -50,7 +49,6 @@ u8 Lora_ErrorCoding   = ERROR_CODING_4_5;         //  前向纠错4/5 4/6 4/7 4/8
 #define CLR_SX1278_MOSI()		GPIO_ResetBits(SX1278_GPIO,SX1278_MOSI)
 #define SET_SX1278_SDN()		GPIO_SetBits(SX1278_GPIO,SX1278_SDNN)
 #define CLR_SX1278_SDN()		GPIO_ResetBits(SX1278_GPIO,SX1278_SDNN)//用于将 SX1278 模块置于关机模式
-
 #define READ_SX1278_NIRQ()		GPIO_ReadInputDataBit(GPIOD,SX1278_NIRQ)//引脚是 SX1278 模块的中断请求引脚
 
 
@@ -91,7 +89,11 @@ void EXTI7_0_IRQHandler(void)
 {
     if(EXTI_GetITStatus(EXTI_Line6)!=RESET)
     {
-        printf("Run at EXTI\r\n");
+        printf("中断触发震动\r\n");//有消息发来就震动
+        MOTOR_ON;
+        Delay_Ms(100);
+        MOTOR_OFF;
+
         EXTI_ClearITPendingBit(EXTI_Line6);     /* Clear Flag */
     }
 }

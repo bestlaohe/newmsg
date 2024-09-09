@@ -24,6 +24,7 @@
 #define SX1278_H
 
  #include "debug.h"
+#include "gpio.h"
 
 
 //≈‰÷√≤Œøº∂®“Â 
