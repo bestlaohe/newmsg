@@ -12,65 +12,83 @@
 volatile int circle = 0, precircle = 0;
 volatile uint16_t precnt = 0;
 volatile uint32_t encodetime = 0;
+u16 BattaryBuf[10];
 
 #define SpeedSampleTimeMs 20
 
-int main(void)
+/*********************************************************************
+ * @fn      IWDG_Feed_Init
+ *
+ * @brief   初始化 IWDG（独立看门狗）。
+ *
+ * @param   prer: 指定 IWDG 的预分频器值。
+ *            IWDG_Prescaler_4: IWDG 预分频器设置为 4。
+ *            IWDG_Prescaler_8: IWDG 预分频器设置为 8。
+ *            IWDG_Prescaler_16: IWDG 预分频器设置为 16。
+ *            IWDG_Prescaler_32: IWDG 预分频器设置为 32。
+ *            IWDG_Prescaler_64: IWDG 预分频器设置为 64。
+ *            IWDG_Prescaler_128: IWDG 预分频器设置为 128。
+ *            IWDG_Prescaler_256: IWDG 预分频器设置为 256。
+ *          rlr: 指定 IWDG 的重装载值。
+ *            该参数必须是介于 0 和 0x0FFF 之间的一个数值。
+ *
+ * @return  none
+ */
+void IWDG_Feed_Init(u16 prer, u16 rlr)
 {
 
-u16 BattaryBuf[10];
-        char strBuf[6];  // 用于存储转换后的字符串（最多需要5个字符加一个终止符）
+    IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); // 使能 IWDG 写访问，以便可以设置 IWDG 的配置寄存器
+    IWDG_SetPrescaler(prer);                      // 设置 IWDG 的预分频器值
+    IWDG_SetReload(rlr); // 设置 IWDG 的重装载值，这个值决定了 IWDG 的超时时间
+    IWDG_ReloadCounter(); // 重新加载 IWDG 计数器，以使计数器从新的重装载值开始
+    IWDG_Enable(); // 启用 IWDG，使其开始工作
+}
 
- u8 buf[21];
-    u8 res;
+int main(void)
+{
+    // 变量初始化
+    char strBuf[6]; // 用于存储转换后的字符串（最多需要5个字符加一个终止符）
+    u8 lorabuf[21]; // lora的buf
+    u8 res;         // 操作的返回
     u8 len;
-
-    SystemCoreClockUpdate();
-    USART_Printf_Init(115200);
+    /*********************基本内容初始化******************************/
+    SystemCoreClockUpdate();   // 系统时钟刷新
+    USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死
     printf("SystemClk:%d\r\n", SystemCoreClock);
     printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
-    Delay_Init();
-    My_GPIO_Init();
-    EXTI6_INT_INIT();
-    PWM_Config(10000, 100);
-    Encoder_Init(80, 0);
+    Delay_Init(); // 延时初始化需要在延时前，不然会卡死
 
-    DEV_Module_Init();
-    LCD_0in85_test();
-    ADC_Function_Init();
-
-    DMA_Tx_Init(DMA1_Channel1, (u32)&ADC1->RDATAR, (u32)BattaryBuf, 10); // 电量会一直存在这个buf里面
-    DMA_Cmd(DMA1_Channel1, ENABLE);
-
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_241Cycles);
-    ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-    Delay_Ms(50);
-    ADC_SoftwareStartConvCmd(ADC1, DISABLE);
-
-    for (int i = 0; i < 10; i++)
-    {
-        printf("%04d\r\n", BattaryBuf[i]);
-        Delay_Ms(10);
-    }
-   
-    SX1278_Init(434);
-
+    /*********************应用函数初始化******************************/
+    IWDG_Feed_Init(IWDG_Prescaler_128, 4000); // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s
+    My_GPIO_Init();                           // IO口初始化
+    EXTI6_INT_INIT();                         // 外部引进触发中断，lora有信息过来了
+    PWM_Config(10000, 100);                   // 屏幕的背光调节  默认百分百亮度
+    Encoder_Init(6, 1);                       // 编码器的内容
+    LCD_Init();                               // 屏幕硬件初始化
+    Battery_Init();                           // 电池的adc初始化
+    SX1278_Init(434);                         // lora的初始化
+                                              // 缺少开机界面
     while (1)
     {
 
+        printf("Feed dog\r\n");
+        IWDG_ReloadCounter(); // Feed dog
 
-for (int i = 0; i < 4; i++) {
-    sprintf(strBuf, "%04d", BattaryBuf[i]);
-    printf("%s\r\n", strBuf);
-    Paint_DrawString_EN(10, 34, strBuf, &Font24, RED, CYAN);
-}
+        //  LCD_0in85_test();        // 屏幕测试
 
-        if (SX1278_LoRaTxPacket(buf, 10))
+        for (int i = 0; i < 4; i++)
+        {
+            sprintf(strBuf, "%04d", BattaryBuf[i]);
+            printf("%s\r\n", strBuf);
+            Paint_DrawString_EN(10, 34, strBuf, &Font24, RED, CYAN);
+        }
+
+        if (SX1278_LoRaTxPacket(lorabuf, 10))
         {
             printf("TX fail \r\n");
         }
 
-        res = SX1278_LoRaRxPacket(buf, &len, 3000);
+        res = SX1278_LoRaRxPacket(lorabuf, &len, 3000);
         if (res == 0)
         {
             printf("RX sucess \r\n");

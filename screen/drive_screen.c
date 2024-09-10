@@ -40,7 +40,7 @@ void SPI_FullDuplex_Init(void)
 
 
 
-int DEV_Module_Init(void)
+int LCD_Init(void)
 {
     SPI_FullDuplex_Init();
     LCD_DC_0;
@@ -60,7 +60,6 @@ void DEV_Module_Exit(void)
 void DEV_SPI_WRite(uint8_t _dat)
 {
         SPI_I2S_SendData( SPI1, _dat );
-
         while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) ) ;
 }
 

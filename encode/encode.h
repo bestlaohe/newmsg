@@ -9,6 +9,6 @@
 #define ENCODE_ENCODE_H_
 #include "time_app.h"
 
-void Encoder_Init();
+void Encoder_Init(u16 arr, u16 psc);
 
 #endif /* ENCODE_ENCODE_H_ */

@@ -16,7 +16,7 @@ LCD_0IN85_ATTRIBUTES LCD;
 void LCD_0in85_test()
 {
     printf("LCD_0IN85_test Demo\r\n");
-        DEV_Module_Init();
+        LCD_Init();
 
       printf("LCD_0IN85_ Init and Clear...\r\n");
         LCD_0IN85_SetBackLight(1000);

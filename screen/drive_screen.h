@@ -53,7 +53,7 @@
 
 void SPI_FullDuplex_Init(void);
 void DEV_SPI_WRite(uint8_t _dat);
-int DEV_Module_Init(void);
+int LCD_Init(void);
 void DEV_Module_Exit(void);
 void LCD_0in85_test();
 

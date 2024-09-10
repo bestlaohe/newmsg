@@ -16,6 +16,6 @@
 #include "debug.h"
 #include "encode.h"
 
-void Encoder_Init(){
-    TIM2_Init(6,1);
+void Encoder_Init(u16 arr, u16 psc){
+    TIM2_Init(arr,psc);//自动重装载值（ARR）和预分频器（PSC）
 }
