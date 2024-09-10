@@ -40,8 +40,8 @@ void TIM2_Init(u16 arr, u16 psc){
 
         RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
         TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
-        TIM_TimeBaseStructure.TIM_Prescaler = psc;
-        TIM_TimeBaseStructure.TIM_Period = arr;
+        TIM_TimeBaseStructure.TIM_Prescaler = psc;//预分频器
+        TIM_TimeBaseStructure.TIM_Period = arr;//自动重装载值
         TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
         TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
         TIM_TimeBaseStructure.TIM_RepetitionCounter = 0;            //重复计数器值

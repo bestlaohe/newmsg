@@ -63,7 +63,7 @@ int main(void)
     My_GPIO_Init();                           // IO口初始化
     EXTI6_INT_INIT();                         // 外部引进触发中断，lora有信息过来了
     PWM_Config(10000, 100);                   // 屏幕的背光调节  默认百分百亮度
-    Encoder_Init(6, 1);                       // 编码器的内容
+    Encoder_Init(65535, 1);                       // 编码器的内容,重载值为65535，不分频，1圈24个，4倍*6格
     LCD_Init();                               // 屏幕硬件初始化
     Battery_Init();                           // 电池的adc初始化
     SX1278_Init(434);                         // lora的初始化
