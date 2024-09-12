@@ -6,13 +6,28 @@
  */
 
 #include "time_app.h"
+/**
+ * @brief   初始化 TIM1 定时器，用于生成 PWM 输出。
+ * 
+ * @param   arr   定时器自动重装载寄存器 (ARR) 的值，决定 PWM 信号的周期。
+ * @param   psc   定时器预分频器 (PSC) 的值，决定定时器计数频率。
+ * @param   ccp   比较寄存器 (CCR) 的值，决定 PWM 信号的占空比。
+ * 
+ * @note    配置 TIM1 为 PWM 输出模式，PWM 通道使用 TIM1_CH3 (pc3) 引脚。
+ *          TIM1 被设置为向上计数模式，PWM 模式 2，输出高电平时有效。
+ *          TIM1 的自动重装载寄存器和预分频器被初始化为用户传入的参数值。
+ *          定时器计数到 ARR 值时会自动重载并产生更新事件。
+ * 
+ * @retval  None
+ */
+
+//100us定时器个数是100，10ms触发一次
 void TIM1_Init(u16 arr, u16 psc, u16 ccp){
 
         TIM_OCInitTypeDef TIM_OCInitStructure={0};
         TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure={0};
 
         RCC_APB2PeriphClockCmd(   RCC_APB2Periph_TIM1, ENABLE );
-
 
         TIM_TimeBaseInitStructure.TIM_Period = arr;
         TIM_TimeBaseInitStructure.TIM_Prescaler = psc;
@@ -30,8 +45,41 @@ void TIM1_Init(u16 arr, u16 psc, u16 ccp){
         TIM_OC3PreloadConfig( TIM1, TIM_OCPreload_Disable );
         TIM_ARRPreloadConfig( TIM1, ENABLE );
         TIM_Cmd( TIM1, ENABLE );
+
+
+        // 配置定时器中断
+    TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);                 // 使能更新中断
+
+    // 配置 NVIC 中断
+    NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;          // 中断通道
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;   // 抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;          // 子优先级
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;             // 使能中断
+    NVIC_Init(&NVIC_InitStructure);
 }
 
+//作为倒计时10ms一次触发中断
+void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+int SleepCounter=0;//1个10ms
+
+
+// 定时器中断服务函数
+void TIM1_UP_IRQHandler(void)
+{
+    if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
+    {
+        // 清除中断标志
+        TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+        SleepCounter++;
+
+
+
+        // 在这里处理定时器更新中断
+        // 例如：toggle an LED, send a signal, etc.
+    }
+}
+
+//用于编码器
 void TIM2_Init(u16 arr, u16 psc){
 
         TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;

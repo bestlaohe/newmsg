@@ -39,9 +39,9 @@ void IWDG_Feed_Init(u16 prer, u16 rlr)
 
     IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); // 使能 IWDG 写访问，以便可以设置 IWDG 的配置寄存器
     IWDG_SetPrescaler(prer);                      // 设置 IWDG 的预分频器值
-    IWDG_SetReload(rlr); // 设置 IWDG 的重装载值，这个值决定了 IWDG 的超时时间
-    IWDG_ReloadCounter(); // 重新加载 IWDG 计数器，以使计数器从新的重装载值开始
-    IWDG_Enable(); // 启用 IWDG，使其开始工作
+    IWDG_SetReload(rlr);                          // 设置 IWDG 的重装载值，这个值决定了 IWDG 的超时时间
+    IWDG_ReloadCounter();                         // 重新加载 IWDG 计数器，以使计数器从新的重装载值开始
+    IWDG_Enable();                                // 启用 IWDG，使其开始工作
 }
 
 int main(void)
@@ -52,7 +52,7 @@ int main(void)
     u8 res;         // 操作的返回
     u8 len;
     /*********************基本内容初始化******************************/
-    SystemCoreClockUpdate();   // 系统时钟刷新
+    SystemCoreClockUpdate();   // 48mhz系统时钟刷新
     USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死
     printf("SystemClk:%d\r\n", SystemCoreClock);
     printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
@@ -63,15 +63,26 @@ int main(void)
     My_GPIO_Init();                           // IO口初始化
     EXTI6_INT_INIT();                         // 外部引进触发中断，lora有信息过来了
     PWM_Config(10000, 100);                   // 屏幕的背光调节  默认百分百亮度
-    Encoder_Init(65535, 1);                       // 编码器的内容,重载值为65535，不分频，1圈24个，4倍*6格
+    Encoder_Init(65535, 1);                   // 编码器的内容,重载值为65535，不分频，1圈24个，4倍*6格
     LCD_Init();                               // 屏幕硬件初始化
     Battery_Init();                           // 电池的adc初始化
     SX1278_Init(434);                         // lora的初始化
                                               // 缺少开机界面
+                                              // 缺少休眠功能  待机功耗最低，睡眠功耗其次，睡眠，有消息过来唤醒，滚轮或者按钮过来唤醒，10s后休眠
+    // 15s休眠，每次动刷新定时器
+
     while (1)
     {
 
-        printf("Feed dog\r\n");
+        if (SleepCounter == 500) // 5s触发一次
+        {
+            printf("定时器5s了开始进入待机模式\r\n");
+            SleepCounter = 0;
+            PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
+        }
+        printf("当前按钮状态%d\r\n", KEY_PRESS());
+
+        printf("喂狗\r\n");
         IWDG_ReloadCounter(); // Feed dog
 
         //  LCD_0in85_test();        // 屏幕测试

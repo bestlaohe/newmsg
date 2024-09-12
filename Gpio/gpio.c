@@ -11,6 +11,14 @@ void My_GPIO_Init(){
     GPIO_InitTypeDef GPIO_InitStructure={0};
     RCC_APB2PeriphClockCmd( RCC_APB2Periph_GPIOA|RCC_APB2Periph_GPIOC|RCC_APB2Periph_GPIOD , ENABLE );
 
+
+    
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz; // GPIO 速度设置为 30MHz
+    GPIO_Init(GPIOD, &GPIO_InitStructure);//pd2的确认按钮
+
+
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz; // GPIO 速度设置为 30MHz

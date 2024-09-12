@@ -14,7 +14,7 @@
 
 
 
-void PWM_Config(u16 Freq, u16 Duty)//5000   50
+void PWM_Config(u16 Freq, u16 Duty)//(10000, 100);
 {
     // 确保频率在合理范围内
     if (Freq == 0) return; // 避免除以零
