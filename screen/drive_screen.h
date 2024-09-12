@@ -25,8 +25,8 @@
 #define LCD_RST_0    GPIO_ResetBits(GPIOD, GPIO_Pin_0)
 #define LCD_RST_1     GPIO_SetBits(GPIOD, GPIO_Pin_0)
 
-#define LCD_DC_0       GPIO_ResetBits(GPIOC, GPIO_Pin_1)
-#define LCD_DC_1       GPIO_SetBits(GPIOC, GPIO_Pin_1)
+#define LCD_DC_0       GPIO_ResetBits(GPIOC, GPIO_Pin_2)
+#define LCD_DC_1       GPIO_SetBits(GPIOC, GPIO_Pin_2)
 
 #define LCD_SCK_0  GPIO_ResetBits(GPIOC, GPIO_Pin_5)
 #define LCD_SCK_1   GPIO_SetBits(GPIOC, GPIO_Pin_5)

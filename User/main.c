@@ -52,7 +52,7 @@ int main(void)
     u8 res;         // 操作的返回
     u8 len;
     /*********************基本内容初始化******************************/
-    SystemCoreClockUpdate();   // 48mhz系统时钟刷新
+    SystemCoreClockUpdate();   // 24mhz系统时钟刷新
     USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死
     printf("SystemClk:%d\r\n", SystemCoreClock);
     printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
@@ -60,73 +60,77 @@ int main(void)
 
     /*********************应用函数初始化******************************/
     IWDG_Feed_Init(IWDG_Prescaler_128, 4000); // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s
-    My_GPIO_Init();                           // IO口初始化
+    My_GPIO_Init();                           // IO口初始化****
     EXTI6_INT_INIT();                         // 外部引进触发中断，lora有信息过来了
-    PWM_Config(10000, 100);                   // 屏幕的背光调节  默认百分百亮度
-    Encoder_Init(65535, 1);                   // 编码器的内容,重载值为65535，不分频，1圈24个，4倍*6格
-    LCD_Init();                               // 屏幕硬件初始化
+    PWM_Config(10000, 100);                   // 屏幕的背光调节  默认百分百亮度******
+    Encoder_Init(1, 1);                   // 编码器的内容,重载值为65535，不分频，1圈24个，4倍*6格
+    LCD_Init();                               // 屏幕硬件初始化****
     Battery_Init();                           // 电池的adc初始化
     SX1278_Init(434);                         // lora的初始化
                                               // 缺少开机界面
                                               // 缺少休眠功能  待机功耗最低，睡眠功耗其次，睡眠，有消息过来唤醒，滚轮或者按钮过来唤醒，10s后休眠
-    // 15s休眠，每次动刷新定时器
-
+    // 15s休眠，每次动刷新定时器,按钮需要改成中断的方式
+  //  LCD_0in85_test();        // 屏幕测试
     while (1)
     {
 
-        if (SleepCounter == 500) // 5s触发一次
-        {
-            printf("定时器5s了开始进入待机模式\r\n");
-            SleepCounter = 0;
-            PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
-        }
-        printf("当前按钮状态%d\r\n", KEY_PRESS());
+//        if (SleepCounter >= 150000) // 15s触发一次
+//        {
+//            printf("定时器15s了开始进入待机模式\r\n");
+//            SleepCounter = 0;
+//            PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
+//        }
 
-        printf("喂狗\r\n");
+//        printf("当前按钮状态%d\r\n", KEY_PRESS());
+//
+   //     printf("喂狗\r\n");
         IWDG_ReloadCounter(); // Feed dog
 
-        //  LCD_0in85_test();        // 屏幕测试
 
-        for (int i = 0; i < 4; i++)
-        {
-            sprintf(strBuf, "%04d", BattaryBuf[i]);
-            printf("%s\r\n", strBuf);
-            Paint_DrawString_EN(10, 34, strBuf, &Font24, RED, CYAN);
-        }
 
-        if (SX1278_LoRaTxPacket(lorabuf, 10))
-        {
-            printf("TX fail \r\n");
-        }
 
-        res = SX1278_LoRaRxPacket(lorabuf, &len, 3000);
-        if (res == 0)
-        {
-            printf("RX sucess \r\n");
-            Delay_Ms(500);
-        }
-        else if (res == 1)
-        {
-            printf("Time out!\r\n");
-        }
-        else if (res == 2)
-        {
-            printf("CRC eeror!\r\n");
-        }
 
-        printf("等等结束\r\n");
-        LCD_0IN85_SetBackLight(100);
+//        for (int i = 0; i < 4; i++)
+//        {
+//            sprintf(strBuf, "%04d", BattaryBuf[i]);
+//            printf("%s\r\n", strBuf);
+//            Paint_DrawString_EN(10, 34, strBuf, &Font24, RED, CYAN);
+//        }
 
-        Delay_Ms(1000);
-        printf("等等结束\r\n");
-        LCD_0IN85_SetBackLight(50);
-        Delay_Ms(1000);
+//        if (SX1278_LoRaTxPacket(lorabuf, 10))
+//        {
+//            printf("TX fail \r\n");
+//        }
+//
+//        res = SX1278_LoRaRxPacket(lorabuf, &len, 3000);
+//        if (res == 0)
+//        {
+//            printf("RX sucess \r\n");
+//            Delay_Ms(500);
+//        }
+//        else if (res == 1)
+//        {
+//            printf("Time out!\r\n");
+//        }
+//        else if (res == 2)
+//        {
+//            printf("CRC eeror!\r\n");
+//        }
+//
+//        printf("等等结束\r\n");
+//        LCD_0IN85_SetBackLight(100);
+
+//        Delay_Ms(1000);
+//        printf("等等结束\r\n");
+//        LCD_0IN85_SetBackLight(50);
+//        Delay_Ms(1000);
 
         if (precircle != circle || (precnt != TIM2->CNT && TIM2->CNT % 4 == 0))
         {
             printf("Encoder position= %d circle %d step\r\n", circle, TIM2->CNT);
             if (encodetime != 0)
-                printf("Encoder speed= %f\r\n", -(float)(precircle * 80 + precnt - (circle * 80 + TIM2->CNT)) / (float)encodetime * 1000.0 / (float)SpeedSampleTimeMs / 80.0);
+           //     printf("Encoder speed= %f\r\n", -(float)(precircle * 80 + precnt - (circle * 80 + TIM2->CNT)) / (float)encodetime * 1000.0 / (float)SpeedSampleTimeMs / 80.0);
+            printf("Encoder speed null!!\r\n");
             else
                 printf("Encoder speed null!!\r\n");
             encodetime = 0;

@@ -9,7 +9,7 @@
 #define ADC_ADC_H_
 
 #include "debug.h"
-extern u16 BattaryBuf;
+extern u16 BattaryBuf[10];
 
 void Battery_Init(void);
 u16 Get_ADC_Val(u8 ch);

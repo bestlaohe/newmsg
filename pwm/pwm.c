@@ -21,7 +21,7 @@ void PWM_Config(u16 Freq, u16 Duty)//(10000, 100);
     if (Duty > 100) Duty = 100; // 确保占空比不超过100%
 
     // 计算预分频器和自动重载寄存器值
-    u16 psc = (SystemCoreClock / (100*Freq)) - 1; // 计算预分频器48
+    u16 psc = (SystemCoreClock / (100*Freq)) - 1; // 计算预分频器24
 
     // 调用初始化函数
     TIM1_Init(100, psc, Duty);

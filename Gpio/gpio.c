@@ -64,7 +64,7 @@ void My_GPIO_Init(){
 
 
     //LCD_DC_1   LCD_CS_1
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1|GPIO_Pin_4;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2|GPIO_Pin_4;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; // 复用推挽输出模式
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz; // GPIO 速度设置为 30MHz
     GPIO_Init(GPIOC, &GPIO_InitStructure); // 初始化 GPIOC
@@ -91,10 +91,8 @@ void My_GPIO_Init(){
 
     //编码器的io口d3d4
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3|GPIO_Pin_4;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
     GPIO_Init(GPIOD, &GPIO_InitStructure);
-
-
 
 
 

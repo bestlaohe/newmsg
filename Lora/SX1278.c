@@ -89,7 +89,7 @@ void EXTI7_0_IRQHandler(void)
 {
     if(EXTI_GetITStatus(EXTI_Line6)!=RESET)
     {
-        printf("中断触发震动\r\n");//有消息发来就震动
+        printf("lora来数据中断触发震动\r\n");//有消息发来就震动
         MOTOR_ON;
         Delay_Ms(100);
         MOTOR_OFF;

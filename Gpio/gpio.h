@@ -13,7 +13,7 @@ void My_GPIO_Init();
 #define MOTOR_ON   GPIO_ResetBits(GPIOA, GPIO_Pin_2)
 #define MOTOR_OFF   GPIO_SetBits(GPIOA, GPIO_Pin_2)
 
-#define KEY0 GPIO_ReadInputDataBit( GPIOC, GPIO_Pin_1)  //PA0
+#define KEY0 GPIO_ReadInputDataBit( GPIOD, GPIO_Pin_2)
 
 
 

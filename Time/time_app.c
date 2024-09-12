@@ -21,12 +21,12 @@
  * @retval  None
  */
 
-//100us定时器个数是100，10ms触发一次
+//100us触发一次中断
 void TIM1_Init(u16 arr, u16 psc, u16 ccp){
 
         TIM_OCInitTypeDef TIM_OCInitStructure={0};
         TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure={0};
-
+        NVIC_InitTypeDef NVIC_InitStructure;
         RCC_APB2PeriphClockCmd(   RCC_APB2Periph_TIM1, ENABLE );
 
         TIM_TimeBaseInitStructure.TIM_Period = arr;
@@ -39,7 +39,7 @@ void TIM1_Init(u16 arr, u16 psc, u16 ccp){
         TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;
         TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
         TIM_OCInitStructure.TIM_Pulse = ccp;
-        TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_High;
+        TIM_OCInitStructure.TIM_OCPolarity = TIM_OCPolarity_Low;
         TIM_OC3Init( TIM1, &TIM_OCInitStructure );
 
         TIM_OC3PreloadConfig( TIM1, TIM_OCPreload_Disable );
@@ -52,17 +52,16 @@ void TIM1_Init(u16 arr, u16 psc, u16 ccp){
 
     // 配置 NVIC 中断
     NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;          // 中断通道
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;   // 抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;   // 抢占优先级
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;          // 子优先级
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;             // 使能中断
+
     NVIC_Init(&NVIC_InitStructure);
 }
 
 //作为倒计时10ms一次触发中断
 void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-int SleepCounter=0;//1个10ms
-
-
+int SleepCounter=0;
 // 定时器中断服务函数
 void TIM1_UP_IRQHandler(void)
 {
@@ -72,10 +71,6 @@ void TIM1_UP_IRQHandler(void)
         TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
         SleepCounter++;
 
-
-
-        // 在这里处理定时器更新中断
-        // 例如：toggle an LED, send a signal, etc.
     }
 }
 
@@ -124,9 +119,11 @@ void TIM2_IRQHandler()
 {
 
   volatile uint16_t tempcnt = TIM2->CNT, temparr = TIM2->ATRLR;
+
   if (TIM_GetITStatus(TIM2, TIM_IT_Update))
   {
-
+      printf("tempcnt=%d\r\n",tempcnt);
+      printf("temparr=%d\r\n",temparr);
       if (tempcnt < temparr / 2)
       {
           circle += 1;

@@ -15,29 +15,26 @@ LCD_0IN85_ATTRIBUTES LCD;
 
 void LCD_0in85_test()
 {
-    printf("LCD_0IN85_test Demo\r\n");
-        LCD_Init();
 
-      printf("LCD_0IN85_ Init and Clear...\r\n");
-        LCD_0IN85_SetBackLight(1000);
+
         LCD_0IN85_Init(VERTICAL);
         LCD_0IN85_Clear(RED);
 
      printf("Paint_NewImage\r\n");
        Paint_NewImage(LCD_WIDTH,LCD_HEIGHT, ROTATE_180, WHITE);
 
-     printf("Set Clear and Display Funtion\r\n");
-       Paint_SetClearFuntion(LCD_0IN85_Clear);
-       Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
-
-     printf("Paint_Clear\r\n");
-       Paint_Clear(WHITE);
-       Delay_Ms(1000);
-
-     printf("drawing...\r\n");
-       Paint_SetRotate(0);
-       Paint_DrawString_EN(5, 10, "123",        &Font24,  YELLOW, RED);
-       Paint_DrawString_EN(5, 34, "ABC",        &Font24,  BLUE,   CYAN);
+//     printf("Set Clear and Display Funtion\r\n");
+//       Paint_SetClearFuntion(LCD_0IN85_Clear);
+//       Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
+//
+//     printf("Paint_Clear\r\n");
+//       Paint_Clear(WHITE);
+//       Delay_Ms(1000);
+//
+//     printf("drawing...\r\n");
+//       Paint_SetRotate(0);
+//       Paint_DrawString_EN(5, 10, "123",        &Font24,  YELLOW, RED);
+//       Paint_DrawString_EN(5, 34, "ABC",        &Font24,  BLUE,   CYAN);
 
        
 //  Paint_DrawFloatNum (5, 58 ,987.654321,3, &Font12,  WHITE,  BLACK);
