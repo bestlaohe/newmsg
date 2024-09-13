@@ -76,27 +76,7 @@ u8 SX1278_SPI_RW(u8 byte)
     return(SPI_I2S_ReceiveData(SPI1));          // 返回读出的一字节
 }
 
-void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
-/*********************************************************************
- * @fn      EXTI0_IRQHandler
- *
- * @brief   This function handles EXTI0 Handler.
- *
- * @return  none
- */
-void EXTI7_0_IRQHandler(void)
-{
-    if(EXTI_GetITStatus(EXTI_Line6)!=RESET)
-    {
-        printf("lora来数据中断触发震动\r\n");//有消息发来就震动
-        MOTOR_ON;
-        Delay_Ms(100);
-        MOTOR_OFF;
-
-        EXTI_ClearITPendingBit(EXTI_Line6);     /* Clear Flag */
-    }
-}
 /*********************************************************************
  * @fn      EXTI0_INT_INIT
  *
@@ -114,7 +94,7 @@ void EXTI6_INT_INIT(void)
  
 
     /* GPIOA ----> EXTI_Line0 */
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource6);
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource3);
     EXTI_InitStructure.EXTI_Line = EXTI_Line6;
     EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
     EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;

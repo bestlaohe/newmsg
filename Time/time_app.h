@@ -11,6 +11,11 @@
 
 void TIM1_Init(u16 arr, u16 psc, u16 ccp);
 void TIM2_Init(u16 arr, u16 psc);
+void refresh_SleepCounter(int newtime);
+
+void system_wokeup();
+
+
+
 extern volatile int circle;
-extern int SleepCounter;
 #endif /* TIME_TIME_APP_H_ */

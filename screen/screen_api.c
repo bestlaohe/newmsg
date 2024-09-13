@@ -20,15 +20,15 @@ void LCD_0in85_test()
         LCD_0IN85_Init(VERTICAL);
         LCD_0IN85_Clear(RED);
 
-     printf("Paint_NewImage\r\n");
-       Paint_NewImage(LCD_WIDTH,LCD_HEIGHT, ROTATE_180, WHITE);
+        printf("Paint_NewImage\r\n");
+        Paint_NewImage(LCD_WIDTH,LCD_HEIGHT, ROTATE_180, WHITE);
 
-//     printf("Set Clear and Display Funtion\r\n");
-//       Paint_SetClearFuntion(LCD_0IN85_Clear);
-//       Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
-//
-//     printf("Paint_Clear\r\n");
-//       Paint_Clear(WHITE);
+        printf("Set Clear and Display Funtion\r\n");
+        Paint_SetClearFuntion(LCD_0IN85_Clear);
+        Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
+
+        printf("Paint_Clear\r\n");
+        Paint_Clear(WHITE);
 //       Delay_Ms(1000);
 //
 //     printf("drawing...\r\n");

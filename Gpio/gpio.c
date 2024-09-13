@@ -19,10 +19,6 @@ void My_GPIO_Init(){
     GPIO_Init(GPIOD, &GPIO_InitStructure);//pd2的确认按钮
 
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz; // GPIO 速度设置为 30MHz
-    GPIO_Init(GPIOD, &GPIO_InitStructure);//pd6的lora的中断接收
 
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;

@@ -61,16 +61,34 @@ void TIM1_Init(u16 arr, u16 psc, u16 ccp){
 
 //作为倒计时10ms一次触发中断
 void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+
 int SleepCounter=0;
+void refresh_SleepCounter(int newtime){
+
+    SleepCounter=newtime;
+}
+void system_wokeup(){
+
+  refresh_SleepCounter(0);//刷新休眠时间
+
+}
+
+
 // 定时器中断服务函数
 void TIM1_UP_IRQHandler(void)
 {
     if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
     {
-        // 清除中断标志
-        TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
-        SleepCounter++;
 
+        SleepCounter++;
+       if (SleepCounter >= 150000) // 15s触发一次
+       {
+           printf("定时器15s了开始进入待机模式\r\n");
+           SleepCounter = 0;
+          // PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
+       }
+       // 清除中断标志
+         TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
     }
 }
 
@@ -122,8 +140,9 @@ void TIM2_IRQHandler()
 
   if (TIM_GetITStatus(TIM2, TIM_IT_Update))
   {
-      printf("tempcnt=%d\r\n",tempcnt);
-      printf("temparr=%d\r\n",temparr);
+      printf("当前计数=%d\r\n",tempcnt);
+      printf("重装载值=%d\r\n",temparr);
+
       if (tempcnt < temparr / 2)
       {
           circle += 1;

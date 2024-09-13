@@ -63,39 +63,33 @@ int main(void)
     My_GPIO_Init();                           // IO口初始化****
     EXTI6_INT_INIT();                         // 外部引进触发中断，lora有信息过来了
     PWM_Config(10000, 100);                   // 屏幕的背光调节  默认百分百亮度******
-    Encoder_Init(1, 1);                   // 编码器的内容,重载值为65535，不分频，1圈24个，4倍*6格
+    Encoder_Init(12, 1);                      // 编码器的内容,重载值为65535，不分频，1圈24个，4倍*6格
     LCD_Init();                               // 屏幕硬件初始化****
     Battery_Init();                           // 电池的adc初始化
     SX1278_Init(434);                         // lora的初始化
-                                              // 缺少开机界面
-                                              // 缺少休眠功能  待机功耗最低，睡眠功耗其次，睡眠，有消息过来唤醒，滚轮或者按钮过来唤醒，10s后休眠
-    // 15s休眠，每次动刷新定时器,按钮需要改成中断的方式
-  //  LCD_0in85_test();        // 屏幕测试
+    KEY_INIT();                               // 确认按键中断初始化
+                                              //  缺少开机界面
+                                              //  缺少休眠功能  待机功耗最低，睡眠功耗其次，睡眠，有消息过来唤醒，滚轮或者按钮过来唤醒，10s后休眠
+    // 15s休眠，每次动刷新定时器
+  //  LCD_0in85_test(); // 屏幕测试
     while (1)
     {
 
-//        if (SleepCounter >= 150000) // 15s触发一次
-//        {
-//            printf("定时器15s了开始进入待机模式\r\n");
-//            SleepCounter = 0;
-//            PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
-//        }
+        Delay_Ms(500);
+        IWDG_ReloadCounter(); // 喂狗
 
-//        printf("当前按钮状态%d\r\n", KEY_PRESS());
-//
-   //     printf("喂狗\r\n");
-        IWDG_ReloadCounter(); // Feed dog
+        for (int i = 0; i <10 ; i++)
+        {
+            sprintf(strBuf, "%04d", BattaryBuf[i]);
+            printf("电量采集值为%d\r\n", BattaryBuf[i]);
+            printf("电压为%d\r\n", (BattaryBuf[i] /1024) * 3);
+            printf("电压为%d\r\n", (BattaryBuf[i] * 3 + 1024 / 2) / 1024);
 
-
+            printf("adc采集值为%s\r\n", strBuf);
 
 
-
-//        for (int i = 0; i < 4; i++)
-//        {
-//            sprintf(strBuf, "%04d", BattaryBuf[i]);
-//            printf("%s\r\n", strBuf);
-//            Paint_DrawString_EN(10, 34, strBuf, &Font24, RED, CYAN);
-//        }
+           // Paint_DrawString_EN(10, 34, strBuf, &Font24, RED, CYAN);
+        }
 
 //        if (SX1278_LoRaTxPacket(lorabuf, 10))
 //        {
@@ -116,28 +110,16 @@ int main(void)
 //        {
 //            printf("CRC eeror!\r\n");
 //        }
-//
-//        printf("等等结束\r\n");
-//        LCD_0IN85_SetBackLight(100);
 
-//        Delay_Ms(1000);
-//        printf("等等结束\r\n");
-//        LCD_0IN85_SetBackLight(50);
-//        Delay_Ms(1000);
-
-        if (precircle != circle || (precnt != TIM2->CNT && TIM2->CNT % 4 == 0))
+        if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动
         {
-            printf("Encoder position= %d circle %d step\r\n", circle, TIM2->CNT);
-            if (encodetime != 0)
-           //     printf("Encoder speed= %f\r\n", -(float)(precircle * 80 + precnt - (circle * 80 + TIM2->CNT)) / (float)encodetime * 1000.0 / (float)SpeedSampleTimeMs / 80.0);
-            printf("Encoder speed null!!\r\n");
-            else
-                printf("Encoder speed null!!\r\n");
-            encodetime = 0;
+            printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
             precircle = circle;
             precnt = TIM2->CNT;
+            system_wokeup();
+            MOTOR_ON;
+            Delay_Ms(10);
+            MOTOR_OFF;
         }
-        encodetime++;
-        Delay_Ms(SpeedSampleTimeMs);
     }
 }

@@ -12,5 +12,5 @@
 
 void Encoder_Init(u16 arr, u16 psc);
 u8 KEY_PRESS(void);
-
+void KEY_INIT(void);
 #endif /* ENCODE_ENCODE_H_ */
