@@ -54,7 +54,31 @@ u8 Lora_ErrorCoding   = ERROR_CODING_4_5;         //  前向纠错4/5 4/6 4/7 4/8
 
 
 
+//控制口配置初始化，中断口配置在完成中断初始化中
+void SX1278_test() //SPI初始化
+{   u8 lorabuf[21]; // lora的buf
+    u8 res;         // 操作的返回
+    u8 len;
+        if (SX1278_LoRaTxPacket(lorabuf, 10))
+        {
+            printf("TX fail \r\n");
+        }
 
+        res = SX1278_LoRaRxPacket(lorabuf, &len, 3000);
+        if (res == 0)
+        {
+            printf("RX sucess \r\n");
+            Delay_Ms(500);
+        }
+        else if (res == 1)
+        {
+            printf("Time out!\r\n");
+        }
+        else if (res == 2)
+        {
+            printf("CRC eeror!\r\n");
+        }
+}
 
 //控制口配置初始化，中断口配置在完成中断初始化中
 void SX1278_GPIO_Init() //SPI初始化

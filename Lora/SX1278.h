@@ -224,4 +224,5 @@ extern u8   SX1278_LoRaReadRSSI(void);
 extern u8 SX1278_LoRaRxPacket(u8 *valid_data, u8* packet_length,u16 timeout);
 //extern u8   SX1278_LoRaEntryTx(u8 packet_length);
 extern u8   SX1278_LoRaTxPacket(u8 *valid_data, u8 packet_length);
+void SX1278_test() ;
 #endif

@@ -145,9 +145,9 @@ void Paint_SetRotate(UWORD Rotate)
 }
 
 /******************************************************************************
-function:	Select Image mirror
+function:	Select Image mirror   设置图像的镜像效果
 parameter:
-    mirror   :       Not mirror,Horizontal mirror,Vertical mirror,Origin mirror
+mirror   :       Not mirror,Horizontal mirror,Vertical mirror,Origin mirror
 ******************************************************************************/
 void Paint_SetMirroring(UBYTE mirror)
 {
@@ -456,8 +456,11 @@ parameter:
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
+
+//数字的偏移为'/'，英文的偏移为'`'
 void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
-                    sFONT* Font, UWORD Color_Background, UWORD Color_Foreground)
+                    sFONT* Font, UWORD Color_Background, UWORD Color_Foreground,
+                    const char offsetAcsii)
 {
     UWORD Page, Column;
 
@@ -466,7 +469,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
         return;
     }
 
-    uint32_t Char_Offset = (Acsii_Char - ' ') * Font->Height * (Font->Width / 8 + (Font->Width % 8 ? 1 : 0));
+    uint32_t Char_Offset = (Acsii_Char - offsetAcsii) * Font->Height * (Font->Width / 8 + (Font->Width % 8 ? 1 : 0));
     const unsigned char *ptr = &Font->table[Char_Offset];
 
     for (Page = 0; Page < Font->Height; Page ++ ) {
@@ -495,6 +498,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     }// Write all
 }
 
+
 /******************************************************************************
 function:	Display the string
 parameter:
@@ -505,14 +509,15 @@ parameter:
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
-void Paint_DrawString_EN(UWORD Xstart, UWORD Ystart, const char * pString,
-                         sFONT* Font, UWORD Color_Background, UWORD Color_Foreground )
+//数字的偏移为'/'，英文的偏移为'`'
+void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char * pString,
+                         sFONT* Font, UWORD Color_Background, UWORD Color_Foreground , const char offsetAcsii)
 {
     UWORD Xpoint = Xstart;
     UWORD Ypoint = Ystart;
 
     if (Xstart > Paint.Width || Ystart > Paint.Height) {
-        printf("Paint_DrawString_EN Input exceeds the normal display range\r\n");
+        printf("Paint_DrawString Input exceeds the normal display range\r\n");
         return;
     }
 
@@ -528,7 +533,7 @@ void Paint_DrawString_EN(UWORD Xstart, UWORD Ystart, const char * pString,
             Xpoint = Xstart;
             Ypoint = Ystart;
         }
-        Paint_DrawChar(Xpoint, Ypoint, * pString, Font, Color_Background, Color_Foreground);
+        Paint_DrawChar(Xpoint, Ypoint, * pString, Font, Color_Background, Color_Foreground,offsetAcsii);
 
         //The next character of the address
         pString ++;
@@ -672,7 +677,7 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
     }
     
     //show
-    Paint_DrawString_EN(Xpoint, Ypoint, (const char*)pStr, Font, Color_Background, Color_Foreground);
+    Paint_DrawString(Xpoint, Ypoint, (const char*)pStr, Font, Color_Background, Color_Foreground,' ');
 }
 /******************************************************************************
 function:	Display float number
@@ -697,7 +702,7 @@ void Paint_DrawFloatNum(UWORD Xpoint, UWORD Ypoint, double Nummber,  UBYTE Decim
       *(pStr+strlen(Str)-3)='\0';
     }
     //show
-    Paint_DrawString_EN(Xpoint, Ypoint, (const char*)pStr, Font, Color_Foreground, Color_Background);
+    Paint_DrawString(Xpoint, Ypoint, (const char*)pStr, Font, Color_Foreground, Color_Background,' ');
     free(pStr);
     pStr=NULL;
 }
@@ -718,14 +723,14 @@ void Paint_DrawTime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT* Font,
     UWORD Dx = Font->Width;
 
     //Write data into the cache
-    Paint_DrawChar(Xstart                           , Ystart, value[pTime->Hour / 10], Font, Color_Background, Color_Foreground);
-    Paint_DrawChar(Xstart + Dx                      , Ystart, value[pTime->Hour % 10], Font, Color_Background, Color_Foreground);
-    Paint_DrawChar(Xstart + Dx  + Dx / 4 + Dx / 2   , Ystart, ':'                    , Font, Color_Background, Color_Foreground);
-    Paint_DrawChar(Xstart + Dx * 2 + Dx / 2         , Ystart, value[pTime->Min / 10] , Font, Color_Background, Color_Foreground);
-    Paint_DrawChar(Xstart + Dx * 3 + Dx / 2         , Ystart, value[pTime->Min % 10] , Font, Color_Background, Color_Foreground);
-    Paint_DrawChar(Xstart + Dx * 4 + Dx / 2 - Dx / 4, Ystart, ':'                    , Font, Color_Background, Color_Foreground);
-    Paint_DrawChar(Xstart + Dx * 5                  , Ystart, value[pTime->Sec / 10] , Font, Color_Background, Color_Foreground);
-    Paint_DrawChar(Xstart + Dx * 6                  , Ystart, value[pTime->Sec % 10] , Font, Color_Background, Color_Foreground);
+    Paint_DrawChar(Xstart                           , Ystart, value[pTime->Hour / 10], Font, Color_Background, Color_Foreground,' ');
+    Paint_DrawChar(Xstart + Dx                      , Ystart, value[pTime->Hour % 10], Font, Color_Background, Color_Foreground,' ');
+    Paint_DrawChar(Xstart + Dx  + Dx / 4 + Dx / 2   , Ystart, ':'                    , Font, Color_Background, Color_Foreground,' ');
+    Paint_DrawChar(Xstart + Dx * 2 + Dx / 2         , Ystart, value[pTime->Min / 10] , Font, Color_Background, Color_Foreground,' ');
+    Paint_DrawChar(Xstart + Dx * 3 + Dx / 2         , Ystart, value[pTime->Min % 10] , Font, Color_Background, Color_Foreground,' ');
+    Paint_DrawChar(Xstart + Dx * 4 + Dx / 2 - Dx / 4, Ystart, ':'                    , Font, Color_Background, Color_Foreground,' ');
+    Paint_DrawChar(Xstart + Dx * 5                  , Ystart, value[pTime->Sec / 10] , Font, Color_Background, Color_Foreground,' ');
+    Paint_DrawChar(Xstart + Dx * 6                  , Ystart, value[pTime->Sec % 10] , Font, Color_Background, Color_Foreground,' ');
 }
 
 /******************************************************************************

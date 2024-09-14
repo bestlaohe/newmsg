@@ -154,3 +154,30 @@ void TIM2_IRQHandler()
   }
   TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 }
+/*********************************************************************
+ * @fn      IWDG_Feed_Init
+ *
+ * @brief   初始化 IWDG（独立看门狗）。
+ *
+ * @param   prer: 指定 IWDG 的预分频器值。
+ *            IWDG_Prescaler_4: IWDG 预分频器设置为 4。
+ *            IWDG_Prescaler_8: IWDG 预分频器设置为 8。
+ *            IWDG_Prescaler_16: IWDG 预分频器设置为 16。
+ *            IWDG_Prescaler_32: IWDG 预分频器设置为 32。
+ *            IWDG_Prescaler_64: IWDG 预分频器设置为 64。
+ *            IWDG_Prescaler_128: IWDG 预分频器设置为 128。
+ *            IWDG_Prescaler_256: IWDG 预分频器设置为 256。
+ *          rlr: 指定 IWDG 的重装载值。
+ *            该参数必须是介于 0 和 0x0FFF 之间的一个数值。
+ *
+ * @return  none
+ */
+void IWDG_Feed_Init(u16 prer, u16 rlr)
+{
+
+    IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); // 使能 IWDG 写访问，以便可以设置 IWDG 的配置寄存器
+    IWDG_SetPrescaler(prer);                      // 设置 IWDG 的预分频器值
+    IWDG_SetReload(rlr);                          // 设置 IWDG 的重装载值，这个值决定了 IWDG 的超时时间
+    IWDG_ReloadCounter();                         // 重新加载 IWDG 计数器，以使计数器从新的重装载值开始
+    IWDG_Enable();                                // 启用 IWDG，使其开始工作
+}

@@ -37,7 +37,7 @@ extern LCD_0IN85_ATTRIBUTES LCD;
 function:
             Macro definition variable name
 ********************************************************************************/
-void LCD_0in85_test();
+void LCD_SHOW_API_INIT();
 void LCD_0IN85_Init(UBYTE Scan_dir);
 void LCD_0IN85_Clear(UWORD Color);
 void LCD_0IN85_Display(UWORD *Image);

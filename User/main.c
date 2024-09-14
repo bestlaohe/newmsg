@@ -11,46 +11,16 @@
 
 volatile int circle = 0, precircle = 0;
 volatile uint16_t precnt = 0;
-volatile uint32_t encodetime = 0;
 u16 BattaryBuf[10];
 
-#define SpeedSampleTimeMs 20
 
-/*********************************************************************
- * @fn      IWDG_Feed_Init
- *
- * @brief   初始化 IWDG（独立看门狗）。
- *
- * @param   prer: 指定 IWDG 的预分频器值。
- *            IWDG_Prescaler_4: IWDG 预分频器设置为 4。
- *            IWDG_Prescaler_8: IWDG 预分频器设置为 8。
- *            IWDG_Prescaler_16: IWDG 预分频器设置为 16。
- *            IWDG_Prescaler_32: IWDG 预分频器设置为 32。
- *            IWDG_Prescaler_64: IWDG 预分频器设置为 64。
- *            IWDG_Prescaler_128: IWDG 预分频器设置为 128。
- *            IWDG_Prescaler_256: IWDG 预分频器设置为 256。
- *          rlr: 指定 IWDG 的重装载值。
- *            该参数必须是介于 0 和 0x0FFF 之间的一个数值。
- *
- * @return  none
- */
-void IWDG_Feed_Init(u16 prer, u16 rlr)
-{
 
-    IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable); // 使能 IWDG 写访问，以便可以设置 IWDG 的配置寄存器
-    IWDG_SetPrescaler(prer);                      // 设置 IWDG 的预分频器值
-    IWDG_SetReload(rlr);                          // 设置 IWDG 的重装载值，这个值决定了 IWDG 的超时时间
-    IWDG_ReloadCounter();                         // 重新加载 IWDG 计数器，以使计数器从新的重装载值开始
-    IWDG_Enable();                                // 启用 IWDG，使其开始工作
-}
-
+// 待机功耗最低，睡眠功耗其次
 int main(void)
 {
     // 变量初始化
     char strBuf[6]; // 用于存储转换后的字符串（最多需要5个字符加一个终止符）
-    u8 lorabuf[21]; // lora的buf
-    u8 res;         // 操作的返回
-    u8 len;
+
     /*********************基本内容初始化******************************/
     SystemCoreClockUpdate();   // 24mhz系统时钟刷新
     USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死
@@ -65,51 +35,28 @@ int main(void)
     PWM_Config(10000, 100);                   // 屏幕的背光调节  默认百分百亮度******
     Encoder_Init(12, 1);                      // 编码器的内容,重载值为65535，不分频，1圈24个，4倍*6格
     LCD_Init();                               // 屏幕硬件初始化****
+    LCD_SHOW_API_INIT();                      // 屏幕测试
     Battery_Init();                           // 电池的adc初始化
     SX1278_Init(434);                         // lora的初始化
     KEY_INIT();                               // 确认按键中断初始化
                                               //  缺少开机界面
-                                              //  缺少休眠功能  待机功耗最低，睡眠功耗其次，睡眠，有消息过来唤醒，滚轮或者按钮过来唤醒，10s后休眠
-    // 15s休眠，每次动刷新定时器
-  //  LCD_0in85_test(); // 屏幕测试
+
     while (1)
     {
 
         Delay_Ms(500);
         IWDG_ReloadCounter(); // 喂狗
+        SX1278_test();
 
-        for (int i = 0; i <10 ; i++)
+        for (int i = 0; i < 10; i++)
         {
-            sprintf(strBuf, "%04d", BattaryBuf[i]);
-            printf("电量采集值为%d\r\n", BattaryBuf[i]);
-            printf("电压为%d\r\n", (BattaryBuf[i] /1024) * 3);
-            printf("电压为%d\r\n", (BattaryBuf[i] * 3 + 1024 / 2) / 1024);
 
-            printf("adc采集值为%s\r\n", strBuf);
-
-
-           // Paint_DrawString_EN(10, 34, strBuf, &Font24, RED, CYAN);
+            printf(" Battery Percentage: %u%%\n", get_battery_percentage(BattaryBuf[i]));
+            sprintf(strBuf, "%04d", get_battery_percentage(BattaryBuf[i]));
+            printf("电池百分比值为%s\r\n", strBuf);
+            Paint_DrawString(10, 34, strBuf, &Font24_Num, RED, CYAN,'/');
+            Paint_DrawString(10, 34, strBuf, &Font24_En, RED, CYAN,'`');//数字的偏移为'/'，英文的偏移为'`'
         }
-
-//        if (SX1278_LoRaTxPacket(lorabuf, 10))
-//        {
-//            printf("TX fail \r\n");
-//        }
-//
-//        res = SX1278_LoRaRxPacket(lorabuf, &len, 3000);
-//        if (res == 0)
-//        {
-//            printf("RX sucess \r\n");
-//            Delay_Ms(500);
-//        }
-//        else if (res == 1)
-//        {
-//            printf("Time out!\r\n");
-//        }
-//        else if (res == 2)
-//        {
-//            printf("CRC eeror!\r\n");
-//        }
 
         if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动
         {

@@ -7,6 +7,38 @@
 
 #include "adc.h"
 
+// 关键点的 ADC 值和对应的电池百分比
+#define NUM_POINTS 5
+const uint16_t adc_points[NUM_POINTS] = {502, 547, 594, 639, 683}; // 示例关键点
+const uint8_t percent_points[NUM_POINTS] = {0, 25, 50, 75, 100}; // 对应的百分比
+
+// 查找表的大小
+#define ADC_MAX 1023
+
+// 函数：使用线性插值获取电池百分比
+uint8_t get_battery_percentage(uint16_t adc_value) {
+    if (adc_value >= adc_points[NUM_POINTS - 1]) {
+        return percent_points[NUM_POINTS - 1];
+    }
+
+    // 查找点之间的插值
+    for (int i = 0; i < NUM_POINTS - 1; i++) {
+        if (adc_value >= adc_points[i] && adc_value < adc_points[i + 1]) {
+            // 线性插值公式
+            uint16_t range = adc_points[i + 1] - adc_points[i];
+            uint16_t delta = adc_value - adc_points[i];
+            uint8_t percentage_range = percent_points[i + 1] - percent_points[i];
+            uint8_t percentage = percent_points[i] + (delta * percentage_range) / range;
+            return percentage;
+        }
+    }
+
+    // 如果不在任何区间内，返回最小值
+    return percent_points[0];
+}
+
+
+
 /*********************************************************************
  * @fn      Battery_Init
  *

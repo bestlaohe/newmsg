@@ -55,7 +55,7 @@ void SPI_FullDuplex_Init(void);
 void DEV_SPI_WRite(uint8_t _dat);
 int LCD_Init(void);
 void DEV_Module_Exit(void);
-void LCD_0in85_test();
+void LCD_SHOW_API_INIT();
 
 
 #endif /* SCREEN_DRIVE_SCREEN_H_ */
