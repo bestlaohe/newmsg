@@ -11,11 +11,14 @@
 
 LCD_0IN85_ATTRIBUTES LCD;
 
+
+
+
 void LCD_SHOW_API_INIT()
 {
 
     LCD_0IN85_Init(VERTICAL);
-    LCD_0IN85_Clear(RED);
+    LCD_0IN85_Clear(BLACK);
 
     printf("Paint_NewImage\r\n");
     Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_180, WHITE);
@@ -25,17 +28,21 @@ void LCD_SHOW_API_INIT()
     Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
 
     printf("Paint_Clear\r\n");
-    Paint_Clear(WHITE);
+    Paint_Clear(BLACK);
 
     printf("drawing...\r\n");
     Paint_SetRotate(0);
+
+    Paint_Drawicon(40, 40, 1,&Font24_icon,  BLACK, BLUE);
+
+
 
     //       Paint_DrawString(5, 10, "123",        &Font24,  YELLOW, RED);
     //       Paint_DrawString(5, 34, "ABC",        &Font24,  BLUE,   CYAN);
 
     //  Paint_DrawFloatNum (5, 58 ,987.654321,3, &Font12,  WHITE,  BLACK);
     //  Paint_DrawString_CN(0,80, "Î¢Ñ©µç×Ó",   &Font24CN,WHITE,  RED);
-    //    Paint_DrawImage(gImage_1,60,15,60,60);
+ //     Paint_DrawImage(set,30,3,48,48);
     //    Delay_Ms(3000);
     //    Paint_Clear(WHITE);
     //

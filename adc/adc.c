@@ -149,3 +149,29 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
     DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;                                // 禁用内存到内存模式
     DMA_Init(DMA_CHx, &DMA_InitStructure);                                      // 初始化指定的DMA通道
 }
+
+
+void show_battery(){
+    u16 sum = 0;
+        char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
+        for (int i = 0; i < 10; i++)
+        {
+            sum += BattaryBuf[i];
+        }
+
+         sum = sum / 10;
+
+        if (sum < 100)
+        {
+            sprintf(strBuf, "%02d",get_battery_percentage(sum)); // 显示2位数字
+        }
+        else
+        {
+            sprintf(strBuf, "%03d", get_battery_percentage(sum)); // 显示3位数字
+        }
+        printf("电池平均百分比值为%s\r\n", strBuf);
+        Paint_DrawString(10, 34, strBuf, &Font24_Num, BLACK,WHITE,  '0');
+
+
+
+}

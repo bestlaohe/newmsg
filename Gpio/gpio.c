@@ -22,21 +22,21 @@ void My_GPIO_Init(){
 
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPU;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IPD;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz; // GPIO 速度设置为 30MHz
-    GPIO_Init(GPIOD, &GPIO_InitStructure);//pd6的lora的中断接收
+    GPIO_Init(GPIOD, &GPIO_InitStructure);//pd6的lora的中断接收mosi
+
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+    GPIO_Init(GPIOC, &GPIO_InitStructure);    //留着和lora通信miso
 
 
-
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0|GPIO_Pin_1;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz;
-    GPIO_Init( GPIOC, &GPIO_InitStructure );//pc1的lora的复位
+    GPIO_Init( GPIOC, &GPIO_InitStructure );//pc0的lora的nss//pc1的lora的复位
 
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz;
-    GPIO_Init( GPIOC, &GPIO_InitStructure );//pc0的lora的nss
+    
 
 
 
@@ -47,7 +47,7 @@ void My_GPIO_Init(){
 
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;//模拟输入模式
     GPIO_InitStructure.GPIO_Speed = GPIO_Speed_30MHz;
     GPIO_Init( GPIOA, &GPIO_InitStructure );//pA1电池电量采集
 
@@ -80,10 +80,8 @@ void My_GPIO_Init(){
     GPIO_Init(GPIOC, &GPIO_InitStructure);
 
 
-    //留着和lora通信
-    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_7;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-    GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+
 
     //编码器的io口d3d4
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3|GPIO_Pin_4;

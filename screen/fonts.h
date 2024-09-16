@@ -83,6 +83,8 @@ extern sFONT Font24;
 
 extern sFONT Font24_Num;
 extern sFONT Font24_En;
+extern sFONT Font24_icon;
+
 
 
 extern sFONT Font20;

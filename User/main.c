@@ -18,8 +18,6 @@ u16 BattaryBuf[10];
 // 待机功耗最低，睡眠功耗其次
 int main(void)
 {
-    // 变量初始化
-    char strBuf[6]; // 用于存储转换后的字符串（最多需要5个字符加一个终止符）
 
     /*********************基本内容初始化******************************/
     SystemCoreClockUpdate();   // 24mhz系统时钟刷新
@@ -29,44 +27,41 @@ int main(void)
     Delay_Init(); // 延时初始化需要在延时前，不然会卡死
 
     /*********************应用函数初始化******************************/
-    IWDG_Feed_Init(IWDG_Prescaler_128, 4000); // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s
+  //  IWDG_Feed_Init(IWDG_Prescaler_128, 4000); // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****
     My_GPIO_Init();                           // IO口初始化****
-    EXTI6_INT_INIT();                         // 外部引进触发中断，lora有信息过来了
+    MOTOR_OFF;
     PWM_Config(10000, 100);                   // 屏幕的背光调节  默认百分百亮度******
-    Encoder_Init(12, 1);                      // 编码器的内容,重载值为65535，不分频，1圈24个，4倍*6格
+    Encoder_Init(12, 1);                      // 编码器的内容,重载值为65535，不分频，1圈12个****
     LCD_Init();                               // 屏幕硬件初始化****
-    LCD_SHOW_API_INIT();                      // 屏幕测试
-    Battery_Init();                           // 电池的adc初始化
+    LCD_SHOW_API_INIT();                      // 屏幕测试******
+    KEY_INIT();                               // 确认按键中断初始化***
+    Battery_Init();                           // 电池的adc初始化****
+    EXTI6_INT_INIT();                         // 外部引进触发中断，lora有信息过来了*****
+
     SX1278_Init(434);                         // lora的初始化
-    KEY_INIT();                               // 确认按键中断初始化
-                                              //  缺少开机界面
+
+
+    Paint_Drawicon(40, 40, 3,&Font24_icon,  BLACK, WHITE);   //  开机界面
 
     while (1)
     {
 
         Delay_Ms(500);
         IWDG_ReloadCounter(); // 喂狗
-        SX1278_test();
+      // show_battery();//电池电量显示出来
+       SX1278_test();
 
-        for (int i = 0; i < 10; i++)
-        {
 
-            printf(" Battery Percentage: %u%%\n", get_battery_percentage(BattaryBuf[i]));
-            sprintf(strBuf, "%04d", get_battery_percentage(BattaryBuf[i]));
-            printf("电池百分比值为%s\r\n", strBuf);
-            Paint_DrawString(10, 34, strBuf, &Font24_Num, RED, CYAN,'/');
-            Paint_DrawString(10, 34, strBuf, &Font24_En, RED, CYAN,'`');//数字的偏移为'/'，英文的偏移为'`'
-        }
-
-        if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动
-        {
-            printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
-            precircle = circle;
-            precnt = TIM2->CNT;
-            system_wokeup();
-            MOTOR_ON;
-            Delay_Ms(10);
-            MOTOR_OFF;
-        }
+//
+//        if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动
+//        {
+//            printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
+//            precircle = circle;
+//            precnt = TIM2->CNT;
+//            system_wokeup();
+//            MOTOR_ON;
+//            Delay_Ms(50);
+//            MOTOR_OFF;
+//        }
     }
 }

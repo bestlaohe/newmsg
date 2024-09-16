@@ -70,63 +70,69 @@
 #define LORABW_500KHz  9
 /********************************************************/
 
-
-//RFM98 Internal registers Address
-/********************Lroa mode***************************/
-#define LR_RegFifo                                  0x00
+ 
+#define LR_RegFifo                                  0x00 //FIFO读写访问，当器件处于睡眠模式时，FIFO被清零，无法访问
 // Common settings
-#define LR_RegOpMode                                0x01
-#define LR_RegFrMsb                                 0x06
-#define LR_RegFrMid                                 0x07
-#define LR_RegFrLsb                                 0x08
-// Tx settings
-#define LR_RegPaConfig                              0x09
-#define LR_RegPaRamp                                0x0A
-#define LR_RegOcp                                   0x0B
-// Rx settings
-#define LR_RegLna                                   0x0C
+#define LR_RegOpMode                                0x01 //运行模式 Lora和FSK选择
+#define LR_RegFrMsb                                 0x06 //RF载波频率最高有效位
+#define LR_RegFrMid                                 0x07 //RF载波频率中间有效位
+#define LR_RegFrLsb                                 0x08 //RF载波频率最低有效位  若F(XOSC)=32MHz，则分辨率为61.035Hz。
+// Tx settings 发送设置
+#define LR_RegPaConfig                              0x09 //PA选择和输出功率控制
+#define LR_RegPaRamp                                0x0A //PA斜升/斜将时间和低相噪PLL的控制
+#define LR_RegOcp                                   0x0B //过流保护控制
+// Rx settings 接收设置
+#define LR_RegLna                                   0x0C //LNA设置
 // LoRa registers
-#define LR_RegFifoAddrPtr                           0x0D
-#define LR_RegFifoTxBaseAddr                        0x0E
-#define LR_RegFifoRxBaseAddr                        0x0F
-#define LR_RegFifoRxCurrentaddr                     0x10
-#define LR_RegIrqFlagsMask                          0x11
-#define LR_RegIrqFlags                              0x12
-#define LR_RegRxNbBytes                             0x13
-#define LR_RegRxHeaderCntValueMsb                   0x14
-#define LR_RegRxHeaderCntValueLsb                   0x15
-#define LR_RegRxPacketCntValueMsb                   0x16
-#define LR_RegRxPacketCntValueLsb                   0x17
-#define LR_RegModemStat                             0x18
-#define LR_RegPktSnrValue                           0x19
-#define LR_RegPktRssiValue                          0x1A
-#define LR_RegRssiValue                             0x1B
-#define LR_RegHopChannel                            0x1C
-#define LR_RegModemConfig1                          0x1D
-#define LR_RegModemConfig2                          0x1E
-#define LR_RegSymbTimeoutLsb                        0x1F
-#define LR_RegPreambleMsb                           0x20
-#define LR_RegPreambleLsb                           0x21
-#define LR_RegPayloadLength                         0x22
-#define LR_RegMaxPayloadLength                      0x23
-#define LR_RegHopPeriod                             0x24
-#define LR_RegFifoRxByteAddr                        0x25
-
-// I/O settings
-#define REG_LR_DIOMAPPING1                          0x40
-#define REG_LR_DIOMAPPING2                          0x41
+#define LR_RegFifoAddrPtr                           0x0D //FIFO数据缓冲区中SPI接口地址指针
+#define LR_RegFifoTxBaseAddr                        0x0E //FIFO数据缓冲区发送调制器的写入基地址
+#define LR_RegFifoRxBaseAddr                        0x0F //FIFO数据缓冲区接收调制器的读取基地址
+#define LR_RegFifoRxCurrentaddr                     0x10 //接收到最后一个数据包的起始地址
+#define LR_RegIrqFlagsMask                          0x11 //可选中断标志屏蔽
+#define LR_RegIrqFlags                              0x12 //中断标志
+#define LR_RegRxNbBytes                             0x13 //最后一次接收到的数据包的负载字节数
+#define LR_RegRxHeaderCntValueMsb                   0x14 //最后一次转换至Rx模式后接收的有效报头数（高位有效）
+#define LR_RegRxHeaderCntValueLsb                   0x15 //最后一次转换至Rx模式后接收的有效报头数（低位有效）
+#define LR_RegRxPacketCntValueMsb                   0x16 //最后一次转换至Rx模式后接收的有效数据包数（高位有效）
+#define LR_RegRxPacketCntValueLsb                   0x17 //最后一次转换至Rx模式后接收的有效数据包数（低位有效）
+#define LR_RegModemStat                             0x18 //LoRa调制解调器现场状态
+#define LR_RegPktSnrValue                           0x19 //最后接收到的数据包的SNR(信噪比)预估值
+#define LR_RegPktRssiValue                          0x1A //最后接收到的数据包的RSSI（dBm） RSSI[dBm]=-137+PacketRssi
+#define LR_RegRssiValue                             0x1B //电流RSSI值（dBm）RSSI[dBm]=-137+Rssi 
+#define LR_RegHopChannel                            0x1C //FHSS起始信道
+#define LR_RegModemConfig1                          0x1D //调制解调器物理层配置1:7-4位信号带宽(0x07默认125kHz) 3-1位纠错编码率(默认001->4/5) 0位报头模式(0 0->显式报头模式 )
+#define LR_RegModemConfig2                          0x1E //调制解调器物理层配置2:7-4位SF值(以 2 基对数表示 默认0x07->128 码片/符号 ) 3位(0正常模式发送单个数据包 1持续模式通过FIFO发送多个数据包(用于频谱分析)) 2位发送端CRC信息(0关闭CRC 1开启CRC) 1-0位RX超时最高有效位
+#define LR_RegSymbTimeoutLsb                        0x1F //接收机超时值,RX超时最低有效位RX操作超时值以符号数表示：TimeOut=SymbTimeout-Ts 
+#define LR_RegPreambleMsb                           0x20 //前导码长度（最高位）=PreambleLength+4.25 符号
+#define LR_RegPreambleLsb                           0x21 //前导码长度（最低位）
+#define LR_RegPayloadLength                         0x22 //LoRa负载长度:隐式报头模式下 需要设置寄存器，以达到预期的 数据包长度。不允许将寄存器值 设置为 0。 
+#define LR_RegMaxPayloadLength                      0x23 //LoRa负载长度最大值:如果报头负载 长度超过该最大值，则会产生报 头 CRC 错误。允许对长度不正 确的数据包进行过滤。
+#define LR_RegHopPeriod                             0x24 //FHSS跳频周期:（0= 关闭）。第一跳总是发生在第一个 报头符号后
+#define LR_RegFifoRxByteAddr                        0x25 //FIFO中最后写入字节的地址,接收数据缓存当前指针（由 Lora 接收机写入的最后一个字节的地址） 
+#define LR_RegModemConfig3                          0x26 //调制解调器物理层配置3
+ 
+#define LR_RegPacketConfig2                         0x31 //RESERVED
+#define LR_RegSeqConfig2                            0x37 //RESERVED
+ 
+#define REG_LR_DIOMAPPING1                          0x40 //DIO0到DIO3引脚映射
+#define REG_LR_DIOMAPPING2                          0x41 //DIO4到DIO5引脚映射、ClkOut频率
 // Version
-#define REG_LR_VERSION                              0x42
+#define REG_LR_VERSION                              0x42 //芯片版本
 // Additional settings
-#define REG_LR_PLLHOP                               0x44
-#define REG_LR_TCXO                                 0x4B
-#define REG_LR_PADAC                                0x4D
-#define REG_LR_FORMERTEMP                           0x5B
+#define REG_LR_PLLHOP                               0x44 //unused
+#define REG_LR_TCXO                                 0x4B //TCXO或XTAL输入设置
+#define REG_LR_PADAC                                0x4D //PA更大功率设置 输出20dBm
+#define REG_LR_FORMERTEMP                           0x5B //IQ校准期间存储温度
+#define REG_LR_BITRATEFRAC                          0x5D
+#define REG_LR_AGCREF                               0x61 //AGC阈值调整
+#define REG_LR_AGCTHRESH1                           0x62 //AGC阈值调整
+#define REG_LR_AGCTHRESH2                           0x63 //AGC阈值调整
+#define REG_LR_AGCTHRESH3                           0x64 //AGC阈值调整
+#define REG_LR_PLL                                  0x70 //PLL带宽控制
 
-#define REG_LR_AGCREF                               0x61
-#define REG_LR_AGCTHRESH1                           0x62
-#define REG_LR_AGCTHRESH2                           0x63
-#define REG_LR_AGCTHRESH3                           0x64
+
+
+
 
 /*!
  * RegIrqFlags
@@ -214,13 +220,15 @@
 //command
 /*********************************************************/
 
+u8 SX1278_Read_Reg(u8 adr);
 
-
+u8 SX1278_SPI_RW(u8 byte);
 void EXTI6_INT_INIT(void);
 extern void SX1278_Init(u16 freq);
 //extern void SX1278_Config(void);
 //extern u8   SX1278_LoRaEntryRx(void); 
 extern u8   SX1278_LoRaReadRSSI(void);
+u8 SX1278_ReadRSSI(void);
 extern u8 SX1278_LoRaRxPacket(u8 *valid_data, u8* packet_length,u16 timeout);
 //extern u8   SX1278_LoRaEntryTx(u8 packet_length);
 extern u8   SX1278_LoRaTxPacket(u8 *valid_data, u8 packet_length);

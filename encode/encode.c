@@ -55,7 +55,7 @@ void EXTI7_0_IRQHandler(void)
     {
         printf("按键中断触发震动\r\n"); // 有消息发来就震动
         MOTOR_ON;
-        Delay_Ms(10);
+        Delay_Ms(100);
         MOTOR_OFF;
         system_wokeup();                    // 系统唤醒
         EXTI_ClearITPendingBit(EXTI_Line2); /* Clear Flag */

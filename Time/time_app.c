@@ -135,12 +135,6 @@ void TIM2_IRQHandler()
 
     volatile uint16_t tempcnt = TIM2->CNT, temparr = TIM2->ATRLR;
 
-    if (TIM_GetITStatus(TIM2, TIM_IT_CC1))
-    {
-        printf("输入捕获触发中断\r\n");
-        TIM_ClearITPendingBit(TIM2, TIM_IT_CC1);
-    }
-
     if (TIM_GetITStatus(TIM2, TIM_IT_Update))
     {
         printf("当前计数=%d\r\n", tempcnt);
