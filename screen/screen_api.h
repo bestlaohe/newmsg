@@ -57,6 +57,7 @@ void LCD_0IN85_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend);
 void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color);
 void LCD_0IN85_SetBackLight(UWORD Value);
 void Lcd_Refrsh_DMA(int pic_size);
+void startup_animation();
 
 #endif /* SCREEN_SCREEN_API_H_ */
 

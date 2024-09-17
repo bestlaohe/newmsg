@@ -3,6 +3,7 @@
   "files.encoding": "gbk",
   "files.associations": {
     "*.cpp": "cpp",
-    "gui_paint.h": "c"
+    "gui_paint.h": "c",
+    "screen_api.h": "c"
   }
 }

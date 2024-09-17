@@ -514,13 +514,12 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     const unsigned char *ptr = &Font->table[Char_Offset];
 
 #if USE_DMA
-    LCD_0IN85_SetWindows(Xpoint , Ypoint , Xpoint +Font->Width -1, Ypoint + Font->Height -1);
+    Delay_Ms(1);
+
+    LCD_0IN85_SetWindows(Xpoint , Ypoint , (Xpoint +Font->Width) -1, (Ypoint + Font->Height) -1);    //准备好窗口和复位
 #endif
 
-   // LCD_0IN85_SetWindows(Xpoint , Ypoint , Xpoint , Ypoint);
 
-
-    //准备好窗口和复位
 
 
     for (Page = 0; Page < Font->Height; Page ++ ) {

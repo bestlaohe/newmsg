@@ -9,7 +9,41 @@
 #include <stdlib.h>
 #include <stdio.h>
 // #include <string.h> //memset()
+void startup_animation()
+{
 
+
+  int final_size = 48; // 最终图标大小
+  int step = 2;        // 每次放大步长
+
+  for (int size = 0; size <= 80; size += step)
+  {
+
+    // 计算图标左上角位置，使其中心保持在屏幕中央
+    int icon_x = LCD_WIDTH - final_size - size / 2;
+    int icon_y = LCD_HEIGHT - final_size - size / 2;
+
+    Paint_Drawicon(icon_x, icon_y, 3, &Font24_icon, BLACK, WHITE - size * 819);
+
+    icon_x = size / 2;
+    icon_y = size / 2;
+    Paint_Drawicon(icon_x, icon_y, 3, &Font24_icon, BLACK, WHITE - size * 819);
+
+    // 从右上角移动到中心
+    icon_x = LCD_WIDTH - final_size - size / 2;
+    icon_y = size / 2;
+    Paint_Drawicon(icon_x, icon_y, 3, &Font24_icon, BLACK, WHITE - size * 819);
+
+    // 从左下角移动到中心
+    icon_x = size / 2;
+    icon_y = LCD_HEIGHT - final_size - size / 2;
+    Paint_Drawicon(icon_x, icon_y, 3, &Font24_icon, BLACK, WHITE - size * 819);
+  }
+  Paint_Clear(BLACK);
+  Paint_Drawicon(40, 40, 3, &Font24_icon, BLACK, WHITE);
+  Delay_Ms(500);
+  Paint_Clear(BLACK);
+}
 LCD_0IN85_ATTRIBUTES LCD;
 uint8_t lcd_gram[Y_MAX_PIXEL * X_MAX_PIXEL * 2] = {0}; ///< 开辟一块内存空间当显存使用
 u8 dmaXoffset, dmaYoffset = 0;
@@ -270,9 +304,9 @@ void LCD_0IN85_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend)
     dmaXoffset = 0;
     dmaYoffset = 0;
 
-
     Ystart = Ystart + 1;
-    Yend = Yend +2;
+    Yend = Yend + 1;
+
 
     Xstart = Xstart + 2;
     Xend = Xend + 2;
@@ -303,10 +337,11 @@ void LCD_0IN85_Clear(UWORD Color)
 {
     UWORD i, j;
 
-    LCD_0IN85_SetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
+
 
 #if USE_DMA
 
+    LCD_0IN85_SetWindows(0, 0, LCD_WIDTH , LCD_HEIGHT );
     int index = 0; // 用于跟踪lcd_gram数组的索引
     for (i = 0; i < X_MAX_PIXEL; i++)
     {
@@ -316,6 +351,7 @@ void LCD_0IN85_Clear(UWORD Color)
             lcd_gram[index++] = Color & 0xff;        // 低字节
         }
     }
+
 
     LCD_DC_1;
     LCD_CS_0;
@@ -332,6 +368,8 @@ void LCD_0IN85_Clear(UWORD Color)
     dmacircular = 0;
 
 #else
+
+    LCD_0IN85_SetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
     LCD_DC_1;
     for (i = 0; i < LCD_WIDTH; i++)
     {
@@ -392,7 +430,7 @@ void Lcd_Refrsh_DMA(int pic_size)
     ///< 将整个数据搬运一次到DMA
     LCD_DC_1;
     LCD_CS_0;
-    printf("开始刷屏\r\n");
+    //printf("开始刷屏\r\n");
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
     DMA_Cmd(DMA1_Channel3, DISABLE);
 
@@ -401,8 +439,7 @@ void Lcd_Refrsh_DMA(int pic_size)
     // else
     //     SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, Y_MAX_PIXEL * X_MAX_PIXEL * 2, DMA_Mode_Normal);
 
-
- SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, pic_size, DMA_Mode_Normal);
+    SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, pic_size, DMA_Mode_Normal);
 
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
     DMA_Cmd(DMA1_Channel3, ENABLE);
@@ -413,12 +450,14 @@ void Lcd_Refrsh_DMA(int pic_size)
     // DMA_ClearFlag(DMA1_FLAG_TC3);            // 清除通道3传输完成标志
 
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
-        printf("等待SPI发送缓冲区为空\r\n"); // 等待SPI发送缓冲区为空
+      ;
+         Delay_Ms(1);//发送完成后要等一下彻底完成
+      //printf("等待SPI发送缓冲区为空\r\n"); // 等待SPI发送缓冲区为空
     LCD_CS_1;
 
-    
     while (dmacircular != 0)
-       printf("等待循环dma：%d\r\n", dmacircular); ;
+       printf("等待循环dma：%d\r\n", dmacircular);
+    
 
 #endif
 }
@@ -450,13 +489,10 @@ void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
         Lcd_Refrsh_DMA(Y_MAX_PIXEL * X_MAX_PIXEL * 2);
         dmaXoffset = X_MAX_PIXEL + dmaXoffset;
         dmaYoffset = Y_MAX_PIXEL + dmaYoffset;
-        printf("完成dma\r\n");
+       // printf("完成dma\r\n");
 
         // memset(lcd_gram, 0x33, sizeof(lcd_gram));
     }
-    
-
-
 
 #else
     LCD_0IN85_SetWindows(x, y, x, y);
