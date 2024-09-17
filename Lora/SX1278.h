@@ -221,12 +221,13 @@
 /*********************************************************/
 
 u8 SX1278_Read_Reg(u8 adr);
-
+void SX1278_Standby(void);
 u8 SX1278_SPI_RW(u8 byte);
 void EXTI6_INT_INIT(void);
 extern void SX1278_Init(u16 freq);
 //extern void SX1278_Config(void);
 //extern u8   SX1278_LoRaEntryRx(void); 
+void SX1278_Write_Reg(u8 adr, u8 WrPara);
 extern u8   SX1278_LoRaReadRSSI(void);
 u8 SX1278_ReadRSSI(void);
 extern u8 SX1278_LoRaRxPacket(u8 *valid_data, u8* packet_length,u16 timeout);

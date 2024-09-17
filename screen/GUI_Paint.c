@@ -462,7 +462,8 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
                     const char offsetAcsii)
 {
     UWORD Page, Column;
-
+    dmaXpoint=Xpoint;dmaYpoint=Ypoint;
+       dmaFont=Font;
     if (Xpoint > Paint.Width || Ypoint > Paint.Height) {
         printf("Paint_DrawChar Input exceeds the normal display range\r\n");
         return;
@@ -470,6 +471,13 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
 
     uint32_t Char_Offset = (Acsii_Char - offsetAcsii) * Font->Height * (Font->Width / 8 + (Font->Width % 8 ? 1 : 0));
     const unsigned char *ptr = &Font->table[Char_Offset];
+
+
+#if USE_DMA
+    Delay_Ms(1);
+    LCD_0IN85_SetWindows(Xpoint , Ypoint , (Xpoint +Font->Width) -1, (Ypoint + Font->Height) -1);    //准备好窗口和复位
+#endif
+
 
     for (Page = 0; Page < Font->Height; Page ++ ) {
         for (Column = 0; Column < Font->Width; Column ++ ) {
@@ -495,6 +503,21 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
         if (Font->Width % 8 != 0)
             ptr++;
     }// Write all
+
+#if USE_DMA
+   // printf("显示小图%d\r\n",dmaFont->Width * dmaFont->Height * 2 / Y_MAX_PIXEL * X_MAX_PIXEL * 2);
+ if (dmaFont->Width * dmaFont->Height * 2 < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
+ {
+   // printf("显示小图\r\n");
+   Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2);
+ }
+ if (dmaFont->Width * dmaFont->Height * 2 %Y_MAX_PIXEL * X_MAX_PIXEL * 2)//补包操作
+ {
+    printf("补余包\r\n");
+   Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 %Y_MAX_PIXEL * X_MAX_PIXEL * 2);//把余数显示掉
+ }
+
+#endif
 }
 u8 dmaXpoint,dmaYpoint=0;
 sFONT* dmaFont;

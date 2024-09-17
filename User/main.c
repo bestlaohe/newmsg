@@ -17,8 +17,6 @@ u16 BattaryBuf[10];
 
 // 待机功耗最低，睡眠功耗其次
 
-
-
 int main(void)
 {
 
@@ -30,7 +28,7 @@ int main(void)
   Delay_Init(); // 延时初始化需要在延时前，不然会卡死
 
   /*********************应用函数初始化******************************/
-  My_GPIO_Init();                           // IO口初始化****
+  My_GPIO_Init(); // IO口初始化****
   MOTOR_OFF;
   PWM_Config(10000, 100); // 屏幕的背光调节  默认百分百亮度******
   Encoder_Init(12, 1);    // 编码器的内容,重载值为65535，不分频，1圈12个****
@@ -40,26 +38,29 @@ int main(void)
   Battery_Init();         // 电池的adc初始化****
   EXTI6_INT_INIT();       // 外部引进触发中断，lora有信息过来了*****
   SX1278_Init(434);       // lora的初始化*****
-  startup_animation();
-  IWDG_Feed_Init(IWDG_Prescaler_128, 4000); // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****
+  //startup_animation();
+  IWDG_Feed_Init(IWDG_Prescaler_128, 10000); // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****
 
   while (1)
   {
-
-    
+      Delay_Ms(500);
     IWDG_ReloadCounter(); // 喂狗
-                                 show_battery();//电池电量显示出来
-                                SX1278_test();
-             
-                                 if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动
-                                 {
-                                     printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
-                                     precircle = circle;
-                                     precnt = TIM2->CNT;
-                                     system_wokeup();
-                                     MOTOR_ON;
-                                     Delay_Ms(50);
-                                     MOTOR_OFF;
-                                 }
+
+
+    show_battery();       // 电池电量显示出来
+    //SX1278_test();
+
+    if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动
+    {
+      printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
+      precircle = circle;
+      precnt = TIM2->CNT;
+      system_wokeup();
+      MOTOR_ON;
+      Delay_Ms(50);
+      MOTOR_OFF;
+    }
+
+
   }
 }
