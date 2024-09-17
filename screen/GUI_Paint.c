@@ -216,7 +216,7 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
         return;
     }
 
-    // printf("x = %d, y = %d\r\n", X, Y);
+    //printf("x = %d, y = %d\r\n", X, Y);
     if(X > Paint.WidthMemory || Y > Paint.HeightMemory){
         printf("Exceeding display boundaries\r\n");
         return;
@@ -496,23 +496,36 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
             ptr++;
     }// Write all
 }
-
+u8 dmaXpoint,dmaYpoint=0;
+sFONT* dmaFont;
 void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
                     sFONT* Font, UWORD Color_Background, UWORD Color_Foreground
                  )
 {
-    UWORD Page, Column;
 
+    UWORD Page, Column;
     if (Xpoint > Paint.Width || Ypoint > Paint.Height) {
         printf("Paint_DrawChar Input exceeds the normal display range\r\n");
         return;
     }
-
+    dmaXpoint=Xpoint;dmaYpoint=Ypoint;
+    dmaFont=Font;
     uint32_t Char_Offset = number * Font->Height * (Font->Width / 8 + (Font->Width % 8 ? 1 : 0));
     const unsigned char *ptr = &Font->table[Char_Offset];
 
+#if USE_DMA
+    LCD_0IN85_SetWindows(Xpoint , Ypoint , Xpoint +Font->Width -1, Ypoint + Font->Height -1);
+#endif
+
+   // LCD_0IN85_SetWindows(Xpoint , Ypoint , Xpoint , Ypoint);
+
+
+    //准备好窗口和复位
+
+
     for (Page = 0; Page < Font->Height; Page ++ ) {
         for (Column = 0; Column < Font->Width; Column ++ ) {
+            //printf("nwo:%08x\r\n", DBGMCU_GetCHIPID());
 
             //To determine whether the font background color and screen background color is consistent
             if (FONT_BACKGROUND == Color_Background) { //this process is to speed up the scan
@@ -534,7 +547,26 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
         }// Write a line
         if (Font->Width % 8 != 0)
             ptr++;
+
     }// Write all
+
+
+
+#if USE_DMA
+   // printf("显示小图%d\r\n",dmaFont->Width * dmaFont->Height * 2 / Y_MAX_PIXEL * X_MAX_PIXEL * 2);
+ if (dmaFont->Width * dmaFont->Height * 2 < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
+ {
+   // printf("显示小图\r\n");
+   Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2);
+ }
+ if (dmaFont->Width * dmaFont->Height * 2 %Y_MAX_PIXEL * X_MAX_PIXEL * 2)//补包操作
+ {
+    printf("补余包\r\n");
+   Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 %Y_MAX_PIXEL * X_MAX_PIXEL * 2);//把余数显示掉
+ }
+
+#endif
+
 }
 
 /******************************************************************************
@@ -596,8 +628,8 @@ parameter:
 void Paint_DrawString_CN(UWORD Xstart, UWORD Ystart, const char * pString, cFONT* font, UWORD Color_Background, UWORD Color_Foreground)
 {
     const char* p_text = pString;
-    int x = Xstart, y = Ystart;
-    int i, j,Num;
+    u8 x = Xstart, y = Ystart;
+    u8 i, j,Num;
 
     /* Send the string character by character on EPD */
     while (*p_text != 0) {

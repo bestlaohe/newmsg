@@ -990,7 +990,8 @@ sFONT Font24_Num = {
   17, /* Width */
   24, /* Height */
 };
-// 图片数组开始
+// 图片数组开始16*18个数据6*8*48个像素点=48*48,一行48个=6*8
+//48x48是像素点
 const unsigned char Font24_Icon [] = {
         /* %MATRIXCODE_HEAD_FONT%*/
         /* 图像 C:\Users\12630\Desktop\交互式按钮_设置.jpg   48x48  */

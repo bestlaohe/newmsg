@@ -13,6 +13,7 @@
  */
 #include "debug.h"
 #include "encode.h"
+#include "SX1278.h"
 
 void Encoder_Init(u16 arr, u16 psc)
 {
@@ -69,6 +70,7 @@ void EXTI7_0_IRQHandler(void)
         MOTOR_OFF;
         system_wokeup();                    // ÏµÍ³»½ÐÑ
         EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
+
     }
 }
 

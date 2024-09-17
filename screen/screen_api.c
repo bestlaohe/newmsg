@@ -8,12 +8,11 @@
 #include "screen_api.h"
 #include <stdlib.h>
 #include <stdio.h>
+// #include <string.h> //memset()
 
 LCD_0IN85_ATTRIBUTES LCD;
-
-
-
-
+uint8_t lcd_gram[Y_MAX_PIXEL * X_MAX_PIXEL * 2] = {0}; ///< 开辟一块内存空间当显存使用
+u8 dmaXoffset, dmaYoffset = 0;
 void LCD_SHOW_API_INIT()
 {
 
@@ -33,16 +32,14 @@ void LCD_SHOW_API_INIT()
     printf("drawing...\r\n");
     Paint_SetRotate(0);
 
-    Paint_Drawicon(40, 40, 1,&Font24_icon,  BLACK, BLUE);
-
-
+    //  Paint_Drawicon(40, 40, 1,&Font24_icon,  BLACK, BLUE);
 
     //       Paint_DrawString(5, 10, "123",        &Font24,  YELLOW, RED);
     //       Paint_DrawString(5, 34, "ABC",        &Font24,  BLUE,   CYAN);
 
     //  Paint_DrawFloatNum (5, 58 ,987.654321,3, &Font12,  WHITE,  BLACK);
     //  Paint_DrawString_CN(0,80, "微雪电子",   &Font24CN,WHITE,  RED);
- //     Paint_DrawImage(set,30,3,48,48);
+    //     Paint_DrawImage(set,30,3,48,48);
     //    Delay_Ms(3000);
     //    Paint_Clear(WHITE);
     //
@@ -270,10 +267,16 @@ parameter:
 ********************************************************************************/
 void LCD_0IN85_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend)
 {
+    dmaXoffset = 0;
+    dmaYoffset = 0;
+
+
     Ystart = Ystart + 1;
-    Yend = Yend + 1;
+    Yend = Yend +2;
+
     Xstart = Xstart + 2;
     Xend = Xend + 2;
+
     // set the X coordinates
     LCD_0IN85_SendCommand(0x2A);
     LCD_0IN85_SendData_8Bit((Xstart >> 8) & 0xFF);
@@ -299,8 +302,36 @@ parameter:
 void LCD_0IN85_Clear(UWORD Color)
 {
     UWORD i, j;
+
     LCD_0IN85_SetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
 
+#if USE_DMA
+
+    int index = 0; // 用于跟踪lcd_gram数组的索引
+    for (i = 0; i < X_MAX_PIXEL; i++)
+    {
+        for (j = 0; j < Y_MAX_PIXEL; j++)
+        {
+            lcd_gram[index++] = (Color >> 8) & 0xff; // 高字节
+            lcd_gram[index++] = Color & 0xff;        // 低字节
+        }
+    }
+
+    LCD_DC_1;
+    LCD_CS_0;
+
+    SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, Y_MAX_PIXEL * X_MAX_PIXEL * 2, DMA_Mode_Circular);
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
+    DMA_Cmd(DMA1_Channel3, ENABLE);
+
+    // while (DMA_GetFlagStatus(DMA1_FLAG_TC3) == RESET)
+    //     printf("等待通道3传输完成标志\r\n"); // 等待通道3传输完成标志
+    DMA_ClearFlag(DMA1_FLAG_TC3); // 清除通道3传输完成标志
+    // while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
+    //     printf("等待SPI发送缓冲区为空\r\n"); // 等待SPI发送缓冲区为空
+    dmacircular = 0;
+
+#else
     LCD_DC_1;
     for (i = 0; i < LCD_WIDTH; i++)
     {
@@ -313,6 +344,7 @@ void LCD_0IN85_Clear(UWORD Color)
             LCD_CS_1;
         }
     }
+#endif
 }
 
 /******************************************************************************
@@ -353,6 +385,43 @@ void LCD_0IN85_DisplayWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend
     }
 }
 
+void Lcd_Refrsh_DMA(int pic_size)
+{
+
+#if USE_DMA
+    ///< 将整个数据搬运一次到DMA
+    LCD_DC_1;
+    LCD_CS_0;
+    printf("开始刷屏\r\n");
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
+    DMA_Cmd(DMA1_Channel3, DISABLE);
+
+    // if (dmaFont->Width * dmaFont->Height * 2 < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
+    //    SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, dmaFont->Width * dmaFont->Height * 2, DMA_Mode_Normal);
+    // else
+    //     SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, Y_MAX_PIXEL * X_MAX_PIXEL * 2, DMA_Mode_Normal);
+
+
+ SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, pic_size, DMA_Mode_Normal);
+
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
+    DMA_Cmd(DMA1_Channel3, ENABLE);
+
+    // while (DMA_GetFlagStatus(DMA1_FLAG_TC3) == RESET)
+    //     printf("等待通道3传输完成标志\r\n"); // 等待通道3传输完成标志
+
+    // DMA_ClearFlag(DMA1_FLAG_TC3);            // 清除通道3传输完成标志
+
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
+        printf("等待SPI发送缓冲区为空\r\n"); // 等待SPI发送缓冲区为空
+    LCD_CS_1;
+
+    
+    while (dmacircular != 0)
+       printf("等待循环dma：%d\r\n", dmacircular); ;
+
+#endif
+}
 /******************************************************************************
 function: Draw a point
 parameter   :
@@ -362,8 +431,37 @@ parameter   :
 ******************************************************************************/
 void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
 {
+
+#if USE_DMA
+    //  printf("dmaXpoint:%d\r\n", x);
+    //  printf("dmaYpoint:%d\r\n", y);
+
+    ///< 使用DMA的话，从对点刷屏到对显存数组写入数据，DMA传输数据的时候再统一进行传输
+    int index = ((y - dmaYpoint) * (dmaFont->Width) + (x - dmaXpoint)) * 2;
+    // printf("index开始偏移前:%d\r\n", index );
+
+    index = index - X_MAX_PIXEL * X_MAX_PIXEL * 2 * dmaXoffset / X_MAX_PIXEL;
+    lcd_gram[index] = (Color >> 8);     // 高字节
+    lcd_gram[index + 1] = Color & 0xFF; // 低字节
+                                        //  printf("开始偏移:%d\r\n", index + 1);
+    if ((index + 1) == (Y_MAX_PIXEL * X_MAX_PIXEL * 2 - 1))
+    {
+
+        Lcd_Refrsh_DMA(Y_MAX_PIXEL * X_MAX_PIXEL * 2);
+        dmaXoffset = X_MAX_PIXEL + dmaXoffset;
+        dmaYoffset = Y_MAX_PIXEL + dmaYoffset;
+        printf("完成dma\r\n");
+
+        // memset(lcd_gram, 0x33, sizeof(lcd_gram));
+    }
+    
+
+
+
+#else
     LCD_0IN85_SetWindows(x, y, x, y);
     LCD_0IN85_SendData_16Bit(Color);
+#endif
 }
 
 /*******************************************************************************

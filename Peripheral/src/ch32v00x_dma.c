@@ -99,6 +99,7 @@ void DMA_Init(DMA_Channel_TypeDef *DMAy_Channelx, DMA_InitTypeDef *DMA_InitStruc
               DMA_InitStruct->DMA_PeripheralDataSize | DMA_InitStruct->DMA_MemoryDataSize |
               DMA_InitStruct->DMA_Priority | DMA_InitStruct->DMA_M2M;
 
+
     DMAy_Channelx->CFGR = tmpreg;
     DMAy_Channelx->CNTR = DMA_InitStruct->DMA_BufferSize;
     DMAy_Channelx->PADDR = DMA_InitStruct->DMA_PeripheralBaseAddr;

@@ -22,7 +22,7 @@ uint8_t get_battery_percentage(uint16_t adc_value) {
     }
 
     // 查找点之间的插值
-    for (int i = 0; i < NUM_POINTS - 1; i++) {
+    for (u8 i = 0; i < NUM_POINTS - 1; i++) {
         if (adc_value >= adc_points[i] && adc_value < adc_points[i + 1]) {
             // 线性插值公式
             uint16_t range = adc_points[i + 1] - adc_points[i];
@@ -154,7 +154,7 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
 void show_battery(){
     u16 sum = 0;
         char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
-        for (int i = 0; i < 10; i++)
+        for (u8 i = 0; i < 10; i++)
         {
             sum += BattaryBuf[i];
         }
@@ -171,7 +171,5 @@ void show_battery(){
         }
         printf("电池平均百分比值为%s\r\n", strBuf);
         Paint_DrawString(10, 34, strBuf, &Font24_Num, BLACK,WHITE,  '0');
-
-
 
 }

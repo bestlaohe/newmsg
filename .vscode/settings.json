@@ -1,4 +1,8 @@
 {
   "C_Cpp.intelliSenseEngine": "default",
-  "files.encoding": "gbk"
+  "files.encoding": "gbk",
+  "files.associations": {
+    "*.cpp": "cpp",
+    "gui_paint.h": "c"
+  }
 }

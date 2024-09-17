@@ -54,16 +54,20 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 void SX1278_test() // SPI初始化
 {
 
+
+    printf("lora的ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION));
+     printf("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
+     printf("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
+
+
   u8 lorasendbuf[21] = "abcd";//{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
   u8 lorareceivebuf[21];
   u8 res; // 操作的返回
   u8 len;
   u8 var;
 
-  printf("lora的ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION));
-  printf("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
-  printf("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
-   if (!SX1278_LoRaTxPacket(lorasendbuf, 10))
+
+   if (!SX1278_LoRaTxPacket(lorasendbuf, 4))
    {
      printf("lora发送成功 \r\n");
    }
@@ -77,7 +81,6 @@ void SX1278_test() // SPI初始化
      {
        printf("RX sucess %d\r\n", lorareceivebuf[var]);
      }
-     // Delay_Ms(500);
    }
    else if (res == 1)
    {
