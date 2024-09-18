@@ -4,6 +4,7 @@
   "files.associations": {
     "*.cpp": "cpp",
     "gui_paint.h": "c",
-    "screen_api.h": "c"
+    "screen_api.h": "c",
+    "gpio.h": "c"
   }
 }

@@ -46,49 +46,16 @@ void TIM1_Init(u16 arr, u16 psc, u16 ccp)
     TIM_ARRPreloadConfig(TIM1, ENABLE);
     TIM_Cmd(TIM1, ENABLE);
 
-    // 配置定时器中断
-    TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE); // 使能更新中断
-
-    // 配置 NVIC 中断
-    NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;        // 中断通道
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; // 抢占优先级
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;        // 子优先级
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // 使能中断
-
-    NVIC_Init(&NVIC_InitStructure);
-}
-
-// 作为倒计时10ms一次触发中断
-void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-
-int SleepCounter = 0;
-void refresh_SleepCounter(int newtime)
-{
-
-    SleepCounter = newtime;
-}
-void system_wokeup()
-{
-
-    refresh_SleepCounter(0); // 刷新休眠时间
-}
-
-// 定时器中断服务函数
-void TIM1_UP_IRQHandler(void)
-{
-    if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
-    {
-
-        SleepCounter++;
-        if (SleepCounter >= 150000) // 15s触发一次
-        {
-            printf("定时器15s了开始进入待机模式\r\n");
-            SleepCounter = 0;
-            // PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
-        }
-        // 清除中断标志
-        TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
-    }
+    //    // 配置定时器中断
+    //    TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE); // 使能更新中断
+    //
+    //    // 配置 NVIC 中断
+    //    NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;        // 中断通道
+    //    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; // 抢占优先级
+    //    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;        // 子优先级
+    //    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // 使能中断
+    //
+    //    NVIC_Init(&NVIC_InitStructure);
 }
 
 // 用于编码器
@@ -117,40 +84,31 @@ void TIM2_Init(u16 arr, u16 psc)
     TIM_ICInitStructure.TIM_ICFilter = 10;                           // 设置输入捕获滤波器的采样周期为 10（用于滤波抖动）
     TIM_ICInit(TIM2, &TIM_ICInitStructure);
 
-    NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    //    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+    //
+    //    NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+    //    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    //    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    //    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+    //
+    //    NVIC_Init(&NVIC_InitStructure);
 
-    NVIC_Init(&NVIC_InitStructure);
-
-    TIM_ClearFlag(TIM2, TIM_FLAG_Update);
+    TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
     TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
+
+    // 配置 NVIC 中断
+    NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn | TIM2_IRQn; // 合并中断通道
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;      // 抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;             // 子优先级
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;                // 使能中断
+    NVIC_Init(&NVIC_InitStructure);
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update);
+    TIM_ClearFlag(TIM1, TIM_FLAG_Update);
+
     TIM_SetCounter(TIM2, 0);
     TIM_Cmd(TIM2, ENABLE);
 }
-void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
-void TIM2_IRQHandler()
-{
 
-    volatile uint16_t tempcnt = TIM2->CNT, temparr = TIM2->ATRLR;
-
-    if (TIM_GetITStatus(TIM2, TIM_IT_Update))
-    {
-        printf("当前计数=%d\r\n", tempcnt);
-        printf("重装载值=%d\r\n", temparr);
-
-        if (tempcnt < temparr / 2)
-        {
-            circle += 1;
-        }
-        else
-        {
-            circle -= 1;
-        }
-    }
-    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-}
 /*********************************************************************
  * @fn      IWDG_Feed_Init
  *

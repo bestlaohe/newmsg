@@ -138,6 +138,7 @@ function :  send data
 parameter:
     Data : Write data
 ******************************************************************************/
+#if !USE_DMA
 static void LCD_0IN85_SendData_16Bit(UWORD Data)
 {
     LCD_DC_1;
@@ -146,6 +147,8 @@ static void LCD_0IN85_SendData_16Bit(UWORD Data)
     DEV_SPI_WRite(Data & 0xFF);
     LCD_CS_1;
 }
+#endif
+
 
 /******************************************************************************
 function :  Initialize the lcd register

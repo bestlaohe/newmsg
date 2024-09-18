@@ -68,41 +68,7 @@ void SPI_DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bu
     NVIC_Init(&NVIC_InitStructure);
    // printf("CFGR%x\r\n", DMA1_Channel3->CFGR);
 }
-void DMA1_Channel3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
-int dmacircular = 0;
-void DMA1_Channel3_IRQHandler(void)
-{
-
-    if (DMA_GetITStatus(DMA1_IT_TC3))
-    {
-        // 传输完成处理
-      //  printf("一开始DMA传输完成%d\r\n", dmacircular);
-        // 清除中断标志
-        DMA_ClearITPendingBit(DMA1_IT_TC3);
-
-        // printf("CFGR%x\r\n", DMA1_Channel3->CFGR);
-
-      //  printf("DMA_Mode_Circular%x\r\n", DMA_Mode_Circular);
-
-       // printf("结果%x\r\n", DMA1_Channel3->CFGR & 0x00b0);
-
-        if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0) // 0x00b0是循环，92是正常
-            dmacircular++;
-
-        if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0&& dmacircular == 29)
-        {
-            dmacircular = 0;
-            DMA_Cmd(DMA1_Channel3, DISABLE);
-            SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
-            DMA_ClearITPendingBit(DMA1_IT_TC3);
-
-            LCD_CS_1;
-        }
-        Delay_Ms(1);
-       // printf("结束DMA传输完成%d\r\n", dmacircular);
-    }
-}
 /*
     简易的us级别的延迟函数
     我的芯片时钟是48Mhz

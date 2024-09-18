@@ -13,7 +13,9 @@
 #define __CH32V00x_IT_H
 
 #include "debug.h"
+#include "gpio.h"
 
+void refresh_SleepCounter(int newtime);
 
 #endif /* __CH32V00x_IT_H */
 

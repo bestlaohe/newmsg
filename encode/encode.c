@@ -41,38 +41,7 @@ u8 KEY_PRESS(void)
     return 0;
 }
 
-void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
-/*********************************************************************
- * @fn      EXTI2_IRQHandler
- *
- * @brief   This function handles EXTI2 Handler.
- *
- * @return  none
- */
-void EXTI7_0_IRQHandler(void)
-{
-    if (EXTI_GetITStatus(EXTI_Line2) != RESET)
-    {
-        printf("按键中断触发震动\r\n"); // 有消息发来就震动
-        MOTOR_ON;
-        Delay_Ms(100);
-        MOTOR_OFF;
-        system_wokeup();                    // 系统唤醒
-        EXTI_ClearITPendingBit(EXTI_Line2); /* Clear Flag */
-    }
-
-    if (EXTI_GetITStatus(EXTI_Line6) != RESET)
-    {
-        printf("我lora来数据中断触发震动\r\n"); // 有消息发来就震动
-        MOTOR_ON;
-        Delay_Ms(100);
-        MOTOR_OFF;
-        system_wokeup();                    // 系统唤醒
-        EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
-
-    }
-}
 
 /*********************************************************************
  * @fn      EXTI0_INT_INIT

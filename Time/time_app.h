@@ -11,11 +11,9 @@
 
 void TIM1_Init(u16 arr, u16 psc, u16 ccp);
 void TIM2_Init(u16 arr, u16 psc);
-void refresh_SleepCounter(int newtime);
 void IWDG_Feed_Init(u16 prer, u16 rlr);//ø¥√≈π∑
 void system_wokeup();
 
 
 
-extern volatile int circle;
 #endif /* TIME_TIME_APP_H_ */

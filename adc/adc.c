@@ -174,3 +174,33 @@ void show_battery(){
 
 
 }
+
+
+/*********************************************************************
+ * @fn      EXTI0_INT_INIT
+ *
+ * @brief   Initializes EXTI0 collection.
+ *
+ * @return  none
+ */
+void EXTI7_INT_INIT(void)
+{
+  EXTI_InitTypeDef EXTI_InitStructure = {0};
+  NVIC_InitTypeDef NVIC_InitStructure = {0};
+
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
+  /* GPIOA ----> EXTI_Line0 */
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource7);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line7;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
+
+  NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+}
