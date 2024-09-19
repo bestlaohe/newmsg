@@ -63,7 +63,7 @@ void TIM1_UP_IRQHandler(void)
     SleepCounter++;
     if (SleepCounter >= 150000) // 15s触发一次
     {
-      printf("定时器15s了开始进入待机模式\r\n");
+      printf("EnterSTANDBYMode\r\n");
       SleepCounter = 0;
       // PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
     }

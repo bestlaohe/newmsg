@@ -84,6 +84,7 @@ extern sFONT Font24;
 extern sFONT Font24_Num;
 extern sFONT Font24_En;
 extern sFONT Font24_icon;
+extern sFONT Font24_logo;
 
 
 
@@ -91,6 +92,10 @@ extern sFONT Font20;
 extern sFONT Font16;
 extern sFONT Font12;
 extern sFONT Font8;
+extern sFONT Font8_En;
+
+extern sFONT Font8_Num;
+
 
 extern cFONT Font12CN;
 extern cFONT Font24CN;

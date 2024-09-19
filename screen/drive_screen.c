@@ -66,7 +66,7 @@ void SPI_DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bu
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
     NVIC_Init(&NVIC_InitStructure);
-   // printf("CFGR%x\r\n", DMA1_Channel3->CFGR);
+    // printf("CFGR%x\r\n", DMA1_Channel3->CFGR);
 }
 
 /*
@@ -92,21 +92,18 @@ void DEV_SPI_WRite(uint8_t _dat)
         ;
 }
 
-int LCD_Init(void)
+int LCD_Drive_Init(void)
 {
     SPI_FullDuplex_Init();
     LCD_DC_0;
     LCD_CS_0;
     TIM_CtrlPWMOutputs(TIM1, ENABLE);
 
-    // 启用SPI的DMA发送请求
-    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
-
-    // 启用DMA通道
-    DMA_Cmd(DMA1_Channel3, ENABLE);
-
-    // 启用DMA中断
-    NVIC_EnableIRQ(DMA1_Channel3_IRQn);
+#if USE_DMA
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE); // 启用SPI的DMA发送请求
+    DMA_Cmd(DMA1_Channel3, ENABLE);                  // 启用DMA通道
+    NVIC_EnableIRQ(DMA1_Channel3_IRQn);              // 启用DMA中断
+#endif
 
     return 0;
 }

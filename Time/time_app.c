@@ -26,15 +26,15 @@ void TIM1_Init(u16 arr, u16 psc, u16 ccp)
 {
 
     TIM_OCInitTypeDef TIM_OCInitStructure = {0};
-    TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStructure = {0};
+    TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure = {0};
     NVIC_InitTypeDef NVIC_InitStructure;
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
 
-    TIM_TimeBaseInitStructure.TIM_Period = arr;
-    TIM_TimeBaseInitStructure.TIM_Prescaler = psc;
-    TIM_TimeBaseInitStructure.TIM_ClockDivision = TIM_CKD_DIV1;
-    TIM_TimeBaseInitStructure.TIM_CounterMode = TIM_CounterMode_Up;
-    TIM_TimeBaseInit(TIM1, &TIM_TimeBaseInitStructure);
+    TIM_TimeBaseStructure.TIM_Period = arr;
+    TIM_TimeBaseStructure.TIM_Prescaler = psc;
+    TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;
+    TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
+    TIM_TimeBaseInit(TIM1, &TIM_TimeBaseStructure);
 
     TIM_OCInitStructure.TIM_OCMode = TIM_OCMode_PWM2;
     TIM_OCInitStructure.TIM_OutputState = TIM_OutputState_Enable;
@@ -46,16 +46,17 @@ void TIM1_Init(u16 arr, u16 psc, u16 ccp)
     TIM_ARRPreloadConfig(TIM1, ENABLE);
     TIM_Cmd(TIM1, ENABLE);
 
-    //    // 配置定时器中断
-    //    TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE); // 使能更新中断
-    //
-    //    // 配置 NVIC 中断
-    //    NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;        // 中断通道
-    //    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; // 抢占优先级
-    //    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;        // 子优先级
-    //    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // 使能中断
-    //
-    //    NVIC_Init(&NVIC_InitStructure);
+    // 配置定时器中断
+    TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE); // 使能更新中断
+
+    // 配置 NVIC 中断
+    NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn;        // 中断通道
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0; // 抢占优先级
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;        // 子优先级
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;           // 使能中断
+
+    NVIC_Init(&NVIC_InitStructure);
+    TIM_ClearFlag(TIM1, TIM_FLAG_Update);
 }
 
 // 用于编码器
@@ -84,27 +85,14 @@ void TIM2_Init(u16 arr, u16 psc)
     TIM_ICInitStructure.TIM_ICFilter = 10;                           // 设置输入捕获滤波器的采样周期为 10（用于滤波抖动）
     TIM_ICInit(TIM2, &TIM_ICInitStructure);
 
-    //    TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-    //
-    //    NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-    //    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    //    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    //    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-    //
-    //    NVIC_Init(&NVIC_InitStructure);
-
-    TIM_ITConfig(TIM1, TIM_IT_Update, ENABLE);
     TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-
-    // 配置 NVIC 中断
-    NVIC_InitStructure.NVIC_IRQChannel = TIM1_UP_IRQn | TIM2_IRQn; // 合并中断通道
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;      // 抢占优先级
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;             // 子优先级
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;                // 使能中断
+    NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_Init(&NVIC_InitStructure);
-    TIM_ClearFlag(TIM2, TIM_FLAG_Update);
-    TIM_ClearFlag(TIM1, TIM_FLAG_Update);
 
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update);
     TIM_SetCounter(TIM2, 0);
     TIM_Cmd(TIM2, ENABLE);
 }

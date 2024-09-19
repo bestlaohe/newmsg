@@ -513,7 +513,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
  }
  if (dmaFont->Width * dmaFont->Height * 2 %Y_MAX_PIXEL * X_MAX_PIXEL * 2)//补包操作
  {
-    printf("补余包\r\n");
+    printf("Surplus package\r\n");
    Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 %Y_MAX_PIXEL * X_MAX_PIXEL * 2);//把余数显示掉
  }
 
@@ -538,7 +538,6 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
 
 #if USE_DMA
     Delay_Ms(1);
-
     LCD_0IN85_SetWindows(Xpoint , Ypoint , (Xpoint +Font->Width) -1, (Ypoint + Font->Height) -1);    //准备好窗口和复位
 #endif
 
@@ -583,7 +582,7 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
  }
  if (dmaFont->Width * dmaFont->Height * 2 %Y_MAX_PIXEL * X_MAX_PIXEL * 2)//补包操作
  {
-    printf("补余包\r\n");
+    printf("EnterSTANDBYMode\r\n");
    Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 %Y_MAX_PIXEL * X_MAX_PIXEL * 2);//把余数显示掉
  }
 

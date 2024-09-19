@@ -40,52 +40,47 @@ int main(void)
   /*********************基本内容初始化******************************/
   SystemCoreClockUpdate();   // 48000000系统时钟刷新3324-3212=100k
   USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死3956-3324=600k
-//  printf("SystemClk:%d\r\n", SystemCoreClock);
-//  printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
-  Delay_Init(); // 延时初始化需要在延时前，不然会卡死4012-3956=100字节
-
+                             //  printf("SystemClk:%d\r\n", SystemCoreClock);
+                             //  printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
+  Delay_Init();              // 延时初始化需要在延时前，不然会卡死4012-3956=100字节
   FLASH_Unlock();
   FLASH_UserOptionByteConfig(OB_IWDG_SW, OB_STDBY_NoRST, OB_RST_NoEN, OB_PowerON_Start_Mode_BOOT);
-  FLASH_Lock();//**4232-4012=200字节
-
+  FLASH_Lock(); //**4232-4012=200字节
   /*********************应用函数初始化******************************/
-  My_GPIO_Init(); // IO口初始化****4484-4232=252字节
-  TIM1_Init(100, (SystemCoreClock / (100*PWM_FRE)) - 1, PWM_Duty);// 屏幕的背光调节  默认百分百亮度******5076-4484=592字节
- // Encoder_Init(12, 1);    // 编码器的内容,重载值为65535，不分频，1圈12个****6040-5148=900字节
-//  LCD_Init();             // 屏幕硬件初始化****200字节
+  My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
+  TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
+  TIM2_Init(12, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
+  LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
+  LCD_SHOW_API_INIT();                                               // 屏幕测试******8404-6224=2180
+  KEY_INIT();                                                        // 确认按键中断初始化***8636-8404=232
+  Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
+  EXTI7_INT_INIT();                                                  // 外部引进触发中断，开始充电*****9540=100
+  EXTI6_INT_INIT();                                                  // 外部引进触发中断，lora有信息过来了*****9620=100
+  SX1278_Init(434);                                                  // lora的初始化*****10268-9620=648
+  startup_animation();                                               // 11732-10512=1220
+  IWDG_Feed_Init(IWDG_Prescaler_128, 10000);                         // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****12467-12356=111字节
 
+  while (1)
+  {
 
-//  LCD_SHOW_API_INIT();    // 屏幕测试******
-//  KEY_INIT();             // 确认按键中断初始化***
-//  Battery_Init();         // 电池的adc初始化****
-//  EXTI7_INT_INIT();       // 外部引进触发中断，开始充电*****
-//  EXTI6_INT_INIT();       // 外部引进触发中断，lora有信息过来了*****
-//  SX1278_Init(434);       // lora的初始化*****
-//  startup_animation();
-//  IWDG_Feed_Init(IWDG_Prescaler_128, 10000); // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****
-//
-//
-//
-//  while (1)
-//  {
-//
-//    Delay_Ms(500);
-//    IWDG_ReloadCounter(); // 喂狗
-//
-//    // Paint_DrawString(77, 0, "ac", &Font24_En, BLACK,WHITE,  '0');
-//
-//    show_battery(); // 电池电量显示出来
-//    SX1278_test();  //  14548         80    1504   16132    3f04 newmsg.elf
-//
-//    if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动
-//    {
-//      printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
-//      precircle = circle;
-//      precnt = TIM2->CNT;
-//      system_wokeup();
-//      MOTOR_ON;
-//      Delay_Ms(50);
-//      MOTOR_OFF;
-//    }
-//  }
+    Delay_Ms(500);
+    IWDG_ReloadCounter(); // 喂狗* 12484-12467=24字节
+
+    //   Paint_DrawString(77, 0, "ac", &Font24_En, BLACK, WHITE, '0'); // 14272-11732=2540
+    Paint_DrawString(77, 0, "ac", &Font8_En, BLACK, WHITE, '0'); // 12608-11732=876
+
+    show_battery(); // 电池电量显示出来16124-15028=1612
+     SX1278_test(); //  16180-15028=1652             会减少368
+
+    if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动   140字节
+    {
+      printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
+      precircle = circle;
+      precnt = TIM2->CNT;
+      system_wokeup();
+      MOTOR_ON;
+      Delay_Ms(50);
+      MOTOR_OFF;
+    }
+  }
 }

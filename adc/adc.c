@@ -169,8 +169,9 @@ void show_battery(){
         {
             sprintf(strBuf, "%03d", get_battery_percentage(sum)); // 显示3位数字
         }
-        printf("电池平均百分比值为%s\r\n", strBuf);
-        Paint_DrawString(77, 0, strBuf, &Font24_Num, BLACK,WHITE,  '0');
+        printf("battery:%s%%\r\n", strBuf);
+      //  Paint_DrawString(77, 0, strBuf, &Font24_Num, BLACK,WHITE,  '0');//13692
+         Paint_DrawString(77, 0, strBuf, &Font8_Num, BLACK,WHITE,  '0');//13052
 
 
 }

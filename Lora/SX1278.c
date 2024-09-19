@@ -46,33 +46,30 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 #define CLR_SX1278_SCK() GPIO_ResetBits(SX1278_GPIO, SX1278_SCK)
 #define SET_SX1278_MOSI() GPIO_SetBits(SX1278_GPIO, SX1278_MOSI)
 #define CLR_SX1278_MOSI() GPIO_ResetBits(SX1278_GPIO, SX1278_MOSI)
-#define SET_SX1278_SDN() GPIO_SetBits(SX1278_GPIO, SX1278_SDNN)     // 复位引脚定义
-#define CLR_SX1278_SDN() GPIO_ResetBits(SX1278_GPIO, SX1278_SDNN)    // 用于将 SX1278 模块置于关机模式
+#define SET_SX1278_RST() GPIO_SetBits(SX1278_GPIO, SX1278_SDNN)      // 复位引脚定义
+#define CLR_SX1278_RST() GPIO_ResetBits(SX1278_GPIO, SX1278_SDNN)    // 用于将 SX1278 模块置于关机模式
 #define READ_SX1278_NIRQ() GPIO_ReadInputDataBit(GPIOD, SX1278_NIRQ) // 引脚是 SX1278 模块的中断请求引脚
 
 // 控制口配置初始化，中断口配置在完成中断初始化中
-void SX1278_test() // SPI初始化
+void SX1278_test() // SPI初始化14196-13828=368
 {
 
+   printf("lora ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION));
+   printf("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
+   printf("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
 
-    printf("lora的ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION));
-     printf("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
-     printf("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
-
-
-  u8 lorasendbuf[21] = "abcd";//{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  u8 lorasendbuf[255] = "abcd"; //{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
   u8 lorareceivebuf[21];
   u8 res; // 操作的返回
   u8 len;
   u8 var;
 
-
-   if (!SX1278_LoRaTxPacket(lorasendbuf, 4))
+  if (!SX1278_LoRaTxPacket(lorasendbuf, 4))
    {
      printf("lora发送成功 \r\n");
    }
 
-   res = SX1278_LoRaRxPacket(lorareceivebuf, &len, 5000);
+  res = SX1278_LoRaRxPacket(lorareceivebuf, &len, 5000);
 
    if (res == 0)
    {
@@ -94,17 +91,14 @@ void SX1278_test() // SPI初始化
 
 void SX1278_GPIO_Init()
 {
-   SET_SX1278_NSEL();
-   SET_SX1278_SDN();
- 
+  SET_SX1278_NSEL();
+  SET_SX1278_RST();
 }
 void SX1278_SPI_Init()
 {
 
-   SET_SX1278_MOSI();
-   SET_SX1278_SCK();
-
-
+  SET_SX1278_MOSI();
+  SET_SX1278_SCK();
 }
 
 // 上升有效，高位在前，SCK平时为低电平
@@ -245,30 +239,30 @@ void SX1278_Burst_Write(u8 adr, u8 *ptr, u8 length)
   }
 }
 
-//功能：SX1276 寄存器读
-void SX1276ReadBuffer( unsigned char addr, unsigned char *buffer, unsigned char size )
+// 功能：SX1276 寄存器读
+void SX1276ReadBuffer(unsigned char addr, unsigned char *buffer, unsigned char size)
 {
-    uint8_t i;
-    CLR_SX1278_NSEL();
- 
-    SX1278_SPI_RW( addr & 0x7F );
- 
-    for( i = 0; i < size; i++ )
-    {
-        buffer[i] = SX1278_SPI_RW( 0 );
-    }
-      SET_SX1278_NSEL();
+  uint8_t i;
+  CLR_SX1278_NSEL();
+
+  SX1278_SPI_RW(addr & 0x7F);
+
+  for (i = 0; i < size; i++)
+  {
+    buffer[i] = SX1278_SPI_RW(0);
+  }
+  SET_SX1278_NSEL();
 }
- 
-//功能: SX1278 单个寄存器读搓澡
+
+// 功能: SX1278 单个寄存器读搓澡
 unsigned char SX1276ReadReg(unsigned char addr)
 {
-    unsigned char dat;
-    CLR_SX1278_NSEL();
-    SX1278_SPI_RW( addr & 0x7F );
-    dat = SX1278_SPI_RW(0);
-      SET_SX1278_NSEL();
-      return dat;
+  unsigned char dat;
+  CLR_SX1278_NSEL();
+  SX1278_SPI_RW(addr & 0x7F);
+  dat = SX1278_SPI_RW(0);
+  SET_SX1278_NSEL();
+  return dat;
 }
 
 /*************************************************************************
@@ -307,7 +301,6 @@ void SX1278_EntryLoRa(void)
   // SX1278_Write_Reg(LR_RegOpMode,0x80);//High Frequency Mode
 }
 
-
 /*************************************************************************
  功能：清中断标志位
  参数：无
@@ -327,7 +320,7 @@ void SX1278_Config(void)
 {
 
   // 睡眠模式由初始化和接收发送函数完成
-  SX1278_Sleep(); // Change modem mode Must in Sleep mode
+  SX1278_Sleep(); // 改变模式需要在睡眠模式
   SX1278_DelayMs(10);
 
   SX1278_EntryLoRa();
@@ -375,19 +368,16 @@ void SX1278_Config(void)
  返回：无
 ***************************************************************************/
 
-
 u8 SX1278_LoRaEntryRx(void)
 {
   u8 addr = 0;
   u8 t = 5;
-  SX1278_Standby();                           // 进入待机模式从待机模式进入其他模式
-  SX1278_Write_Reg(REG_LR_PADAC, 0x84);       // zhen and Rx
+  SX1278_Standby();                     // 进入待机模式从待机模式进入其他模式
+  SX1278_Write_Reg(REG_LR_PADAC, 0x84); // zhen and Rx
 
   SX1278_Write_Reg(LR_RegHopPeriod, 0xFF);    // 接收模式跳频周期写0XFF不跳频
   SX1278_Write_Reg(REG_LR_DIOMAPPING1, 0x01); // DIO0=00, DIO1=00, DIO2=00, DIO3=01
   SX1278_Write_Reg(LR_RegIrqFlagsMask, 0x9F); // Open RxDone interrupt & CRC
-
-
 
   SX1278_LoRaClearIrq();
 
@@ -453,7 +443,6 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
       packet_size = SX1278_Read_Reg(LR_RegRxNbBytes); // Number for received bytes
       SX1278_Burst_Read(0x00, valid_data, packet_size);
       *packet_length = packet_size;
-
 
       SX1278_LoRaClearIrq();
       SX1278_Sleep(); // 进入睡眠模式，
@@ -545,14 +534,16 @@ u8 SX1278_ReadRSSI(void)
 void SX1278_Init(u16 freq)
 {
   SX1278_GPIO_Init();
-  SX1278_SPI_Init();              // SPI初始化
+  SX1278_SPI_Init(); // SPI初始化
+
   if (freq >= 428 && freq <= 439) // 在设置范围内，不然就按照默认频率设置
   {
     Lora_Freq = freq % 428; // 设置载波频率
   }
-  CLR_SX1278_SDN();
+  CLR_SX1278_RST();
   SX1278_DelayMs(10);
-  SET_SX1278_SDN();
-  SX1278_DelayMs(6);
+  SET_SX1278_RST();
+  SX1278_DelayMs(6); // 复位操作
+
   SX1278_Config();
 }
