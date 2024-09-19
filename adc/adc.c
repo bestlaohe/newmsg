@@ -10,20 +10,24 @@
 // 关键点的 ADC 值和对应的电池百分比
 #define NUM_POINTS 5
 const uint16_t adc_points[NUM_POINTS] = {502, 547, 594, 639, 683}; // 示例关键点
-const uint8_t percent_points[NUM_POINTS] = {0, 25, 50, 75, 100}; // 对应的百分比
+const uint8_t percent_points[NUM_POINTS] = {0, 25, 50, 75, 100};   // 对应的百分比
 
 // 查找表的大小
 #define ADC_MAX 1023
 
 // 函数：使用线性插值获取电池百分比
-uint8_t get_battery_percentage(uint16_t adc_value) {
-    if (adc_value >= adc_points[NUM_POINTS - 1]) {
+uint8_t get_battery_percentage(uint16_t adc_value)
+{
+    if (adc_value >= adc_points[NUM_POINTS - 1])
+    {
         return percent_points[NUM_POINTS - 1];
     }
 
     // 查找点之间的插值
-    for (u8 i = 0; i < NUM_POINTS - 1; i++) {
-        if (adc_value >= adc_points[i] && adc_value < adc_points[i + 1]) {
+    for (u8 i = 0; i < NUM_POINTS - 1; i++)
+    {
+        if (adc_value >= adc_points[i] && adc_value < adc_points[i + 1])
+        {
             // 线性插值公式
             uint16_t range = adc_points[i + 1] - adc_points[i];
             uint16_t delta = adc_value - adc_points[i];
@@ -36,8 +40,6 @@ uint8_t get_battery_percentage(uint16_t adc_value) {
     // 如果不在任何区间内，返回最小值
     return percent_points[0];
 }
-
-
 
 /*********************************************************************
  * @fn      Battery_Init
@@ -144,38 +146,55 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
     DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;                     // 内存地址递增
     DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord; // 外设数据大小：半字
     DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;         // 内存数据大小：半字
-    DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;                               // DMA工作模式：循环模式
+    DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;                             // DMA工作模式：循环模式
     DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;                     // 设置优先级：非常高
     DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;                                // 禁用内存到内存模式
     DMA_Init(DMA_CHx, &DMA_InitStructure);                                      // 初始化指定的DMA通道
 }
 
-
-void show_battery(){
+void show_battery()
+{
     u16 sum = 0;
-        char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
-        for (u8 i = 0; i < 10; i++)
+    static u8 percentage = 0;
+    char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
+                    //        for (u8 i = 0; i < 10; i++)
+                    //        {
+                    //            sum += BattaryBuf[i];
+                    //        }
+                    //
+                    //         sum = sum / 10;
+                    //        percentage= get_battery_percentage(sum);
+    percentage++;
+    if (percentage < 100 && percentage > 9) // 2位数
+    {
+        // sprintf(strBuf, "%02d:", percentage);                            // 显示2位数字
+        // Paint_DrawString(75, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
+        // Paint_Drawicon(108, 0, 1, &Font16_Bat, BLACK, BLUE);             // 有电
+
+        u8 cnt = percentage / 25;
+        printf("battery cnt:%d%%\r\n", cnt);
+        for (u8 i = 0; i < cnt; i++)
         {
-            sum += BattaryBuf[i];
+           // Paint_DrawLine(108 + 4 + i * 2, 4, 108 + 4 + i * 2, 8, BLUE, 5, LINE_STYLE_SOLID);
+
+            Paint_DrawLine(4, 4, 4, 20, BLUE, 1, LINE_STYLE_SOLID);
         }
+    }
+    else if (percentage >= 100) // 3位数
+    {
+        sprintf(strBuf, "%03d:", percentage);                            // 显示3位数字
+        Paint_DrawString(64, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
+        Paint_Drawicon(108, 0, 2, &Font16_Bat, BLACK, GREEN);            // 满电
+    }
+    else                                                                 // 1位数
+    {                                                                    // 1位数
+        sprintf(strBuf, "%01d:", percentage);                            // 显示2位数字
+        Paint_DrawString(86, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
+        Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, RED);              // 没电
+    }
 
-         sum = sum / 10;
-
-        if (sum < 100)
-        {
-            sprintf(strBuf, "%02d",get_battery_percentage(sum)); // 显示2位数字
-        }
-        else
-        {
-            sprintf(strBuf, "%03d", get_battery_percentage(sum)); // 显示3位数字
-        }
-        printf("battery:%s%%\r\n", strBuf);
-      //  Paint_DrawString(77, 0, strBuf, &Font24_Num, BLACK,WHITE,  '0');//13692
-         Paint_DrawString(77, 0, strBuf, &Font8_Num, BLACK,WHITE,  '0');//13052
-
-
+    printf("battery percentage:%d%%\r\n", percentage);
 }
-
 
 /*********************************************************************
  * @fn      EXTI0_INT_INIT
@@ -186,22 +205,22 @@ void show_battery(){
  */
 void EXTI7_INT_INIT(void)
 {
-  EXTI_InitTypeDef EXTI_InitStructure = {0};
-  NVIC_InitTypeDef NVIC_InitStructure = {0};
+    EXTI_InitTypeDef EXTI_InitStructure = {0};
+    NVIC_InitTypeDef NVIC_InitStructure = {0};
 
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
-  /* GPIOA ----> EXTI_Line0 */
-  GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource7);
-  EXTI_InitStructure.EXTI_Line = EXTI_Line7;
-  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
-  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStructure);
+    /* GPIOA ----> EXTI_Line0 */
+    GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource7);
+    EXTI_InitStructure.EXTI_Line = EXTI_Line7;
+    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+    EXTI_Init(&EXTI_InitStructure);
 
-  NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
+    NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
+    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+    NVIC_Init(&NVIC_InitStructure);
 }

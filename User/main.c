@@ -57,30 +57,31 @@ int main(void)
   EXTI7_INT_INIT();                                                  // 外部引进触发中断，开始充电*****9540=100
   EXTI6_INT_INIT();                                                  // 外部引进触发中断，lora有信息过来了*****9620=100
   SX1278_Init(434);                                                  // lora的初始化*****10268-9620=648
-  startup_animation();                                               // 11732-10512=1220
+ // startup_animation();                                               // 11732-10512=1220
   IWDG_Feed_Init(IWDG_Prescaler_128, 10000);                         // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****12467-12356=111字节
 
   while (1)
   {
 
-    Delay_Ms(500);
+
     IWDG_ReloadCounter(); // 喂狗* 12484-12467=24字节
 
     //   Paint_DrawString(77, 0, "ac", &Font24_En, BLACK, WHITE, '0'); // 14272-11732=2540
-    Paint_DrawString(77, 0, "ac", &Font8_En, BLACK, WHITE, '0'); // 12608-11732=876
+   // Paint_DrawString(77, 0, "ac", &Font8_En, BLACK, WHITE, '0'); // 12608-11732=876
 
     show_battery(); // 电池电量显示出来16124-15028=1612
-     SX1278_test(); //  16180-15028=1652             会减少368
+   //  SX1278_test(); //  16180-15028=1652             会减少368
 
-    if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动   140字节
-    {
-      printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
-      precircle = circle;
-      precnt = TIM2->CNT;
-      system_wokeup();
-      MOTOR_ON;
-      Delay_Ms(50);
-      MOTOR_OFF;
-    }
+//    if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动   140字节
+//    {
+//      printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
+//      precircle = circle;
+//      precnt = TIM2->CNT;
+//      system_wokeup();
+//      MOTOR_ON;
+//      Delay_Ms(50);
+//      MOTOR_OFF;
+//    }
+    Delay_Ms(100);
   }
 }

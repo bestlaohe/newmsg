@@ -90,6 +90,11 @@ extern sFONT Font24_logo;
 
 extern sFONT Font20;
 extern sFONT Font16;
+
+extern sFONT Font16_Bat;
+
+
+extern sFONT Font16_Num;
 extern sFONT Font12;
 extern sFONT Font8;
 extern sFONT Font8_En;

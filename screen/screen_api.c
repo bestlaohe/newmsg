@@ -485,7 +485,7 @@ void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
         Lcd_Refrsh_DMA(Y_MAX_PIXEL * X_MAX_PIXEL * 2);
         dmaXoffset = X_MAX_PIXEL + dmaXoffset;
         dmaYoffset = Y_MAX_PIXEL + dmaYoffset;
-        // printf("Íê³Édma\r\n");
+         printf("dma ok\r\n");
     }
 
 #else

@@ -157,7 +157,7 @@ void EXTI7_0_IRQHandler(void)
 void NMI_Handler(void)
 { // 处理 NMI 异常的代码
   // 例如，记录错误信息或触发系统安全机制
-  printf("start NMI_Handler");
+  printf("start NMI_Handler\r\n");
   while (1)
   {
   }
@@ -174,7 +174,7 @@ void HardFault_Handler(void)
 {
   // 处理 HardFault 异常的代码
   // 例如，记录故障信息、尝试恢复系统或重启系统
-  printf("start HardFault_Handler");
+  printf("start HardFault_Handler\r\n");
   while (1)
   {
   }
