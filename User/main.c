@@ -33,6 +33,16 @@ u16 BattaryBuf[10];
 #define PWM_FRE 10000
 #define PWM_Duty 100
 
+// 定义按键事件
+typedef enum
+{
+  PAGE_SEND,    // 发送页面
+  PAGE_SETTING, // 设置页面
+  PAGE_INFO,    // 信息页面
+} Page;
+
+Page page = PAGE_SEND;
+
 extern Key key;
 int main(void)
 {
@@ -65,30 +75,38 @@ int main(void)
   while (1)
   {
 
-    // 处理按键事件
-    switch (key->event)
+    // 处理页面
+    switch (page)
     {
-    case KEY_EVENT_PRESS:
+    case PAGE_SEND: // 发送界面
 
+      show_battery(); // 电池电量显示出来16124-15028=1612
+      Paint_DrawRectangle(0, 20, 128, 120,BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+      
+      if (key->event = KEY_EVENT_HOLD)
+        page = PAGE_SETTING;
       break;
-    case KEY_EVENT_HOLD:
-      // 处理长按事件
+
+    case PAGE_SETTING: // 设置界面
+
+      if (key->event = KEY_EVENT_HOLD)
+        page = PAGE_INFO;
       break;
-    case KEY_EVENT_RELEASE:
-      // 处理松开事件
+
+    case PAGE_INFO: // 信息界面
+
+      if (key->event = KEY_EVENT_HOLD)
+        page = PAGE_SEND;
       break;
-    default:
+
+    default: // 默认情况
+
+      page = PAGE_SEND;
       break;
     }
+
     // 处理完事件后清除事件
     key->event = KEY_EVENT_NONE;
-
-    // 发送界面
-    show_battery(); // 电池电量显示出来16124-15028=1612
-
-    // 设置界面
-
-    // 信息界面
 
     IWDG_ReloadCounter(); // 喂狗* 12484-12467=24字节
 

@@ -204,8 +204,8 @@ void show_battery()
         Paint_DrawString(86, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
         Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, RED);              // Ã»µç
     }
-
-    printf("battery percentage:%d%%\r\n", percentage);
+    Paint_DrawRectangle(0, 0, 128, 20, GREEN, DOT_PIXEL_1X1, DRAW_FILL_FULL)
+        printf("battery percentage:%d%%\r\n", percentage);
 }
 
 /*********************************************************************
