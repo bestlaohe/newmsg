@@ -278,7 +278,7 @@ parameter:
     Dot_Pixel	:	point size
 ******************************************************************************/
 void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color,
-                     DOT_PIXEL Dot_Pixel, DOT_STYLE Dot_FillWay)
+                     DOT_PIXEL Dot_Pixel, DOT_STYLE Dot_FillWay)//运行一次
 {
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
@@ -296,7 +296,7 @@ void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color,
                 if (Xpoint + XDir_Num - Dot_Pixel < 0 || Ypoint + YDir_Num - Dot_Pixel < 0)
                     break;
                 // printf("x = %d, y = %d\r\n", Xpoint + XDir_Num - Dot_Pixel, Ypoint + YDir_Num - Dot_Pixel);
-                Paint_SetPixel(Xpoint + XDir_Num - Dot_Pixel, Ypoint + YDir_Num - Dot_Pixel, Color);
+                Paint_SetPixel(Xpoint + XDir_Num - Dot_Pixel, Ypoint + YDir_Num - Dot_Pixel, Color);//33
             }
         }
     }
@@ -361,16 +361,16 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
         }
         else
         {
-            Paint_DrawPoint(Xpoint, Ypoint, Color, Line_width, DOT_STYLE_DFT);
+            Paint_DrawPoint(Xpoint, Ypoint, Color, Line_width, DOT_STYLE_DFT);//44,45,46,47,48
         }
-        if (2 * Esp >= dy)
+        if (2 * Esp >= dy)//8>4
         {
             if (Xpoint == Xend)
                 break;
             Esp += dy;
             Xpoint += XAddway;
         }
-        if (2 * Esp <= dx)
+        if (2 * Esp <= dx)//跑这里
         {
             if (Ypoint == Yend)
                 break;
@@ -380,7 +380,7 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     }
 
 #if USE_DMA
-    Lcd_Refrsh_DMA(Esp * 2);
+    Lcd_Refrsh_DMA(dx+dy);
 #endif
 }
 

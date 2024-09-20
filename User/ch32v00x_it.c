@@ -21,8 +21,13 @@ void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 volatile int circle = 0;
 int SleepCounter = 0;
 int dmacircular = 0;
+int LongKeyCounter = 0;
 
 
+Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0};
+// 去抖动和长按检测的常数
+#define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
+#define HOLD_TIME 5000   // 长按时间，单位：100us
 void TIM2_IRQHandler()
 {
 
@@ -67,6 +72,16 @@ void TIM1_UP_IRQHandler(void)
       SleepCounter = 0;
       // PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
     }
+
+    if (!KEY0)
+      key.LongKeyCounter++;
+    if (key.LongKeyCounter >= HOLD_TIME) // 500ms触发一次
+    {
+      key.state = KEY_STATE_HOLD;
+      printf("longkey ontime\r\n");
+      key.LongKeyCounter = 0;
+    }
+
     // 清除中断标志
     TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
   }
@@ -115,12 +130,25 @@ void EXTI7_0_IRQHandler(void)
 {
   if (EXTI_GetITStatus(EXTI_Line2) != RESET)
   {
+
     printf("have key msg\r\n"); // 按键
     MOTOR_ON;
     Delay_Ms(100);
     MOTOR_OFF;
     system_wokeup();                    // 系统唤醒
     EXTI_ClearITPendingBit(EXTI_Line2); /* Clear Flag */
+    key.LongKeyCounter = 0;
+
+    if (!KEY0)
+    {
+      key.state = KEY_STATE_PRESS;
+      printf("start press\r\n");
+    }
+    else
+    {
+      printf("end press\r\n");
+      key.state = KEY_STATE_RELEASE;
+    }
   }
 
   if (EXTI_GetITStatus(EXTI_Line6) != RESET)

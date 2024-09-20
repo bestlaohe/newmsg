@@ -167,27 +167,39 @@ void show_battery()
     percentage++;
     if (percentage < 100 && percentage > 9) // 2位数
     {
-        // sprintf(strBuf, "%02d:", percentage);                            // 显示2位数字
-        // Paint_DrawString(75, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-        // Paint_Drawicon(108, 0, 1, &Font16_Bat, BLACK, BLUE);             // 有电
+        sprintf(strBuf, "%02d:", percentage);                            // 显示2位数字
+        Paint_DrawString(75, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
+        Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, BLUE);
 
         u8 cnt = percentage / 25;
         printf("battery cnt:%d%%\r\n", cnt);
         for (u8 i = 0; i < cnt; i++)
         {
-           // Paint_DrawLine(108 + 4 + i * 2, 4, 108 + 4 + i * 2, 8, BLUE, 5, LINE_STYLE_SOLID);
-
-            Paint_DrawLine(4, 4, 4, 20, BLUE, 1, LINE_STYLE_SOLID);
+            Paint_DrawLine(108 + 4 + i * 2, 4, 108 + 4 + i * 2, 8, BLUE, 1, LINE_STYLE_SOLID);
+            // Paint_DrawLine(4, 4, 4, 20, BLUE, 1, LINE_STYLE_SOLID);
         }
     }
     else if (percentage >= 100) // 3位数
     {
+        percentage = 100;
         sprintf(strBuf, "%03d:", percentage);                            // 显示3位数字
         Paint_DrawString(64, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-        Paint_Drawicon(108, 0, 2, &Font16_Bat, BLACK, GREEN);            // 满电
+                                                                         // Paint_Drawicon(108, 0, 2, &Font16_Bat, BLACK, GREEN);            // 满电
+
+        Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, GREEN);
+
+        u8 cnt = percentage / 25;
+        printf("battery cnt:%d%%\r\n", cnt);
+        for (u8 i = 0; i < cnt; i++)
+        {
+            Paint_DrawLine(108 + 4 + i * 2, 4, 108 + 4 + i * 2, 8, GREEN, 1, LINE_STYLE_SOLID);
+            // Paint_DrawLine(4, 4, 4, 20, BLUE, 1, LINE_STYLE_SOLID);
+        }
     }
-    else                                                                 // 1位数
-    {                                                                    // 1位数
+    else // 1位数
+    {
+        if (percentage <= 0)
+            percentage = 0;
         sprintf(strBuf, "%01d:", percentage);                            // 显示2位数字
         Paint_DrawString(86, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
         Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, RED);              // 没电

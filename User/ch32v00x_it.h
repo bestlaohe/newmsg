@@ -14,6 +14,33 @@
 
 #include "debug.h"
 #include "gpio.h"
+// 定义按键状态
+typedef enum
+{
+  KEY_STATE_IDLE,   // 空闲状态
+  KEY_STATE_PRESS,  // 按下状态
+  KEY_STATE_HOLD,   // 长按状态
+  KEY_STATE_RELEASE // 松开状态
+} KeyState;
+
+// 定义按键事件
+typedef enum
+{
+  KEY_EVENT_NONE,   // 无事件
+  KEY_EVENT_PRESS,  // 按下事件
+  KEY_EVENT_HOLD,   // 长按事件
+  KEY_EVENT_RELEASE // 松开事件
+} KeyEvent;
+
+// 定义按键结构体
+typedef struct
+{
+  KeyState state;            // 当前按键状态
+  KeyEvent event;            // 当前按键事件
+  uint16_t debounce_counter; // 去抖动计数器
+  uint16_t LongKeyCounter;   // 长按计数器
+} Key;
+
 
 void refresh_SleepCounter(int newtime);
 
