@@ -44,10 +44,16 @@ typedef enum
 Page page = PAGE_SEND;
 
 extern Key key;
+
+u8 lorasendbuf[255];
+u8 lorareceivebuf[255];
+
 int main(void)
 {
   uint16_t precnt = 0;
   int precircle = 0;
+  u8 Englishcount = 0; // 字符的位号
+  int Englishpos = 0;  // 字符的位置
 
   /*********************基本内容初始化******************************/
   SystemCoreClockUpdate();   // 48000000系统时钟刷新3324-3212=100k
@@ -81,21 +87,47 @@ int main(void)
     case PAGE_SEND: // 发送界面
 
       show_battery(); // 电池电量显示出来16124-15028=1612
-      Paint_DrawRectangle(0, 20, 128, 120,BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-      
-      if (key->event = KEY_EVENT_HOLD)
+      Paint_DrawRectangle(0, 20, 128, 100, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+      Paint_DrawRectangle(0, 100, 128, 128, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+
+      if (up)
+        Englishcount++;
+      if (down)
+        Englishcount--;
+
+      if (up &&key->event = KEY_state_PRESS) // 发送
+      {
+      }
+
+      if (donwn &&key->event = KEY_state_PRESS) // 删除
+      {
+
+        Englishpos--;
+      }
+
+      Paint_DrawChar(1 + Englishpos * Font8_En->Width, 100, 'a' + Englishcount, &Font8_En, BLACK, WHITE, 'a');
+
+      if (key->event = KEY_EVENT_CLICK) // 确认
+      {
+
+        lorasendbuf[Englishpos] = Font8_En->Font8_English[Englishcount];
+        Englishpos++;
+        Englishcount = 0;
+      }
+      if (key->event = KEY_EVENT_LONG_CLICK) // 返回
         page = PAGE_SETTING;
+
       break;
 
     case PAGE_SETTING: // 设置界面
 
-      if (key->event = KEY_EVENT_HOLD)
+      if (key->event = KEY_EVENT_LONG_CLICK)
         page = PAGE_INFO;
       break;
 
     case PAGE_INFO: // 信息界面
 
-      if (key->event = KEY_EVENT_HOLD)
+      if (key->event = KEY_EVENT_LONG_CLICK)
         page = PAGE_SEND;
       break;
 
@@ -113,18 +145,18 @@ int main(void)
     //   Paint_DrawString(77, 0, "ac", &Font24_En, BLACK, WHITE, '0'); // 14272-11732=2540
     // Paint_DrawString(77, 0, "ac", &Font8_En, BLACK, WHITE, '0'); // 12608-11732=876
 
-    //  SX1278_test(); //  16180-15028=1652             会减少368
+    SX1278_test(); //  16180-15028=1652             会减少368
 
-    //    if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动   140字节
-    //    {
-    //      printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
-    //      precircle = circle;
-    //      precnt = TIM2->CNT;
-    //      system_wokeup();
-    //      MOTOR_ON;
-    //      Delay_Ms(50);
-    //      MOTOR_OFF;
-    //    }
+    if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动   140字节
+    {
+      printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
+      precircle = circle;
+      precnt = TIM2->CNT;
+      system_wokeup();
+      MOTOR_ON;
+      Delay_Ms(50);
+      MOTOR_OFF;
+    }
     Delay_Ms(100);
   }
 }

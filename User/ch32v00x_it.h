@@ -27,9 +27,8 @@ typedef enum
 typedef enum
 {
   KEY_EVENT_NONE,   // 无事件
-  KEY_EVENT_PRESS,  // 按下事件
-  KEY_EVENT_HOLD,   // 长按事件
-  KEY_EVENT_RELEASE // 松开事件
+  KEY_EVENT_CLICK,  // 按下事件
+  KEY_EVENT_LONG_CLICK,   // 长按事件
 } KeyEvent;
 
 // 定义按键结构体
