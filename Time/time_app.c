@@ -85,6 +85,10 @@ void TIM2_Init(u16 arr, u16 psc)
     TIM_ICInitStructure.TIM_ICFilter = 10;                           // 设置输入捕获滤波器的采样周期为 10（用于滤波抖动）
     TIM_ICInit(TIM2, &TIM_ICInitStructure);
 
+
+    // 清除更新中断标志
+    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+
     TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
     NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
     NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
@@ -92,8 +96,9 @@ void TIM2_Init(u16 arr, u16 psc)
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_Init(&NVIC_InitStructure);
 
-    TIM_ClearFlag(TIM2, TIM_FLAG_Update);
+
     TIM_SetCounter(TIM2, 0);
+
     TIM_Cmd(TIM2, ENABLE);
 }
 

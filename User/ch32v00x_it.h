@@ -27,7 +27,7 @@ typedef enum
 typedef enum
 {
   KEY_EVENT_NONE,   // 无事件
-  KEY_EVENT_CLICK,  // 按下事件
+  KEY_EVENT_CLICK,  // 单机事件
   KEY_EVENT_LONG_CLICK,   // 长按事件
 } KeyEvent;
 
@@ -38,7 +38,26 @@ typedef struct
   KeyEvent event;            // 当前按键事件
   uint16_t debounce_counter; // 去抖动计数器
   uint16_t LongKeyCounter;   // 长按计数器
+  u8 enable;   // 使能
+
 } Key;
+
+
+// 定义按键事件
+typedef enum
+{
+    ENCODE_EVENT_NONE,   // 无事件
+  ENCODE_EVENT_UP,  // 按下事件
+  ENCODE_EVENT_DOWN,   // 长按事件
+} EncodeState;
+
+// 定义按键结构体
+typedef struct
+{
+  EncodeState state;            // 当前按键状态
+
+} Encode;
+
 
 
 void refresh_SleepCounter(int newtime);

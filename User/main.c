@@ -3,17 +3,16 @@
 #include "encode.h"
 #include "adc.h"
 #include "SX1278.h"
-
-extern volatile int circle;
+#include "page.h"
 
 u16 BattaryBuf[10];
 
 //******************guipain
 //**********************|
 //**********************|
-// timeapp->pwm->screen->screen_api->adc->main
-// timeapp->encode->main
-// gpio->SX1278->main
+// timeapp.pwm.screen.screen_api.adc.main
+// timeapp.encode.main
+// gpio.SX1278.main
 
 // 待机功耗最低，睡眠功耗其次
 // 16k=16,384
@@ -36,7 +35,10 @@ u16 BattaryBuf[10];
 // 定义按键事件
 typedef enum
 {
-  PAGE_SEND,    // 发送页面
+  PAGE_SEND, // 发送页面
+  PAGE_HISTROY_CHAT,
+  PAGE_PERPARE_SETTING, // 设置页面
+
   PAGE_SETTING, // 设置页面
   PAGE_INFO,    // 信息页面
 } Page;
@@ -45,15 +47,11 @@ Page page = PAGE_SEND;
 
 extern Key key;
 
-u8 lorasendbuf[255];
-u8 lorareceivebuf[255];
+extern Encode encode;
 
 int main(void)
 {
-  uint16_t precnt = 0;
-  int precircle = 0;
-  u8 Englishcount = 0; // 字符的位号
-  int Englishpos = 0;  // 字符的位置
+
 
   /*********************基本内容初始化******************************/
   SystemCoreClockUpdate();   // 48000000系统时钟刷新3324-3212=100k
@@ -67,7 +65,7 @@ int main(void)
   /*********************应用函数初始化******************************/
   My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
   TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
-  TIM2_Init(12, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
+  TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
   LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
   LCD_SHOW_API_INIT();                                               // 屏幕测试******8404-6224=2180
   KEY_INIT();                                                        // 确认按键中断初始化***8636-8404=232
@@ -75,59 +73,67 @@ int main(void)
   EXTI7_INT_INIT();                                                  // 外部引进触发中断，开始充电*****9540=100
   EXTI6_INT_INIT();                                                  // 外部引进触发中断，lora有信息过来了*****9620=100
   SX1278_Init(434);                                                  // lora的初始化*****10268-9620=648
-                                                                     // startup_animation();                                               // 11732-10512=1220
+  startup_animation();                                               // 11732-10512=1220
   IWDG_Feed_Init(IWDG_Prescaler_128, 10000);                         // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****12467-12356=111字节
 
   while (1)
   {
+    LCD_0IN85_SetBackLight(50);
+     Paint_DrawLine(0, 4, 0, 20, BLUE, 1, LINE_STYLE_SOLID);
+    //  Paint_DrawRectangle(0, 0, 50, 50, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+    //  Paint_DrawRectangle(0, 100, 127, 127, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
 
-    // 处理页面
-    switch (page)
+    switch (page) // 处理页面
     {
     case PAGE_SEND: // 发送界面
 
-      show_battery(); // 电池电量显示出来16124-15028=1612
-      Paint_DrawRectangle(0, 20, 128, 100, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-      Paint_DrawRectangle(0, 100, 128, 128, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+     // chat_page();
 
-      if (up)
-        Englishcount++;
-      if (down)
-        Englishcount--;
+      if (key.event == KEY_EVENT_LONG_CLICK) // 返回
 
-      if (up &&key->event = KEY_state_PRESS) // 发送
+        page = PAGE_HISTROY_CHAT;
+
+      break;
+
+    case PAGE_HISTROY_CHAT: // 聊天记录界面
+
+      Paint_DrawRectangle(0, 20, 127, 100, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+      Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+      chat_history_page();
+
+      if (key.event == KEY_EVENT_LONG_CLICK)
+        page = PAGE_PERPARE_SETTING;
+      break;
+
+    case PAGE_PERPARE_SETTING: // 设置界面
+
+      Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+      Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+      Paint_Drawicon(0, 0, 0, &Font16_Operate, GREEN, BLUE);
+      if (key.event == KEY_EVENT_CLICK)
       {
-      }
-
-      if (donwn &&key->event = KEY_state_PRESS) // 删除
-      {
-
-        Englishpos--;
-      }
-
-      Paint_DrawChar(1 + Englishpos * Font8_En->Width, 100, 'a' + Englishcount, &Font8_En, BLACK, WHITE, 'a');
-
-      if (key->event = KEY_EVENT_CLICK) // 确认
-      {
-
-        lorasendbuf[Englishpos] = Font8_En->Font8_English[Englishcount];
-        Englishpos++;
-        Englishcount = 0;
-      }
-      if (key->event = KEY_EVENT_LONG_CLICK) // 返回
+        Paint_Clear(BLACK);
         page = PAGE_SETTING;
+      }
 
+      if (key.event == KEY_EVENT_LONG_CLICK)
+        page = PAGE_SEND;
       break;
 
     case PAGE_SETTING: // 设置界面
 
-      if (key->event = KEY_EVENT_LONG_CLICK)
+      Paint_Drawicon(40, 40, 0, &Font24_icon, BLACK, BLUE);
+
+      if (key.event == KEY_EVENT_LONG_CLICK)
+      {
+        Paint_Clear(BLACK);
         page = PAGE_INFO;
+      }
       break;
 
     case PAGE_INFO: // 信息界面
 
-      if (key->event = KEY_EVENT_LONG_CLICK)
+      if (key.event == KEY_EVENT_LONG_CLICK)
         page = PAGE_SEND;
       break;
 
@@ -138,25 +144,15 @@ int main(void)
     }
 
     // 处理完事件后清除事件
-    key->event = KEY_EVENT_NONE;
-
-    IWDG_ReloadCounter(); // 喂狗* 12484-12467=24字节
+    key.event = KEY_EVENT_NONE;
+    encode.state = ENCODE_EVENT_NONE;
 
     //   Paint_DrawString(77, 0, "ac", &Font24_En, BLACK, WHITE, '0'); // 14272-11732=2540
     // Paint_DrawString(77, 0, "ac", &Font8_En, BLACK, WHITE, '0'); // 12608-11732=876
 
-    SX1278_test(); //  16180-15028=1652             会减少368
-
-    if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动   140字节
-    {
-      printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
-      precircle = circle;
-      precnt = TIM2->CNT;
-      system_wokeup();
-      MOTOR_ON;
-      Delay_Ms(50);
-      MOTOR_OFF;
-    }
-    Delay_Ms(100);
+    // SX1278_test(); //  16180-15028=1652             会减少368
+    Encoder_Scan();
+    IWDG_ReloadCounter(); // 喂狗* 12484-12467=24字节
+    Delay_Ms(10);
   }
 }

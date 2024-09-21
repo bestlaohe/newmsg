@@ -23,8 +23,8 @@ int SleepCounter = 0;
 int dmacircular = 0;
 int LongKeyCounter = 0;
 
-
-Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0};
+Encode encode = {ENCODE_EVENT_NONE};
+Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
 // 去抖动和长按检测的常数
 #define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
 #define HOLD_TIME 5000   // 长按时间，单位：100us
@@ -35,8 +35,9 @@ void TIM2_IRQHandler()
 
   if (TIM_GetITStatus(TIM2, TIM_IT_Update))
   {
-    // printf("当前计数=%d\r\n", tempcnt);
-    // printf("重装载值=%d\r\n", temparr);
+
+    //     printf("当前计数=%d\r\n", tempcnt);
+    //     printf("重装载值=%d\r\n", temparr);
 
     if (tempcnt < temparr / 2)
     {
@@ -74,12 +75,9 @@ void TIM1_UP_IRQHandler(void)
     }
 
     if (!KEY0)
-      key.LongKeyCounter++;
-    if (key.LongKeyCounter >= HOLD_TIME) // 500ms触发一次
     {
+      key.LongKeyCounter++;
       key.state = KEY_STATE_HOLD;
-      printf("longkey ontime\r\n");
-      key.LongKeyCounter = 0;
     }
 
     // 清除中断标志
@@ -131,13 +129,12 @@ void EXTI7_0_IRQHandler(void)
   if (EXTI_GetITStatus(EXTI_Line2) != RESET)
   {
 
-    printf("have key msg\r\n"); // 按键
+    // printf("have key msg\r\n"); // 按键
     MOTOR_ON;
     Delay_Ms(100);
     MOTOR_OFF;
     system_wokeup();                    // 系统唤醒
     EXTI_ClearITPendingBit(EXTI_Line2); /* Clear Flag */
-    key.LongKeyCounter = 0;
 
     if (!KEY0)
     {
@@ -147,7 +144,31 @@ void EXTI7_0_IRQHandler(void)
     else
     {
       printf("end press\r\n");
+      if (key.LongKeyCounter <= HOLD_TIME)
+      {
+
+        key.event = KEY_EVENT_CLICK;
+        printf("KEY_EVENT_CLICK ontime\r\n");
+      }
+      else
+      {
+        key.event = KEY_EVENT_LONG_CLICK;
+
+        printf("KEY_STATE_HOLD ontime\r\n");
+        key.LongKeyCounter = 0;
+      }
+
       key.state = KEY_STATE_RELEASE;
+    }
+    key.LongKeyCounter = 0;
+
+    if (key.enable == 0)
+    {
+      key.event = KEY_EVENT_NONE;
+      key.state = KEY_STATE_IDLE;
+      key.LongKeyCounter = 0;
+      key.enable = 1;
+       printf("disable key operate\r\n"); // 有消息发来就震动
     }
   }
 
@@ -166,7 +187,10 @@ void EXTI7_0_IRQHandler(void)
     if (CHARGING)
       printf("start chage\r\n");
     else
+    {
+
       printf("end chage\r\n");
+    }
 
     MOTOR_ON;
     Delay_Ms(100);
@@ -202,7 +226,7 @@ void HardFault_Handler(void)
 {
   // 处理 HardFault 异常的代码
   // 例如，记录故障信息、尝试恢复系统或重启系统
-  printf("start HardFault_Handler\r\n");
+  // printf("start HardFault_Handler\r\n");
   while (1)
   {
   }

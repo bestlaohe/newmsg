@@ -424,7 +424,7 @@ void Lcd_Refrsh_DMA(int pic_size)
 {
 
 #if USE_DMA
-    ///< 将整个数据搬运一次到DMA
+    // 将整个数据搬运一次到DMA
     LCD_DC_1;
     LCD_CS_0;
     // printf("开始刷屏\r\n");
@@ -467,18 +467,23 @@ parameter   :
 void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
 {
 
+//
+//   printf("x = %d, y = %d,dmaXpoint:%d,dmaYpoint:%d\r\n",x,y,dmaXpoint,dmaYpoint);
+//      printf("dmaFont->Width:%d\r\n", dmaFont->Width);
+//
+
+
 #if USE_DMA
-    //  printf("dmaXpoint:%d\r\n", x);
-    //  printf("dmaYpoint:%d\r\n", y);
+ 
 
     ///< 使用DMA的话，从对点刷屏到对显存数组写入数据，DMA传输数据的时候再统一进行传输
     int index = ((y - dmaYpoint) * (dmaFont->Width) + (x - dmaXpoint)) * 2;
-    // printf("index开始偏移前:%d\r\n", index );
+    //printf("index开始偏移前:%d\r\n", index );
 
-    index = index - X_MAX_PIXEL * X_MAX_PIXEL * 2 * dmaXoffset / X_MAX_PIXEL;
+    index = index - X_MAX_PIXEL * Y_MAX_PIXEL * 2 * dmaXoffset / X_MAX_PIXEL;
     lcd_gram[index] = (Color >> 8) & 0xff; // 高字节
     lcd_gram[index + 1] = Color & 0xFF;    // 低字节
-                                           //  printf("开始偏移:%d\r\n", index + 1);
+                                          //  printf("开始偏移:%d\r\n", index + 1);
     if ((index + 1) == (Y_MAX_PIXEL * X_MAX_PIXEL * 2 - 1))
     {
 

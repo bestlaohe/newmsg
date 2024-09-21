@@ -92,6 +92,10 @@ extern sFONT Font20;
 extern sFONT Font16;
 
 extern sFONT Font16_Bat;
+extern sFONT Font16_En;
+
+
+extern sFONT Font16_Operate;
 
 
 extern sFONT Font16_Num;
@@ -101,6 +105,7 @@ extern sFONT Font8_En;
 
 extern sFONT Font8_Num;
 
+extern sFONT Fontline;
 
 extern cFONT Font12CN;
 extern cFONT Font24CN;

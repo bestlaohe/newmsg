@@ -79,6 +79,8 @@
 #include <math.h>
 
 volatile PAINT Paint;
+u8 dmaXpoint, dmaYpoint = 0;
+sFONT *dmaFont;
 void (*DISPLAY)(UWORD, UWORD, UWORD);
 void (*CLEAR)(UWORD);
 /******************************************************************************
@@ -182,7 +184,7 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
 {
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
-        printf("Exceeding display boundaries\r\n");
+        printf("Exceeding display boundaries%d,%d\r\n",Xpoint,Ypoint);
         return;
     }
     UWORD X, Y;
@@ -277,36 +279,35 @@ parameter:
     Color		:   Set color
     Dot_Pixel	:	point size
 ******************************************************************************/
-void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color,
-                     DOT_PIXEL Dot_Pixel, DOT_STYLE Dot_FillWay)//运行一次
-{
-    if (Xpoint > Paint.Width || Ypoint > Paint.Height)
-    {
+void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color, DOT_PIXEL Dot_Pixel, DOT_STYLE Dot_FillWay) {
+    if (Xpoint >= Paint.Width || Ypoint >= Paint.Height) {
         printf("Paint_DrawPoint Input exceeds the normal display range\r\n");
         return;
     }
 
     int16_t XDir_Num, YDir_Num;
-    if (Dot_FillWay == DOT_FILL_AROUND)
-    {
-        for (XDir_Num = 0; XDir_Num < 2 * Dot_Pixel - 1; XDir_Num++)
-        {
-            for (YDir_Num = 0; YDir_Num < 2 * Dot_Pixel - 1; YDir_Num++)
-            {
-                if (Xpoint + XDir_Num - Dot_Pixel < 0 || Ypoint + YDir_Num - Dot_Pixel < 0)
-                    break;
-                // printf("x = %d, y = %d\r\n", Xpoint + XDir_Num - Dot_Pixel, Ypoint + YDir_Num - Dot_Pixel);
-                Paint_SetPixel(Xpoint + XDir_Num - Dot_Pixel, Ypoint + YDir_Num - Dot_Pixel, Color);//33
+    if (Dot_FillWay == DOT_FILL_AROUND) {
+        for (XDir_Num = 0; XDir_Num < 2 * Dot_Pixel - 1; XDir_Num++) {
+            for (YDir_Num = 0; YDir_Num < 2 * Dot_Pixel - 1; YDir_Num++) {
+                int16_t x = Xpoint + XDir_Num - Dot_Pixel + 1;
+                int16_t y = Ypoint + YDir_Num - Dot_Pixel + 1;
+
+                // 边界检查
+                if (x >= 0 && y >= 0 && x < Paint.Width && y < Paint.Height) {
+                    Paint_SetPixel(x, y, Color);
+                }
             }
         }
-    }
-    else
-    {
-        for (XDir_Num = 0; XDir_Num < Dot_Pixel; XDir_Num++)
-        {
-            for (YDir_Num = 0; YDir_Num < Dot_Pixel; YDir_Num++)
-            {
-                Paint_SetPixel(Xpoint + XDir_Num - 1, Ypoint + YDir_Num - 1, Color);
+    } else {
+        for (XDir_Num = 0; XDir_Num < Dot_Pixel; XDir_Num++) {
+            for (YDir_Num = 0; YDir_Num < Dot_Pixel; YDir_Num++) {
+                int16_t x = Xpoint + XDir_Num;
+                int16_t y = Ypoint + YDir_Num;
+
+                // 边界检查
+                if (x >= 0 && y >= 0 && x < Paint.Width && y < Paint.Height) {
+                    Paint_SetPixel(x, y, Color);
+                }
             }
         }
     }
@@ -333,20 +334,29 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
 
     UWORD Xpoint = Xstart;
     UWORD Ypoint = Ystart;
-    int dx = (int)Xend - (int)Xstart >= 0 ? Xend - Xstart : Xstart - Xend;//0
-    int dy = (int)Yend - (int)Ystart <= 0 ? Yend - Ystart : Ystart - Yend;//4
+
+    int dx = (int)Xend - (int)Xstart >= 0 ? Xend - Xstart : Xstart - Xend; // 0
+    int dy = (int)Yend - (int)Ystart <= 0 ? Yend - Ystart : Ystart - Yend; //-16
 
     // Increment direction, 1 is positive, -1 is counter;
-    int XAddway = Xstart < Xend ? 1 : -1;//-1
-    int YAddway = Ystart < Yend ? 1 : -1;//1
+    int XAddway = Xstart < Xend ? 1 : -1; //-1
+    int YAddway = Ystart < Yend ? 1 : -1; // 1
 
     // Cumulative error
-    int Esp = dx + dy;//4
-    char Dotted_Len = 0;
+    int Esp = dx + dy; //-16
+    unsigned char Dotted_Len = 0;
 
 #if USE_DMA
+
+    dmaXpoint = Xpoint;
+    dmaYpoint = Ypoint;
+    dmaFont = &Fontline;
+
     Delay_Ms(1);
     LCD_0IN85_SetWindows(Xstart, Ystart, Xend, Yend); // 准备好窗口和复位
+                                                      //  LCD_0IN85_SetWindows(3, 3, 3, 19);
+ //   printf("Xstart, Ystart, Xend, Yend = %d= %d= %d= %d\r\n", Xstart, Ystart, Xend, Yend);
+  //  printf("wwwwdmaFont->Width:%d\r\n", dmaFont->Width);
 #endif
 
     for (;;)
@@ -361,26 +371,29 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
         }
         else
         {
-            Paint_DrawPoint(Xpoint, Ypoint, Color, Line_width, DOT_STYLE_DFT);//44,45,46,47,48
+            Paint_DrawPoint(Xpoint, Ypoint, Color, Line_width, DOT_STYLE_DFT); // 44,45,46,47,48
         }
-        if (2 * Esp >= dy)//8>4
+        if (2 * Esp >= dy) // 8>4
         {
             if (Xpoint == Xend)
                 break;
             Esp += dy;
             Xpoint += XAddway;
         }
-        if (2 * Esp <= dx)//跑这里
+        if (2 * Esp <= dx) // 跑这里
         {
+           // printf("2 * Esp = %d\r\n", 2 * Esp );
             if (Ypoint == Yend)
                 break;
             Esp += dx;
             Ypoint += YAddway;
         }
     }
+   // printf("Dotted_Len = %d\r\n", Dotted_Len);
 
 #if USE_DMA
-    Lcd_Refrsh_DMA(dx+dy);
+    Lcd_Refrsh_DMA(Dotted_Len * 2);
+    //  Lcd_Refrsh_DMA(34);
 #endif
 }
 
@@ -393,6 +406,7 @@ parameter:
     Yend   ：Rectangular  End point Ypoint coordinate
     Color  ：The color of the Rectangular segment
     Filled : Whether it is filled--- 1 solid 0：empty
+    输入0到127
 ******************************************************************************/
 void Paint_DrawRectangle(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
                          UWORD Color, DOT_PIXEL Line_width, DRAW_FILL Filled)
@@ -415,9 +429,10 @@ void Paint_DrawRectangle(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     else
     {
         Paint_DrawLine(Xstart, Ystart, Xend, Ystart, Color, Line_width, LINE_STYLE_SOLID);
-        Paint_DrawLine(Xstart, Ystart, Xstart, Yend, Color, Line_width, LINE_STYLE_SOLID);
-        Paint_DrawLine(Xend, Yend, Xend, Ystart, Color, Line_width, LINE_STYLE_SOLID);
-        Paint_DrawLine(Xend, Yend, Xstart, Yend, Color, Line_width, LINE_STYLE_SOLID);
+           Paint_DrawLine(Xstart, Ystart, Xstart, Yend, Color, Line_width, LINE_STYLE_SOLID);
+
+                Paint_DrawLine(Xend, Ystart, Xend, Yend, Color, Line_width, LINE_STYLE_SOLID);
+                Paint_DrawLine(Xstart,Yend,  Xend, Yend, Color, Line_width, LINE_STYLE_SOLID);
     }
 }
 
@@ -581,8 +596,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
 
 #endif
 }
-u8 dmaXpoint, dmaYpoint = 0;
-sFONT *dmaFont;
+
 void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
                     sFONT *Font, UWORD Color_Background, UWORD Color_Foreground)
 {

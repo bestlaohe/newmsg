@@ -156,56 +156,61 @@ void show_battery()
 {
     u16 sum = 0;
     static u8 percentage = 0;
+    static u8 Prepercentage = 100;
     char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
-                    //        for (u8 i = 0; i < 10; i++)
-                    //        {
-                    //            sum += BattaryBuf[i];
-                    //        }
-                    //
-                    //         sum = sum / 10;
-                    //        percentage= get_battery_percentage(sum);
-    percentage++;
-    if (percentage < 100 && percentage > 9) // 2位数
-    {
-        sprintf(strBuf, "%02d:", percentage);                            // 显示2位数字
-        Paint_DrawString(75, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-        Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, BLUE);
-
-        u8 cnt = percentage / 25;
-        printf("battery cnt:%d%%\r\n", cnt);
-        for (u8 i = 0; i < cnt; i++)
-        {
-            Paint_DrawLine(108 + 4 + i * 2, 4, 108 + 4 + i * 2, 8, BLUE, 1, LINE_STYLE_SOLID);
-            // Paint_DrawLine(4, 4, 4, 20, BLUE, 1, LINE_STYLE_SOLID);
-        }
-    }
-    else if (percentage >= 100) // 3位数
-    {
+//                           for (u8 i = 0; i < 10; i++)
+//                           {
+//                               sum += BattaryBuf[i];
+//                           }
+//
+//                            sum = sum / 10;
+//                           percentage= get_battery_percentage(sum);
+   percentage++;
+    if (percentage >= 100)
         percentage = 100;
-        sprintf(strBuf, "%03d:", percentage);                            // 显示3位数字
-        Paint_DrawString(64, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-                                                                         // Paint_Drawicon(108, 0, 2, &Font16_Bat, BLACK, GREEN);            // 满电
+    if (percentage <= 0)
+        percentage = 0;
 
-        Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, GREEN);
+   // printf("battery percentage:%d%%%d%\r\n", percentage,Prepercentage);
 
-        u8 cnt = percentage / 25;
-        printf("battery cnt:%d%%\r\n", cnt);
-        for (u8 i = 0; i < cnt; i++)
-        {
-            Paint_DrawLine(108 + 4 + i * 2, 4, 108 + 4 + i * 2, 8, GREEN, 1, LINE_STYLE_SOLID);
-            // Paint_DrawLine(4, 4, 4, 20, BLUE, 1, LINE_STYLE_SOLID);
-        }
-    }
-    else // 1位数
+
+
+    if (Prepercentage != percentage)
     {
-        if (percentage <= 0)
-            percentage = 0;
-        sprintf(strBuf, "%01d:", percentage);                            // 显示2位数字
-        Paint_DrawString(86, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-        Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, RED);              // 没电
+        Prepercentage = percentage;
+        u8 cnt = percentage / 25;
+        if (percentage < 100 && percentage > 9) // 2位数
+        {
+            sprintf(strBuf, "%02d:", percentage);                            // 显示2位数字
+            Paint_DrawString(75, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
+            Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, BLUE);
+            for (u8 i = 0; i < cnt; i++)
+            {
+                Paint_DrawLine(108 + 4 + i * 3, 4, 108 + 4 + i * 3, 8, BLUE, 1, LINE_STYLE_SOLID);
+            }
+        }
+        else if (percentage >= 100) // 3位数
+        {
+
+            sprintf(strBuf, "%03d:", percentage);                            // 显示3位数字
+            Paint_DrawString(64, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
+            Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, GREEN);
+            for (u8 i = 0; i < cnt; i++)
+            {
+                Paint_DrawLine(108 + 4 + i * 3, 4, 108 + 4 + i * 3, 8, GREEN, 1, LINE_STYLE_SOLID);
+            }
+        }
+        else // 1位数
+        {
+
+            sprintf(strBuf, "%01d:", percentage);                            // 显示2位数字
+            Paint_DrawString(86, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
+            Paint_Drawicon(108, 0, 0, &Font16_Bat, BLACK, RED);              // 没电
+        }
+
+        //    Paint_DrawRectangle(0, 0, 128, 20, GREEN, DOT_PIXEL_1X1, DRAW_FILL_FULL);
+       // printf("battery percentage:%d%%\r\n", percentage);
     }
-    Paint_DrawRectangle(0, 0, 128, 20, GREEN, DOT_PIXEL_1X1, DRAW_FILL_FULL)
-        printf("battery percentage:%d%%\r\n", percentage);
 }
 
 /*********************************************************************

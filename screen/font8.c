@@ -1002,6 +1002,11 @@ sFONT Font8 = {
 };
 
 
+sFONT Fontline = {
+  Font8_Table,
+  1, /* Width */
+  8, /* Height */
+};
 
 const uint8_t Font8_English[]={
 // @520 'a' (5 pixels wide)
