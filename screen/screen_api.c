@@ -50,8 +50,31 @@ void LCD_SHOW_API_INIT()
 {
 
     LCD_0IN85_Init(VERTICAL);
-    Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
+    Delay_Ms(300);
+   // printf("Set Clear and Display Funtion\r\n");
     LCD_0IN85_Clear(BLACK);
+  //  printf("Set Clear and Display Funtion\r\n");
+    Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
+
+  //  printf("Set Clear and Display Funtion\r\n");
+
+
+//    LCD_0IN85_Init(VERTICAL);
+//      LCD_0IN85_Clear(BLACK);
+//
+//      printf("Paint_NewImage\r\n");
+//      Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_180, WHITE);
+//
+//      printf("Set Clear and Display Funtion\r\n");
+//      //Paint_SetClearFuntion(LCD_0IN85_Clear);
+//     // Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
+//
+//      printf("Paint_Clear\r\n");
+//      //Paint_Clear(BLACK);
+//
+//      printf("drawing...\r\n");
+//      Paint_SetRotate(0);
+
 
   //  printf("Set Clear and Display Funtion\r\n");
    // Paint_SetClearFuntion(LCD_0IN85_Clear);
@@ -175,7 +198,7 @@ static const uint8_t init_cmds[] = {
 
 static void LCD_0IN85_InitReg(void)
 {
-    for (size_t i = 0; i < sizeof(init_cmds); ++i) {
+    for (int8_t i = 0; i < sizeof(init_cmds); ++i) {
         if (i % 2 == 0) {
             LCD_0IN85_SendCommand(init_cmds[i]);
         } else {
@@ -288,6 +311,9 @@ void LCD_0IN85_Clear(UWORD Color)
     UWORD i, j;
 
 #if USE_DMA
+     int dma_circular = 0;
+
+    printf("LCD_0IN85_Clear\r\n"); // 等待SPI发送缓冲区为空
 
     LCD_0IN85_SetWindows(0, 0, LCD_WIDTH, LCD_HEIGHT);
     int index = 0; // 用于跟踪lcd_gram数组的索引
@@ -307,12 +333,44 @@ void LCD_0IN85_Clear(UWORD Color)
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
     DMA_Cmd(DMA1_Channel3, ENABLE);
 
-    // while (DMA_GetFlagStatus(DMA1_FLAG_TC3) == RESET)
-    //     printf("等待通道3传输完成标志\r\n"); // 等待通道3传输完成标志
-    DMA_ClearFlag(DMA1_FLAG_TC3); // 清除通道3传输完成标志
-    // while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
-    //     printf("等待SPI发送缓冲区为空\r\n"); // 等待SPI发送缓冲区为空
-    dma_circular = 0;
+
+ //   printf(" dma_circular:%d, (LCD_HEIGHT*LCD_WIDTH/X_MAX_PIXEL/Y_MAX_PIXEL)+1te:%d\r\n", dma_circular, (LCD_HEIGHT*LCD_WIDTH/X_MAX_PIXEL/Y_MAX_PIXEL)+1);
+
+    while (dma_circular <= (LCD_HEIGHT*LCD_WIDTH/X_MAX_PIXEL/Y_MAX_PIXEL)+1){
+
+       printf("开始等待通道3传输\r\n");
+        while (dmaTransferComplete)
+        {
+           printf("通道3传输完成\r\n"); // 等待通道3传输完成标志
+            dmaTransferComplete=0;
+            dma_circular++;
+        }
+
+    }
+
+     dma_circular = 0;
+     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
+         printf("wait screen SPI tx ok\r\n"); // 等待SPI发送缓冲区为空
+
+     DMA_Cmd(DMA1_Channel3, DISABLE);
+      SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
+      DMA_ClearITPendingBit(DMA1_IT_TC3);
+
+      LCD_CS_1;
+      printf("LCD_0IN85_Clear OK\r\n"); // 等待SPI发送缓冲区为空
+
+   // Delay_Ms(100);
+//    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0) // 0x00b0是循环，92是正常
+//      dma_circular++;
+//
+//    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0 && dma_circular >= (LCD_HEIGHT*LCD_WIDTH/X_MAX_PIXEL/Y_MAX_PIXEL)+1)
+//    {
+//      dma_circular = 0;
+
+
+//    }
+
+
 
 #else
 
@@ -378,23 +436,38 @@ void Lcd_Refrsh_DMA(int pic_size)
     LCD_DC_1;
     LCD_CS_0;
     // printf("开始刷屏\r\n");
+  dmaTransferComplete=0;
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
     DMA_Cmd(DMA1_Channel3, DISABLE);
+
+
     SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, pic_size, DMA_Mode_Normal);
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
     DMA_Cmd(DMA1_Channel3, ENABLE);
+
 //       while (DMA_GetFlagStatus(DMA1_FLAG_TC3) == RESET)
 //        printf("wait dma ok\r\n"); // 等待通道3传输完成标志
-//    DMA_ClearFlag(DMA1_FLAG_TC3);            // 清除通道3传输完成标志
+
+
+       while (!dmaTransferComplete){
+           printf("wait normoldma ok %d\r\n",dmaTransferComplete); // 等待通道3传输完成标志
+       }
+       dmaTransferComplete=0;
+    DMA_ClearFlag(DMA1_FLAG_TC3);            // 清除通道3传输完成标志
 
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
         ;
-    Delay_Ms(1); // 发送完成后要等一下彻底完成
+   Delay_Ms(1); // 发送完成后要等一下彻底完成
+
+   DMA_Cmd(DMA1_Channel3, DISABLE);
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
+    DMA_ClearITPendingBit(DMA1_IT_TC3);
+
     LCD_CS_1;
 
-    while (dma_circular != 0)
-        printf("wait cycle dma：%d\r\n", dma_circular);
-
+//    while (dma_circular != 0)
+//        printf("wait cycle dma：%d\r\n", dma_circular);
+    printf("end normoldma ok\r\n");
 #endif
 }
 /******************************************************************************

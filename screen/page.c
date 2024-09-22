@@ -13,44 +13,41 @@ static u8 lorasendbuf[100];
 void chat_page(sFONT *Font)
 {
 
- show_battery(); // 电池电量显示出来1412-264=1100
-   Paint_DrawChar(0, 0, 0, &Font16_Operate, BLACK, BLUE, 0);
-    Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-    Paint_DrawRectangle(0, 102, 127, 127, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+  show_battery(); // 电池电量显示出来1412-264=1100
+  Paint_DrawChar(0, 0, 0, &Font16_Operate, BLACK, BLUE, 0);
+  Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+  Paint_DrawRectangle(0, 102, 127, 127, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+  Paint_DrawChar(2 + Englishposx * Font->Width, 103 + Englishposy * Font->Height, 'a' + Englishcount, Font, BLACK, WHITE, 'a');
+//  show_history_data();
 
+  if (encode.state == ENCODE_EVENT_UP) // 滚动
+  {
+    Englishcount++;
+    if (Englishcount > 25)
+      Englishcount = 0;
+  }
 
-    Paint_DrawChar(2 + Englishposx * Font->Width, 103 + Englishposy * Font->Height, 'a' + Englishcount, Font, BLACK, WHITE, 'a');
-
-  show_history_data();
-
- if (encode.state == ENCODE_EVENT_UP) // 滚动
- {
-   Englishcount++;
-   if (Englishcount > 25)
-     Englishcount = 0;
- }
-
- if (encode.state == ENCODE_EVENT_DOWN) // 滚动
- {
-   Englishcount--;
-   if (Englishcount < 0)
-     Englishcount = 25;
- }
+  if (encode.state == ENCODE_EVENT_DOWN) // 滚动
+  {
+    Englishcount--;
+    if (Englishcount < 0)
+      Englishcount = 25;
+  }
 
   // printf(" encode.state:%d, key.state:%d\r\n", encode.state, key.state);
   if (encode.state == ENCODE_EVENT_UP && key.state == KEY_STATE_HOLD) // 发送
   {
 
-   // int16_t i;
-   // for (i = 0; i < Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width); i++)
-   // {
-   //   printf(" lorasendbuf[i]:%c\r\n", lorasendbuf[i]);
-   // }
+    // int16_t i;
+    // for (i = 0; i < Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width); i++)
+    // {
+    //   printf(" lorasendbuf[i]:%c\r\n", lorasendbuf[i]);
+    // }
 
-     if (!SX1278_LoRaTxPacket(lorasendbuf, Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)))
-     {
-       printf("lora send ok \r\n");
-     }
+    if (!SX1278_LoRaTxPacket(lorasendbuf, Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)))
+    {
+      printf("lora send ok \r\n");
+    }
 
     key.enable = 0;
   }
@@ -80,10 +77,10 @@ void chat_page(sFONT *Font)
   //
   // printf("Paint_DrawChar rg,Width = %d, Height = %d\r\n", Font->Width, Font->Height);
 
-   if (key.event == KEY_EVENT_CLICK) // 确认
-   {
-     lorasendbuf[Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)] = 'a' + Englishcount;
-      Englishposx++;
+  if (key.event == KEY_EVENT_CLICK) // 确认
+  {
+    lorasendbuf[Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)] = 'a' + Englishcount;
+    Englishposx++;
 
     if (2 + Englishposx * Font->Width >= LCD_WIDTH - 1)
     {
@@ -95,7 +92,7 @@ void chat_page(sFONT *Font)
       }
     }
     Englishcount = 0;
-   }
+  }
 }
 
 void chat_history_page()

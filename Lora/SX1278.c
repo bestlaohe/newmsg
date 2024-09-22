@@ -129,6 +129,8 @@ u8 SX1278_SPI_RW(u8 byte)
   } // 还没收完
 
   return (uint8_t)SPI_I2S_ReceiveData(SPI1);
+
+
 }
 
 
@@ -507,7 +509,10 @@ void SX1278_Init(u16 freq)
 {
 //  SX1278_GPIO_Init();
 //  SX1278_SPI_Init(); // SPI初始化
-
+//       SET_SX1278_NSEL();
+//       SET_SX1278_RST();
+//       SET_SX1278_MOSI();
+//       SET_SX1278_SCK();
   if (freq >= 428 && freq <= 439) // 在设置范围内，不然就按照默认频率设置
   {
     Lora_Freq = freq % 428; // 设置载波频率

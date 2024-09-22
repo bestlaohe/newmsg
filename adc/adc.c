@@ -152,132 +152,59 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
     DMA_Init(DMA_CHx, &DMA_InitStructure);                                      // 初始化指定的DMA通道
 }
 
-//void show_battery()
-//{
-//    u16 sum = 0;
-//    static u8 percentage = 0;
-//    static u8 Prepercentage = 100;
-//    char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
-//    // for (u8 i = 0; i < 10; i++)
-//    // {
-//    //     sum += BattaryBuf[i];
-//    // }
-//
-//    // sum = sum / 10;
-//  //  percentage = get_battery_percentage(sum);
-//   percentage++;
-//    if (percentage >= 100)
-//        percentage = 100;
-//    if (percentage <= 0)
-//        percentage = 0;
-//
-//     printf("battery percentage:%d%% %d%%\r\n", percentage,Prepercentage);
-//
-//    if (Prepercentage != percentage)
-//    {
-//       // printf("12\r\n");
-//
-//        Prepercentage = percentage;
-//        u8 cnt = percentage / 25;
-//
-//        printf("cnt:%d%% %d%%\r\n", cnt,Prepercentage);
-//
-//        if (percentage < 100 && percentage > 9) // 2位数
-//        {
-//            sprintf(strBuf, "%02d:", percentage);                            // 显示2位数字
-//            Paint_DrawString(75, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-//            Paint_DrawChar(108, 0, 0, &Font16_Bat, BLACK, BLUE, 0);
-//            for (u8 i = 0; i < cnt; i++)
-//            {
-//                Paint_DrawLine(108 + 4 + i * 3, 4, 108 + 4 + i * 3, 8, BLUE, 1, LINE_STYLE_SOLID);
-//            }
-//        }
-//        else if (percentage >= 100) // 3位数
-//        {
-//
-//            sprintf(strBuf, "%03d:", percentage);                            // 显示3位数字
-//            Paint_DrawString(64, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-//            Paint_DrawChar(108, 0, 0, &Font16_Bat, BLACK, GREEN, 0);
-//            for (u8 i = 0; i < cnt; i++)
-//            {
-//                Paint_DrawLine(108 + 4 + i * 3, 4, 108 + 4 + i * 3, 8, GREEN, 1, LINE_STYLE_SOLID);
-//            }
-//        }
-//        else // 1位数
-//        {
-//
-//            sprintf(strBuf, "%01d:", percentage);                            // 显示2位数字
-//            Paint_DrawString(86, 0, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-//            Paint_DrawChar(108, 0, 0, &Font16_Bat, BLACK, RED, 0);           // 没电
-//        }
-//
-//
-//
-//
-//        //    Paint_DrawRectangle(0, 0, 128, 20, GREEN, DOT_PIXEL_1X1, DRAW_FILL_FULL);
-//        // printf("battery percentage:%d%%\r\n", percentage);
-//    }
-//}
 
+void show_battery()
+{
+    u16 sum = 0;
+    static u8 percentage = 0;
+    static u8 Prepercentage = 101;
+    char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
 
+    // // 计算平均电池值
+    // for (u8 i = 0; i < 10; i++)
+    // {
+    //     sum += BattaryBuf[i];
+    // }
+    // sum = sum / 10;
+    // percentage = get_battery_percentage(sum);
 
+    percentage=100;
 
+    // 限制百分比范围
+    if (percentage > 100)
+        percentage = 100;
 
- void show_battery()
- {
-     u16 sum = 0;
-     static u8 percentage = 0;
-     static u8 Prepercentage = 100;
-     char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
+    if (Prepercentage != percentage)
+    {
+        Prepercentage = percentage;
 
-     // // 计算平均电池值
-     // for (u8 i = 0; i < 10; i++)
-     // {
-     //     sum += BattaryBuf[i];
-     // }
-     // sum = sum / 10;
-     // percentage = get_battery_percentage(sum);
+        u8 cnt = percentage / 25;
+        u16 strX = 75;    // 默认 2 位数的显示位置
+        u16 color = BLUE; // 默认颜色
 
-
- percentage++;
-
-     // 限制百分比范围
-     if (percentage > 100)
-         percentage = 100;
-
-     if (Prepercentage != percentage)
-     {
-         Prepercentage = percentage;
-
-         u8 cnt = percentage / 25;
-         u16 strX = 75; // 默认 2 位数的显示位置
-         u16 color = BLUE; // 默认颜色
-
-         if (percentage >= 100)
-         {
-             strX = 64; // 3 位数的显示位置
-             color = GREEN; // 颜色
-             sprintf(strBuf, "%03d:", percentage); // 显示3位数字
-         }
-         else if (percentage < 10)
-         {
-             strX = 86; // 1 位数的显示位置
-             color = RED; // 颜色
-             sprintf(strBuf, "%01d:", percentage); // 显示1位数字
-         }
-         else
-         {
-             sprintf(strBuf, "%02d:", percentage); // 显示2位数字
-         }
+        if (percentage >= 100)
+        {
+            strX = 64;                            // 3 位数的显示位置
+            color = GREEN;                        // 颜色
+            sprintf(strBuf, "%03d:", percentage); // 显示3位数字
+        }
+        else if (percentage < 10)
+        {
+            strX = 86;                            // 1 位数的显示位置
+            color = RED;                          // 颜色
+            sprintf(strBuf, "%01d:", percentage); // 显示1位数字
+        }
+        else
+        {
+            sprintf(strBuf, "%02d:", percentage); // 显示2位数字
+        }
 
         Paint_DrawString(strX, 0, strBuf, &Font16_Num, BLACK, WHITE, '0');
         Paint_DrawChar(108, 0, 0, &Font16_Bat, BLACK, color, 0);
 
-         for (u8 i = 0; i < cnt; i++)
-         {
-             Paint_DrawLine(108 + 4 + i * 3, 4, 108 + 4 + i * 3, 8, color, 1, LINE_STYLE_SOLID);
-         }
-
-        
-     }
- }
+        for (u8 i = 0; i < cnt; i++)
+        {
+            Paint_DrawLine(108 + 4 + i * 3, 4, 108 + 4 + i * 3, 8, color, 1, LINE_STYLE_SOLID);
+        }
+    }
+}

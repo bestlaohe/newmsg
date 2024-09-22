@@ -18,9 +18,10 @@ void DMA1_Channel3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast
 void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast"))); // 作为倒计时10ms一次触发中断
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
+volatile int dmaTransferComplete = 0;
+
 volatile int circle = 0;
 int SleepCounter = 0;
-volatile int dma_circular = 0;
 char lorareceivebuf[100]={0};
 
 Encode encode = {ENCODE_EVENT_NONE};
@@ -90,30 +91,30 @@ void DMA1_Channel3_IRQHandler(void)
 
   if (DMA_GetITStatus(DMA1_IT_TC3))
   {
+      dmaTransferComplete = 1;
     // 传输完成处理
-    //  printf("一开始DMA传输完成%d\r\n", dma_circular);
+    printf("一开始DMA传输完成%d\r\n", dmaTransferComplete);
 
-
-    // printf("CFGR%x\r\n", DMA1_Channel3->CFGR);
+  //  printf("CFGR%x\r\n", DMA1_Channel3->CFGR);
 
     //  printf("DMA_Mode_Circular%x\r\n", DMA_Mode_Circular);
 
     // printf("结果%x\r\n", DMA1_Channel3->CFGR & 0x00b0);
 
-    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0) // 0x00b0是循环，92是正常
-      dma_circular++;
-
-    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0 && dma_circular >= 29)
-    {
-      dma_circular = 0;
-      DMA_Cmd(DMA1_Channel3, DISABLE);
-      SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
-      DMA_ClearITPendingBit(DMA1_IT_TC3);
-
-      LCD_CS_1;
-    }
-    Delay_Ms(1);
-  // printf("结束DMA传输完成%d\r\n", dma_circular);
+//    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0) // 0x00b0是循环，92是正常
+//      dma_circular++;
+//
+//    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0 && dma_circular >=29)
+//    {
+//      dma_circular = 0;
+//      DMA_Cmd(DMA1_Channel3, DISABLE);
+//      SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
+//      DMA_ClearITPendingBit(DMA1_IT_TC3);
+//
+//      LCD_CS_1;
+//    }
+//   // Delay_Ms(1);
+//  printf("结束DMA传输完成%d\r\n", dma_circular);
 
     // 清除中断标志
    DMA_ClearITPendingBit(DMA1_IT_TC3);

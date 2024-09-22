@@ -56,25 +56,34 @@ int main(void)
   LCD_SHOW_API_INIT();                                               // 屏幕测试******8404-6224=2180
   EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
   Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
+
+
   SX1278_Init(434);                                                  // lora的初始化*****10268-9620=648
  // startup_animation();                                               // 11732-10512=500
   IWDG_Feed_Init(IWDG_Prescaler_128, 10000);                         // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****12467-12356=111字节
 
-  Delay_Ms(500);
 
+//    LCD_0IN85_Clear(BLUE);
+//
+//    LCD_0IN85_Clear(RED);
+//
+//    LCD_0IN85_Clear(GREEN);
+//  show_battery(); // 电池电量显示出来1412-264=1100
+  chat_page(&Font8_En);
 
   while (1)
   {
       //LCD_0IN85_SetBackLight(50);
-//     Paint_DrawLine(20, 55, 20, 75, BLUE, 1, LINE_STYLE_SOLID);
+//      Paint_DrawLine(20, 55, 20, 75, BLUE, 1, LINE_STYLE_SOLID);
 //      Paint_DrawRectangle(0, 0, 50, 50, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-//     Paint_DrawRectangle(0, 100, 127, 127, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+//      Paint_DrawRectangle(0, 100, 127, 127, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+
+
 
     switch (page) // 处理页面
     {
     case PAGE_SEND: // 发送界面
 
-       chat_page(&Font8_En);
 
       if (key.event == KEY_EVENT_LONG_CLICK) // 返回
 
@@ -142,4 +151,6 @@ int main(void)
     IWDG_ReloadCounter(); // 喂狗* 12484-12467=24字节
     Delay_Ms(10);
   }
+
+
 }
