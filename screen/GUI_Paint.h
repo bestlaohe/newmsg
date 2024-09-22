@@ -198,13 +198,13 @@ extern PAINT_TIME sPaint_time;
 //init and Clear
 void Paint_NewImage(UWORD Width, UWORD Height, UWORD Rotate, UWORD Color);
 void Paint_SelectImage(UBYTE *image);
-void Paint_SetClearFuntion(void (*Clear)(UWORD));
-void Paint_SetDisplayFuntion(void (*Display)(UWORD,UWORD,UWORD));
+// void Paint_SetClearFuntion(void (*Clear)(UWORD));
+//void Paint_SetDisplayFuntion(void (*Display)(UWORD,UWORD,UWORD));
 void Paint_SetRotate(UWORD Rotate);
 void Paint_SetMirroring(UBYTE mirror);
 void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color);
 
-void Paint_Clear(UWORD Color);
+void LCD_0IN85_Clear(UWORD Color);
 void Paint_ClearWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD Color);
 
 

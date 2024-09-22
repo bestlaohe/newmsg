@@ -54,57 +54,56 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 void SX1278_test() // SPI初始化14196-13828=368
 {
 
-   printf("lora ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION));
-   printf("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
-   printf("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
+  //  printf("lora ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION));
+  //  printf("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
+  //  printf("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
 
-  u8 lorasendbuf[255] = "abcd"; //{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-  u8 lorareceivebuf[21];
-  u8 res; // 操作的返回
-  u8 len;
-  u8 var;
+  // u8 lorasendbuf[255] = "abcd"; //{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  // u8 lorareceivebuf[21];
+  // u8 res; // 操作的返回
+  // u8 len;
+  // u8 var;
 
-  if (!SX1278_LoRaTxPacket(lorasendbuf, 4))
-   {
-     printf("lora发送成功 \r\n");
-   }
+  // if (!SX1278_LoRaTxPacket(lorasendbuf, 4))
+  //  {
+  //    printf("lora发送成功 \r\n");
+  //  }
 
-  res = SX1278_LoRaRxPacket(lorareceivebuf, &len, 5000);
+  // res = SX1278_LoRaRxPacket(lorareceivebuf, &len, 5000);
 
-   if (res == 0)
-   {
-     printf("lora接收到数据长度  %d\r\n", len);
-     for (var = 0; var < len; ++var)
-     {
-       printf("RX sucess %d\r\n", lorareceivebuf[var]);
-     }
-   }
-   else if (res == 1)
-   {
-     printf("lora接收超时!\r\n");
-   }
-   else if (res == 2)
-   {
-     printf("lora的CRC eeror!\r\n");
-   }
+  //  if (res == 0)
+  //  {
+  //    printf("lora接收到数据长度  %d\r\n", len);
+  //    for (var = 0; var < len; ++var)
+  //    {
+  //      printf("RX sucess %d\r\n", lorareceivebuf[var]);
+  //    }
+  //  }
+  //  else if (res == 1)
+  //  {
+  //    printf("lora接收超时!\r\n");
+  //  }
+  //  else if (res == 2)
+  //  {
+  //    printf("lora的CRC eeror!\r\n");
+  //  }
 }
 
-void SX1278_GPIO_Init()
-{
-  SET_SX1278_NSEL();
-  SET_SX1278_RST();
-}
-void SX1278_SPI_Init()
-{
+// void SX1278_GPIO_Init()
+// {
+//   SET_SX1278_NSEL();
+//   SET_SX1278_RST();
+// }
+// void SX1278_SPI_Init()
+// {
 
-  SET_SX1278_MOSI();
-  SET_SX1278_SCK();
-}
+//   SET_SX1278_MOSI();
+//   SET_SX1278_SCK();
+// }
 
 // 上升有效，高位在前，SCK平时为低电平
 u8 SX1278_SPI_RW(u8 byte)
 {
-  uint16_t data = (uint16_t)byte;
   unsigned char retry = 0;
 
   while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
@@ -112,19 +111,19 @@ u8 SX1278_SPI_RW(u8 byte)
     retry++;
     if (retry > 200)
     {
-      printf("spi发送超时!\r\n");
+      printf("send spi outtime!\r\n");
       return 0;
     }
 
   } // 还没发完
-  SPI_I2S_SendData(SPI1, data);
+  SPI_I2S_SendData(SPI1, (uint16_t)byte);
 
   while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
   {
     retry++;
     if (retry > 200)
     {
-      printf("spi接收超时!\r\n");
+      printf("rec spi outtime!\r\n");
       return 0;
     }
   } // 还没收完
@@ -132,34 +131,7 @@ u8 SX1278_SPI_RW(u8 byte)
   return (uint8_t)SPI_I2S_ReceiveData(SPI1);
 }
 
-/*********************************************************************
- * @fn      EXTI0_INT_INIT
- *
- * @brief   Initializes EXTI0 collection.
- *
- * @return  none
- */
-void EXTI6_INT_INIT(void)
-{
-  EXTI_InitTypeDef EXTI_InitStructure = {0};
-  NVIC_InitTypeDef NVIC_InitStructure = {0};
 
-  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-
-  /* GPIOA ----> EXTI_Line0 */
-  GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource6);
-  EXTI_InitStructure.EXTI_Line = EXTI_Line6;
-  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
-  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStructure);
-
-  NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStructure);
-}
 /*****************以上是移植需要实现的部分**************************************************************/
 
 /*****************以下与MCU无关，移植无需更改*******************************************************/
@@ -533,8 +505,8 @@ u8 SX1278_ReadRSSI(void)
 ***************************************************************************/
 void SX1278_Init(u16 freq)
 {
-  SX1278_GPIO_Init();
-  SX1278_SPI_Init(); // SPI初始化
+//  SX1278_GPIO_Init();
+//  SX1278_SPI_Init(); // SPI初始化
 
   if (freq >= 428 && freq <= 439) // 在设置范围内，不然就按照默认频率设置
   {
@@ -547,3 +519,5 @@ void SX1278_Init(u16 freq)
 
   SX1278_Config();
 }
+
+

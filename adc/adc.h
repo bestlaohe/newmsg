@@ -18,6 +18,4 @@ u16 Get_ADC_Val(u8 ch);
 void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsize);
 uint8_t get_battery_percentage(uint16_t adc_value);
 void show_battery();
-void EXTI7_INT_INIT(void);
-
 #endif /* ADC_ADC_H_ */

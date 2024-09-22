@@ -1,18 +1,9 @@
 
 #include "debug.h"
-#include "encode.h"
-#include "adc.h"
-#include "SX1278.h"
+#include "encode.h" // timeapp->encode->main
+#include "adc.h"    // timeapp->pwm.screen->screen_api->adc->main
+#include "SX1278.h" // gpio->SX1278->page
 #include "page.h"
-
-u16 BattaryBuf[10];
-
-//******************guipain
-//**********************|
-//**********************|
-// timeapp.pwm.screen.screen_api.adc.main
-// timeapp.encode.main
-// gpio.SX1278.main
 
 // 待机功耗最低，睡眠功耗其次
 // 16k=16,384
@@ -30,14 +21,14 @@ u16 BattaryBuf[10];
 //  bss 段：在运行时存储未初始化的全局变量和静态变量。
 
 #define PWM_FRE 10000
-#define PWM_Duty 100
+#define PWM_Duty 50
 
 // 定义按键事件
 typedef enum
 {
   PAGE_SEND, // 发送页面
   PAGE_HISTROY_CHAT,
-  PAGE_PERPARE_SETTING, // 设置页面
+  PAGE_PERPARE_SETTING, // 准备设置页面
 
   PAGE_SETTING, // 设置页面
   PAGE_INFO,    // 信息页面
@@ -45,18 +36,13 @@ typedef enum
 
 Page page = PAGE_SEND;
 
-extern Key key;
-
-extern Encode encode;
-
 int main(void)
 {
-
 
   /*********************基本内容初始化******************************/
   SystemCoreClockUpdate();   // 48000000系统时钟刷新3324-3212=100k
   USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死3956-3324=600k
-  printf("SystemClk:%d\r\n", SystemCoreClock);
+  printf("\r\n\r\n\r\n\r\nSystemClk:%d\r\n", SystemCoreClock);
   //  printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
   Delay_Init(); // 延时初始化需要在延时前，不然会卡死4012-3956=100字节
   FLASH_Unlock();
@@ -68,26 +54,27 @@ int main(void)
   TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
   LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
   LCD_SHOW_API_INIT();                                               // 屏幕测试******8404-6224=2180
-  KEY_INIT();                                                        // 确认按键中断初始化***8636-8404=232
+  EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
   Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
-  EXTI7_INT_INIT();                                                  // 外部引进触发中断，开始充电*****9540=100
-  EXTI6_INT_INIT();                                                  // 外部引进触发中断，lora有信息过来了*****9620=100
   SX1278_Init(434);                                                  // lora的初始化*****10268-9620=648
-  startup_animation();                                               // 11732-10512=1220
+ // startup_animation();                                               // 11732-10512=500
   IWDG_Feed_Init(IWDG_Prescaler_128, 10000);                         // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****12467-12356=111字节
+
+  Delay_Ms(500);
+
 
   while (1)
   {
-    LCD_0IN85_SetBackLight(50);
-     Paint_DrawLine(0, 4, 0, 20, BLUE, 1, LINE_STYLE_SOLID);
-    //  Paint_DrawRectangle(0, 0, 50, 50, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-    //  Paint_DrawRectangle(0, 100, 127, 127, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+      //LCD_0IN85_SetBackLight(50);
+//     Paint_DrawLine(20, 55, 20, 75, BLUE, 1, LINE_STYLE_SOLID);
+//      Paint_DrawRectangle(0, 0, 50, 50, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+//     Paint_DrawRectangle(0, 100, 127, 127, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
 
     switch (page) // 处理页面
     {
     case PAGE_SEND: // 发送界面
 
-     // chat_page();
+       chat_page(&Font8_En);
 
       if (key.event == KEY_EVENT_LONG_CLICK) // 返回
 
@@ -97,22 +84,20 @@ int main(void)
 
     case PAGE_HISTROY_CHAT: // 聊天记录界面
 
-      Paint_DrawRectangle(0, 20, 127, 100, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-      Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
       chat_history_page();
 
       if (key.event == KEY_EVENT_LONG_CLICK)
         page = PAGE_PERPARE_SETTING;
       break;
 
-    case PAGE_PERPARE_SETTING: // 设置界面
+    case PAGE_PERPARE_SETTING: // 准备设置界面
 
       Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
       Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-      Paint_Drawicon(0, 0, 0, &Font16_Operate, GREEN, BLUE);
+      Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE,0);
       if (key.event == KEY_EVENT_CLICK)
       {
-        Paint_Clear(BLACK);
+        LCD_0IN85_Clear(BLACK);
         page = PAGE_SETTING;
       }
 
@@ -122,16 +107,18 @@ int main(void)
 
     case PAGE_SETTING: // 设置界面
 
-      Paint_Drawicon(40, 40, 0, &Font24_icon, BLACK, BLUE);
+       Paint_DrawChar(40, 40, 0, &Font24_icon, BLACK, BLUE,0);
 
       if (key.event == KEY_EVENT_LONG_CLICK)
       {
-        Paint_Clear(BLACK);
+        LCD_0IN85_Clear(BLACK);
         page = PAGE_INFO;
       }
       break;
 
     case PAGE_INFO: // 信息界面
+
+     // info_page();
 
       if (key.event == KEY_EVENT_LONG_CLICK)
         page = PAGE_SEND;

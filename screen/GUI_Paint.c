@@ -75,14 +75,14 @@
 #include "drive_screen.h"
 #include <stdint.h>
 #include <stdlib.h>
-#include <string.h> //memset()
+// #include <string.h> //memset()
 #include <math.h>
 
 volatile PAINT Paint;
 u8 dmaXpoint, dmaYpoint = 0;
 sFONT *dmaFont;
-void (*DISPLAY)(UWORD, UWORD, UWORD);
-void (*CLEAR)(UWORD);
+// void (*DISPLAY)(UWORD, UWORD, UWORD);
+// void (*CLEAR)(UWORD);
 /******************************************************************************
 function:	Create Image
 parameter:
@@ -98,7 +98,7 @@ void Paint_NewImage(UWORD Width, UWORD Height, UWORD Rotate, UWORD Color)
     Paint.Color = Color;
     Paint.WidthByte = Width;
     Paint.HeightByte = Height;
-    printf("WidthByte = %d, HeightByte = %d\r\n", Paint.WidthByte, Paint.HeightByte);
+    // printf("WidthByte = %d, HeightByte = %d\r\n", Paint.WidthByte, Paint.HeightByte);
 
     Paint.Rotate = Rotate;
     Paint.Mirror = MIRROR_NONE;
@@ -114,24 +114,24 @@ void Paint_NewImage(UWORD Width, UWORD Height, UWORD Rotate, UWORD Color)
         Paint.Height = Width;
     }
 }
-/******************************************************************************
-function:	Select Clear Funtion
-parameter:
-      Clear :   Pointer to Clear funtion
-******************************************************************************/
-void Paint_SetClearFuntion(void (*Clear)(UWORD))
-{
-    CLEAR = Clear;
-}
+// /******************************************************************************
+// function:	Select Clear Funtion
+// parameter:
+//       Clear :   Pointer to Clear funtion
+// ******************************************************************************/
+// void Paint_SetClearFuntion(void (*Clear)(UWORD))
+// {
+//     CLEAR = Clear;
+// }
 /******************************************************************************
 function:	Select DisplayF untion
 parameter:
       Display :   Pointer to display funtion
 ******************************************************************************/
-void Paint_SetDisplayFuntion(void (*Display)(UWORD, UWORD, UWORD))
-{
-    DISPLAY = Display;
-}
+// void Paint_SetDisplayFuntion(void (*Display)(UWORD, UWORD, UWORD))
+// {
+//     DISPLAY = Display;
+// }
 
 /******************************************************************************
 function:	Select Image Rotate
@@ -142,13 +142,13 @@ void Paint_SetRotate(UWORD Rotate)
 {
     if (Rotate == ROTATE_0 || Rotate == ROTATE_90 || Rotate == ROTATE_180 || Rotate == ROTATE_270)
     {
-        printf("Set image Rotate %d\r\n", Rotate);
+        // printf("Set image Rotate %d\r\n", Rotate);
         Paint.Rotate = Rotate;
     }
     else
     {
-        printf("rotate = 0, 90, 180, 270\r\n");
-        //  exit(0);
+        // printf("rotate = 0, 90, 180, 270\r\n");
+        //   exit(0);
     }
 }
 
@@ -162,12 +162,12 @@ void Paint_SetMirroring(UBYTE mirror)
     if (mirror == MIRROR_NONE || mirror == MIRROR_HORIZONTAL ||
         mirror == MIRROR_VERTICAL || mirror == MIRROR_ORIGIN)
     {
-        printf("mirror image x:%s, y:%s\r\n", (mirror & 0x01) ? "mirror" : "none", ((mirror >> 1) & 0x01) ? "mirror" : "none");
+        //  printf("mirror image x:%s, y:%s\r\n", (mirror & 0x01) ? "mirror" : "none", ((mirror >> 1) & 0x01) ? "mirror" : "none");
         Paint.Mirror = mirror;
     }
     else
     {
-        printf("mirror should be MIRROR_NONE, MIRROR_HORIZONTAL, \
+        //  printf("mirror should be MIRROR_NONE, MIRROR_HORIZONTAL, \
         MIRROR_VERTICAL or MIRROR_ORIGIN\r\n");
         // exit(0);
     }
@@ -184,7 +184,7 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
 {
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
-        printf("Exceeding display boundaries%d,%d\r\n",Xpoint,Ypoint);
+        printf("Paint_SetPixel1 erro %d,%d\r\n", Xpoint, Ypoint);
         return;
     }
     UWORD X, Y;
@@ -230,10 +230,9 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
         return;
     }
 
-    // printf("x = %d, y = %d\r\n", X, Y);
     if (X > Paint.WidthMemory || Y > Paint.HeightMemory)
     {
-        printf("Exceeding display boundaries\r\n");
+        printf("Paint_SetPixel2 erro,x = %d, y = %d\r\n", X, Y);
         return;
     }
 
@@ -241,15 +240,15 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
     LCD_0IN85_DrawPaint(X, Y, Color); // LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
 }
 
-/******************************************************************************
-function:	Clear the color of the picture
-parameter:
-    Color   :   Painted colors
-******************************************************************************/
-void Paint_Clear(UWORD Color)
-{
-    CLEAR(Color);
-}
+///******************************************************************************
+// function:	Clear the color of the picture
+// parameter:
+//     Color   :   Painted colors
+//******************************************************************************/
+// void LCD_0IN85_Clear(UWORD Color)
+//{
+//     CLEAR(Color);
+// }
 
 /******************************************************************************
 function:	Clear the color of a window
@@ -279,38 +278,49 @@ parameter:
     Color		:   Set color
     Dot_Pixel	:	point size
 ******************************************************************************/
-void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color, DOT_PIXEL Dot_Pixel, DOT_STYLE Dot_FillWay) {
-    if (Xpoint >= Paint.Width || Ypoint >= Paint.Height) {
-        printf("Paint_DrawPoint Input exceeds the normal display range\r\n");
+void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color, DOT_PIXEL Dot_Pixel, DOT_STYLE Dot_FillWay)
+{
+    if (Xpoint >= Paint.Width || Ypoint >= Paint.Height)
+    {
+        printf("Paint_DrawPoint erro,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
         return;
     }
 
     int16_t XDir_Num, YDir_Num;
-    if (Dot_FillWay == DOT_FILL_AROUND) {
-        for (XDir_Num = 0; XDir_Num < 2 * Dot_Pixel - 1; XDir_Num++) {
-            for (YDir_Num = 0; YDir_Num < 2 * Dot_Pixel - 1; YDir_Num++) {
+    if (Dot_FillWay == DOT_FILL_AROUND)
+    {
+        for (XDir_Num = 0; XDir_Num < 2 * Dot_Pixel - 1; XDir_Num++)
+        {
+            for (YDir_Num = 0; YDir_Num < 2 * Dot_Pixel - 1; YDir_Num++)
+            {
                 int16_t x = Xpoint + XDir_Num - Dot_Pixel + 1;
                 int16_t y = Ypoint + YDir_Num - Dot_Pixel + 1;
 
                 // 边界检查
-                if (x >= 0 && y >= 0 && x < Paint.Width && y < Paint.Height) {
-                    Paint_SetPixel(x, y, Color);
-                }
-            }
-        }
-    } else {
-        for (XDir_Num = 0; XDir_Num < Dot_Pixel; XDir_Num++) {
-            for (YDir_Num = 0; YDir_Num < Dot_Pixel; YDir_Num++) {
-                int16_t x = Xpoint + XDir_Num;
-                int16_t y = Ypoint + YDir_Num;
-
-                // 边界检查
-                if (x >= 0 && y >= 0 && x < Paint.Width && y < Paint.Height) {
+                if (x >= 0 && y >= 0 && x < Paint.Width && y < Paint.Height)
+                {
                     Paint_SetPixel(x, y, Color);
                 }
             }
         }
     }
+    // else
+    // {
+    //     for (XDir_Num = 0; XDir_Num < Dot_Pixel; XDir_Num++)
+    //     {
+    //         for (YDir_Num = 0; YDir_Num < Dot_Pixel; YDir_Num++)
+    //         {
+    //             int16_t x = Xpoint + XDir_Num;
+    //             int16_t y = Ypoint + YDir_Num;
+
+    //             // 边界检查
+    //             if (x >= 0 && y >= 0 && x < Paint.Width && y < Paint.Height)
+    //             {
+    //                 Paint_SetPixel(x, y, Color);
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 /******************************************************************************
@@ -328,23 +338,24 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     if (Xstart > Paint.Width || Ystart > Paint.Height ||
         Xend > Paint.Width || Yend > Paint.Height)
     {
-        printf("Paint_DrawLine Input exceeds the normal display range\r\n");
+        printf("Paint_DrawLine erro,Xstart = %d, Ystart = %d,Xend = %d, Yend = %d\r\n", Xstart, Ystart, Xend, Yend);
+
         return;
     }
 
     UWORD Xpoint = Xstart;
     UWORD Ypoint = Ystart;
 
-    int dx = (int)Xend - (int)Xstart >= 0 ? Xend - Xstart : Xstart - Xend; // 0
-    int dy = (int)Yend - (int)Ystart <= 0 ? Yend - Ystart : Ystart - Yend; //-16
+    int8_t dx = (int)Xend - (int)Xstart >= 0 ? Xend - Xstart : Xstart - Xend; // 0
+    int8_t dy = (int)Yend - (int)Ystart <= 0 ? Yend - Ystart : Ystart - Yend; //-16
 
     // Increment direction, 1 is positive, -1 is counter;
-    int XAddway = Xstart < Xend ? 1 : -1; //-1
-    int YAddway = Ystart < Yend ? 1 : -1; // 1
+    int8_t XAddway = Xstart < Xend ? 1 : -1; //-1
+    int8_t YAddway = Ystart < Yend ? 1 : -1; // 1
 
     // Cumulative error
-    int Esp = dx + dy; //-16
-    unsigned char Dotted_Len = 0;
+    int16_t Esp = dx + dy; //-16
+    uint8_t Dotted_Len = 0;
 
 #if USE_DMA
 
@@ -354,9 +365,9 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
 
     Delay_Ms(1);
     LCD_0IN85_SetWindows(Xstart, Ystart, Xend, Yend); // 准备好窗口和复位
-                                                      //  LCD_0IN85_SetWindows(3, 3, 3, 19);
- //   printf("Xstart, Ystart, Xend, Yend = %d= %d= %d= %d\r\n", Xstart, Ystart, Xend, Yend);
-  //  printf("wwwwdmaFont->Width:%d\r\n", dmaFont->Width);
+// printf("Xstart, Ystart, Xend, Yend = %d= %d= %d= %d\r\n", Xstart, Ystart, Xend, Yend);
+// printf("wwwwdmaFont->Width:%d\r\n", dmaFont->Width);
+
 #endif
 
     for (;;)
@@ -366,8 +377,8 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
         if (Line_Style == LINE_STYLE_DOTTED && Dotted_Len % 3 == 0)
         {
             // printf("LINE_DOTTED\r\n");
-            Paint_DrawPoint(Xpoint, Ypoint, IMAGE_BACKGROUND, Line_width, DOT_STYLE_DFT);
-            Dotted_Len = 0;
+            // Paint_DrawPoint(Xpoint, Ypoint, IMAGE_BACKGROUND, Line_width, DOT_STYLE_DFT);
+            // Dotted_Len = 0;
         }
         else
         {
@@ -382,14 +393,14 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
         }
         if (2 * Esp <= dx) // 跑这里
         {
-           // printf("2 * Esp = %d\r\n", 2 * Esp );
+            // printf("2 * Esp = %d\r\n", 2 * Esp );
             if (Ypoint == Yend)
                 break;
             Esp += dx;
             Ypoint += YAddway;
         }
     }
-   // printf("Dotted_Len = %d\r\n", Dotted_Len);
+    // printf("Dotted_Len = %d\r\n", Dotted_Len);
 
 #if USE_DMA
     Lcd_Refrsh_DMA(Dotted_Len * 2);
@@ -414,25 +425,25 @@ void Paint_DrawRectangle(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     if (Xstart > Paint.Width || Ystart > Paint.Height ||
         Xend > Paint.Width || Yend > Paint.Height)
     {
-        printf("Input exceeds the normal display range\r\n");
+        printf("Paint_DrawRectangle erro,Xstart = %d, Ystart = %d,Xend = %d, Yend = %d\r\n", Xstart, Ystart, Xend, Yend);
+
         return;
     }
 
     if (Filled)
     {
-        UWORD Ypoint;
-        for (Ypoint = Ystart; Ypoint < Yend; Ypoint++)
-        {
-            Paint_DrawLine(Xstart, Ypoint, Xend, Ypoint, Color, Line_width, LINE_STYLE_SOLID);
-        }
+        // UWORD Ypoint;
+        // for (Ypoint = Ystart; Ypoint < Yend; Ypoint++)
+        // {
+        //     Paint_DrawLine(Xstart, Ypoint, Xend, Ypoint, Color, Line_width, LINE_STYLE_SOLID);
+        // }
     }
     else
     {
         Paint_DrawLine(Xstart, Ystart, Xend, Ystart, Color, Line_width, LINE_STYLE_SOLID);
-           Paint_DrawLine(Xstart, Ystart, Xstart, Yend, Color, Line_width, LINE_STYLE_SOLID);
-
-                Paint_DrawLine(Xend, Ystart, Xend, Yend, Color, Line_width, LINE_STYLE_SOLID);
-                Paint_DrawLine(Xstart,Yend,  Xend, Yend, Color, Line_width, LINE_STYLE_SOLID);
+        Paint_DrawLine(Xstart, Ystart, Xstart, Yend, Color, Line_width, LINE_STYLE_SOLID);
+        Paint_DrawLine(Xend, Ystart, Xend, Yend, Color, Line_width, LINE_STYLE_SOLID);
+        Paint_DrawLine(Xstart, Yend, Xend, Yend, Color, Line_width, LINE_STYLE_SOLID);
     }
 }
 
@@ -451,7 +462,8 @@ void Paint_DrawCircle(UWORD X_Center, UWORD Y_Center, UWORD Radius,
 {
     if (X_Center > Paint.Width || Y_Center >= Paint.Height)
     {
-        printf("Paint_DrawCircle Input exceeds the normal display range\r\n");
+        printf("Paint_DrawCircle erro,X_Center = %d, Y_Center = %d\r\n", X_Center, Y_Center);
+
         return;
     }
 
@@ -536,7 +548,9 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
 
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
-        printf("Paint_DrawChar Input exceeds the normal display range\r\n");
+
+        printf("Paint_DrawChar erro,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
+
         return;
     }
 
@@ -544,24 +558,31 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     const unsigned char *ptr = &Font->table[Char_Offset];
 
 #if USE_DMA
+
     Delay_Ms(1);
     LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备好窗口和复位
 #endif
+
+    // printf("Paint_DrawChar rg,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
 
     for (Page = 0; Page < Font->Height; Page++)
     {
         for (Column = 0; Column < Font->Width; Column++)
         {
-
+            // printf("Paint_DrawChar rg,Xpoint + Column = %d, Column = %d\r\n", Xpoint + Column, Column);
             // To determine whether the font background color and screen background color is consistent
             if (FONT_BACKGROUND == Color_Background)
-            { // this process is to speed up the scan
+            {
+                // 当背景色和字体背景色相同时，意味着不需要绘制背景，只需要绘制前景色
                 if (*ptr & (0x80 >> (Column % 8)))
+                {
                     Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Foreground);
-                // Paint_DrawPoint(Xpoint + Column, Ypoint + Page, Color_Foreground, DOT_PIXEL_DFT, DOT_STYLE_DFT);
+                    // Paint_DrawPoint(Xpoint + Column, Ypoint + Page, Color_Foreground, DOT_PIXEL_DFT, DOT_STYLE_DFT);
+                }
             }
             else
             {
+                // 当背景色和字体背景色不同时，需要同时绘制前景色和背景色
                 if (*ptr & (0x80 >> (Column % 8)))
                 {
                     Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Foreground);
@@ -573,6 +594,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
                     // Paint_DrawPoint(Xpoint + Column, Ypoint + Page, Color_Background, DOT_PIXEL_DFT, DOT_STYLE_DFT);
                 }
             }
+
             // One pixel is 8 bits
             if (Column % 8 == 7)
                 ptr++;
@@ -590,7 +612,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     }
     if (dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2 && dmaFont->Width * dmaFont->Height * 2 > Y_MAX_PIXEL * X_MAX_PIXEL * 2) // 补包操作
     {
-        printf("Surplus package\r\n");
+        // printf("Surplus package\r\n");
         Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2); // 把余数显示掉
     }
 
@@ -604,7 +626,9 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     UWORD Page, Column;
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
-        printf("Paint_DrawChar Input exceeds the normal display range\r\n");
+
+        printf("Paint_Drawicon erro,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
+
         return;
     }
     dmaXpoint = Xpoint;
@@ -688,7 +712,8 @@ void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
 
     if (Xstart > Paint.Width || Ystart > Paint.Height)
     {
-        printf("Paint_DrawString Input exceeds the normal display range\r\n");
+        printf("Paint_DrawString erro,Xstart = %d, Ystart = %d\r\n", Xstart, Ystart);
+
         return;
     }
 
@@ -862,7 +887,9 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
 
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
-        printf("Paint_DisNum Input exceeds the normal display range\r\n");
+
+        printf("Paint_DrawNum erro %d,%d\r\n", Xpoint, Ypoint);
+
         return;
     }
 
@@ -885,33 +912,33 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
     // show
     Paint_DrawString(Xpoint, Ypoint, (const char *)pStr, Font, Color_Background, Color_Foreground, ' ');
 }
-/******************************************************************************
-function:	Display float number
-parameter:
-    Xstart           ：X coordinate
-    Ystart           : Y coordinate
-    Nummber          : The float data that you want to display
-    Decimal_Point	 : Show decimal places
-    Font             ：A structure pointer that displays a character size
-    Color            : Select the background color of the English character
-******************************************************************************/
-void Paint_DrawFloatNum(UWORD Xpoint, UWORD Ypoint, double Nummber, UBYTE Decimal_Point,
-                        sFONT *Font, UWORD Color_Background, UWORD Color_Foreground)
-{
-    char Str[ARRAY_LEN];
-    sprintf(Str, "%.*lf", Decimal_Point + 2, Nummber);
-    char *pStr = (char *)malloc((strlen(Str)) * sizeof(char));
-    memcpy(pStr, Str, (strlen(Str) - 2));
-    *(pStr + strlen(Str) - 1) = '\0';
-    if ((*(pStr + strlen(Str) - 3)) == '.')
-    {
-        *(pStr + strlen(Str) - 3) = '\0';
-    }
-    // show
-    Paint_DrawString(Xpoint, Ypoint, (const char *)pStr, Font, Color_Foreground, Color_Background, ' ');
-    free(pStr);
-    pStr = NULL;
-}
+// /******************************************************************************
+// function:	Display float number
+// parameter:
+//     Xstart           ：X coordinate
+//     Ystart           : Y coordinate
+//     Nummber          : The float data that you want to display
+//     Decimal_Point	 : Show decimal places
+//     Font             ：A structure pointer that displays a character size
+//     Color            : Select the background color of the English character
+// ******************************************************************************/
+// void Paint_DrawFloatNum(UWORD Xpoint, UWORD Ypoint, double Nummber, UBYTE Decimal_Point,
+//                         sFONT *Font, UWORD Color_Background, UWORD Color_Foreground)
+// {
+//     char Str[ARRAY_LEN];
+//     sprintf(Str, "%.*lf", Decimal_Point + 2, Nummber);
+//     char *pStr = (char *)malloc((strlen(Str)) * sizeof(char));
+//     memcpy(pStr, Str, (strlen(Str) - 2));
+//     *(pStr + strlen(Str) - 1) = '\0';
+//     if ((*(pStr + strlen(Str) - 3)) == '.')
+//     {
+//         *(pStr + strlen(Str) - 3) = '\0';
+//     }
+//     // show
+//     Paint_DrawString(Xpoint, Ypoint, (const char *)pStr, Font, Color_Foreground, Color_Background, ' ');
+//     free(pStr);
+//     pStr = NULL;
+// }
 /******************************************************************************
 function:	Display time
 parameter:

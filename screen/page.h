@@ -10,14 +10,21 @@
 #include "debug.h"
 #include "encode.h"
 #include "adc.h"
-#include "SX1278.h"
+//#include "SX1278.h"
+
+
+
 extern Key key;
 
 extern Encode encode;
 
 
+extern char lorareceivebuf[255];
 
-void chat_page();
 
+
+void chat_page(sFONT *Font);
+void show_history_data();
 void chat_history_page();
+void info_page();
 #endif /* SCREEN_PAGE_H_ */

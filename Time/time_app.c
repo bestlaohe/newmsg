@@ -83,7 +83,7 @@ void TIM2_Init(u16 arr, u16 psc)
     TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;  // 选择直接输入（TI）
     TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;            // 设置输入捕获预分频器为 1（不分频）
     TIM_ICInitStructure.TIM_ICFilter = 10;                           // 设置输入捕获滤波器的采样周期为 10（用于滤波抖动）
-    TIM_ICInit(TIM2, &TIM_ICInitStructure);
+    TIM_ICInit(TIM2, &TIM_ICInitStructure);//3，4捕获被我禁用了
 
 
     // 清除更新中断标志

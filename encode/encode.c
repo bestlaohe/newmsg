@@ -72,30 +72,3 @@ u8 KEY_PRESS(void)
 
 
 
-/*********************************************************************
- * @fn      EXTI0_INT_INIT
- *
- * @brief   Initializes EXTI0 collection.
- *
- * @return  none
- */
-void KEY_INIT(void)
-{
-    EXTI_InitTypeDef EXTI_InitStructure = {0};
-    NVIC_InitTypeDef NVIC_InitStructure = {0};
-
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
-
-    GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource2);
-    EXTI_InitStructure.EXTI_Line = EXTI_Line2;
-    EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-    EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
-    EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-    EXTI_Init(&EXTI_InitStructure);
-
-    NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
-    NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
-    NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
-    NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-    NVIC_Init(&NVIC_InitStructure);
-}

@@ -20,8 +20,8 @@ void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 volatile int circle = 0;
 int SleepCounter = 0;
-int dmacircular = 0;
-int LongKeyCounter = 0;
+volatile int dma_circular = 0;
+char lorareceivebuf[100]={0};
 
 Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
@@ -91,9 +91,8 @@ void DMA1_Channel3_IRQHandler(void)
   if (DMA_GetITStatus(DMA1_IT_TC3))
   {
     // 传输完成处理
-    //  printf("一开始DMA传输完成%d\r\n", dmacircular);
-    // 清除中断标志
-    DMA_ClearITPendingBit(DMA1_IT_TC3);
+    //  printf("一开始DMA传输完成%d\r\n", dma_circular);
+
 
     // printf("CFGR%x\r\n", DMA1_Channel3->CFGR);
 
@@ -102,11 +101,11 @@ void DMA1_Channel3_IRQHandler(void)
     // printf("结果%x\r\n", DMA1_Channel3->CFGR & 0x00b0);
 
     if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0) // 0x00b0是循环，92是正常
-      dmacircular++;
+      dma_circular++;
 
-    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0 && dmacircular == 29)
+    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0 && dma_circular >= 29)
     {
-      dmacircular = 0;
+      dma_circular = 0;
       DMA_Cmd(DMA1_Channel3, DISABLE);
       SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
       DMA_ClearITPendingBit(DMA1_IT_TC3);
@@ -114,7 +113,10 @@ void DMA1_Channel3_IRQHandler(void)
       LCD_CS_1;
     }
     Delay_Ms(1);
-    // printf("结束DMA传输完成%d\r\n", dmacircular);
+  // printf("结束DMA传输完成%d\r\n", dma_circular);
+
+    // 清除中断标志
+   DMA_ClearITPendingBit(DMA1_IT_TC3);
   }
 }
 /*********************************************************************
@@ -148,12 +150,11 @@ void EXTI7_0_IRQHandler(void)
       {
 
         key.event = KEY_EVENT_CLICK;
-        printf("KEY_EVENT_CLICK ontime\r\n");
+         printf("KEY_EVENT_CLICK ontime\r\n");
       }
       else
       {
         key.event = KEY_EVENT_LONG_CLICK;
-
         printf("KEY_STATE_HOLD ontime\r\n");
         key.LongKeyCounter = 0;
       }
@@ -168,28 +169,60 @@ void EXTI7_0_IRQHandler(void)
       key.state = KEY_STATE_IDLE;
       key.LongKeyCounter = 0;
       key.enable = 1;
-       printf("disable key operate\r\n"); // 有消息发来就震动
+      //  printf("disable key operate\r\n"); // 有消息发来就震动
     }
   }
 
   if (EXTI_GetITStatus(EXTI_Line6) != RESET)
   {
-    printf("have lora msg\r\n"); // 有消息发来就震动
+    //  printf("have lora msg\r\n"); // 有消息发来就震动
     MOTOR_ON;
     Delay_Ms(100);
     MOTOR_OFF;
-    system_wokeup();                    // 系统唤醒
+    system_wokeup(); // 系统唤醒
+
+    u8 res; // 操作的返回
+    u8 len;
+    u8 var;
+    res = SX1278_LoRaRxPacket(lorareceivebuf, &len, 100);
+
+    if (res == 0)
+    {
+      printf("lora接收到数据长度  %d\r\n", len);
+      for (var = 0; var < len; ++var)
+      {
+        printf("RX sucess %d\r\n", lorareceivebuf[var]);
+      }
+
+
+    }
+    else if (res == 1)
+    {
+      printf("lora接收超时!\r\n");
+    }
+    else if (res == 2)
+    {
+      printf("lora的CRC erro!\r\n");
+    }
+
     EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
   }
+
+
+
   if (EXTI_GetITStatus(EXTI_Line7) != RESET)
   {
 
     if (CHARGING)
-      printf("start chage\r\n");
+    {
+
+      // printf("start chage\r\n");
+    }
+
     else
     {
 
-      printf("end chage\r\n");
+      //   printf("end chage\r\n");
     }
 
     MOTOR_ON;
@@ -226,8 +259,41 @@ void HardFault_Handler(void)
 {
   // 处理 HardFault 异常的代码
   // 例如，记录故障信息、尝试恢复系统或重启系统
-  // printf("start HardFault_Handler\r\n");
+  printf("start HardFault_Handler\r\n");
   while (1)
   {
   }
+}
+
+/*********************************************************************
+ * @fn      EXTI0_INT_INIT
+ *
+ * @brief   Initializes EXTI0 collection.
+ *
+ * @return  none
+ */
+void EXTI_INT_INIT(void)
+{
+  EXTI_InitTypeDef EXTI_InitStructure = {0};
+  NVIC_InitTypeDef NVIC_InitStructure = {0};
+
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
+
+  // GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource6|GPIO_PinSource2|GPIO_PinSource7);
+
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource6);
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource2);
+  GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource7);
+
+  EXTI_InitStructure.EXTI_Line = EXTI_Line6 | EXTI_Line2 | EXTI_Line7;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
+
+  NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
 }

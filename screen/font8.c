@@ -1002,12 +1002,6 @@ sFONT Font8 = {
 };
 
 
-sFONT Fontline = {
-  Font8_Table,
-  1, /* Width */
-  8, /* Height */
-};
-
 const uint8_t Font8_English[]={
 // @520 'a' (5 pixels wide)
 	0x00, //      
@@ -1383,6 +1377,11 @@ sFONT Font8_En = {
   8, /* Height */
 };
 
+sFONT Fontline = {
+  Font8_English,//随便给一个就好
+  1, /* Width */
+  8, /* Height */
+};
 
 
 sFONT Font8_Num = {

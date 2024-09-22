@@ -21,26 +21,26 @@ void startup_animation()
         int icon_x = LCD_WIDTH - final_size - size / 2;
         int icon_y = LCD_HEIGHT - final_size - size / 2;
 
-        Paint_Drawicon(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819);
+        Paint_DrawChar(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819,0);
 
         icon_x = size / 2;
         icon_y = size / 2;
-        Paint_Drawicon(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819);
+        Paint_DrawChar(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819,0);
 
         // 从右上角移动到中心
         icon_x = LCD_WIDTH - final_size - size / 2;
         icon_y = size / 2;
-        Paint_Drawicon(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819);
+        Paint_DrawChar(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819,0);
 
         // 从左下角移动到中心
         icon_x = size / 2;
         icon_y = LCD_HEIGHT - final_size - size / 2;
-        Paint_Drawicon(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819);
+        Paint_DrawChar(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819,0);
     }
-    Paint_Clear(BLACK);
-    Paint_Drawicon(40, 40, 0, &Font24_logo, BLACK, WHITE);
+    LCD_0IN85_Clear(BLACK);
+    Paint_DrawChar(40, 40, 0, &Font24_logo, BLACK, WHITE,0);
     Delay_Ms(500);
-    Paint_Clear(BLACK);
+    LCD_0IN85_Clear(BLACK);
 }
 
 LCD_0IN85_ATTRIBUTES LCD;
@@ -50,22 +50,18 @@ void LCD_SHOW_API_INIT()
 {
 
     LCD_0IN85_Init(VERTICAL);
+    Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
     LCD_0IN85_Clear(BLACK);
 
-    printf("Paint_NewImage\r\n");
-    Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_180, WHITE);
+  //  printf("Set Clear and Display Funtion\r\n");
+   // Paint_SetClearFuntion(LCD_0IN85_Clear);
+   // Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
 
-    printf("Set Clear and Display Funtion\r\n");
-    Paint_SetClearFuntion(LCD_0IN85_Clear);
-    Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
+  //  printf("LCD_0IN85_Clear\r\n");
 
-    printf("Paint_Clear\r\n");
-    Paint_Clear(BLACK);
+   // printf("drawing...\r\n");
+  //  Paint_SetRotate(0);
 
-    printf("drawing...\r\n");
-    Paint_SetRotate(0);
-
-    //  Paint_Drawicon(40, 40, 1,&Font24_icon,  BLACK, BLUE);
 
     //       Paint_DrawString(5, 10, "123",        &Font24,  YELLOW, RED);
     //       Paint_DrawString(5, 34, "ABC",        &Font24,  BLUE,   CYAN);
@@ -74,7 +70,7 @@ void LCD_SHOW_API_INIT()
     //  Paint_DrawString_CN(0,80, "微雪电子",   &Font24CN,WHITE,  RED);
     //     Paint_DrawImage(set,30,3,48,48);
     //    Delay_Ms(3000);
-    //    Paint_Clear(WHITE);
+    //    LCD_0IN85_Clear(WHITE);
     //
     ////  Paint_DrawRectangle(0, 10, 225, 58, RED     ,DOT_PIXEL_2X2,DRAW_FILL_EMPTY);
     ////  Paint_DrawLine  (0, 10, 225, 58,    MAGENTA ,DOT_PIXEL_2X2,LINE_STYLE_SOLID);
@@ -152,88 +148,42 @@ static void LCD_0IN85_SendData_16Bit(UWORD Data)
 function :  Initialize the lcd register
 parameter:
 ******************************************************************************/
+// 常量数组存储命令和数据
+static const uint8_t init_cmds[] = {
+    0xB0, 0xC0,
+    0xB2, 0x2F,
+    0xB3, 0x03,
+    0xB6, 0x19,
+    0xB7, 0x01,
+    0xAC, 0xCB,
+    0xAB, 0x0E,
+    0xB4, 0x04,
+    0xA8, 0x19,
+    0x3A, 0x05,
+    0xB8, 0x08,
+    0xE8, 0x24,
+    0xE9, 0x48,
+    0xEA, 0x22,
+    0xC6, 0x30,
+    0xC7, 0x18,
+    0xF0, 0x1F, 0x28, 0x04, 0x3E, 0x2A, 0x2E, 0x20, 0x00, 0x0C, 0x06, 0x00, 0x1C, 0x1F, 0x0F,
+    0xF1, 0x00, 0x2D, 0x2F, 0x3C, 0x6F, 0x1C, 0x0B, 0x00, 0x00, 0x00, 0x07, 0x0D, 0x11, 0x0F,
+    0x21,
+    0x11,
+    0x29
+};
+
 static void LCD_0IN85_InitReg(void)
 {
-
-    LCD_0IN85_SendCommand(0xB0);
-    LCD_0IN85_SendData_8Bit(0xC0);
-    LCD_0IN85_SendCommand(0xB2);
-    LCD_0IN85_SendData_8Bit(0x2F);
-    LCD_0IN85_SendCommand(0xB3);
-    LCD_0IN85_SendData_8Bit(0x03);
-    LCD_0IN85_SendCommand(0xB6);
-    LCD_0IN85_SendData_8Bit(0x19);
-    LCD_0IN85_SendCommand(0xB7);
-    LCD_0IN85_SendData_8Bit(0x01);
-
-    LCD_0IN85_SendCommand(0xAC);
-    LCD_0IN85_SendData_8Bit(0xCB);
-    LCD_0IN85_SendCommand(0xAB);
-    LCD_0IN85_SendData_8Bit(0x0e);
-
-    LCD_0IN85_SendCommand(0xB4);
-    LCD_0IN85_SendData_8Bit(0x04);
-
-    LCD_0IN85_SendCommand(0xA8);
-    LCD_0IN85_SendData_8Bit(0x19);
-
-    LCD_0IN85_SendCommand(0x3A);
-    LCD_0IN85_SendData_8Bit(0x05);
-
-    LCD_0IN85_SendCommand(0xb8);
-    LCD_0IN85_SendData_8Bit(0x08);
-
-    LCD_0IN85_SendCommand(0xE8);
-    LCD_0IN85_SendData_8Bit(0x24);
-
-    LCD_0IN85_SendCommand(0xE9);
-    LCD_0IN85_SendData_8Bit(0x48);
-
-    LCD_0IN85_SendCommand(0xea);
-    LCD_0IN85_SendData_8Bit(0x22);
-
-    LCD_0IN85_SendCommand(0xC6);
-    LCD_0IN85_SendData_8Bit(0x30);
-    LCD_0IN85_SendCommand(0xC7);
-    LCD_0IN85_SendData_8Bit(0x18);
-
-    LCD_0IN85_SendCommand(0xF0);
-    LCD_0IN85_SendData_8Bit(0x1F);
-    LCD_0IN85_SendData_8Bit(0x28);
-    LCD_0IN85_SendData_8Bit(0x04);
-    LCD_0IN85_SendData_8Bit(0x3E);
-    LCD_0IN85_SendData_8Bit(0x2A);
-    LCD_0IN85_SendData_8Bit(0x2E);
-    LCD_0IN85_SendData_8Bit(0x20);
-    LCD_0IN85_SendData_8Bit(0x00);
-    LCD_0IN85_SendData_8Bit(0x0C);
-    LCD_0IN85_SendData_8Bit(0x06);
-    LCD_0IN85_SendData_8Bit(0x00);
-    LCD_0IN85_SendData_8Bit(0x1C);
-    LCD_0IN85_SendData_8Bit(0x1F);
-    LCD_0IN85_SendData_8Bit(0x0f);
-
-    LCD_0IN85_SendCommand(0xF1);
-    LCD_0IN85_SendData_8Bit(0X00);
-    LCD_0IN85_SendData_8Bit(0X2D);
-    LCD_0IN85_SendData_8Bit(0X2F);
-    LCD_0IN85_SendData_8Bit(0X3C);
-    LCD_0IN85_SendData_8Bit(0X6F);
-    LCD_0IN85_SendData_8Bit(0X1C);
-    LCD_0IN85_SendData_8Bit(0X0B);
-    LCD_0IN85_SendData_8Bit(0X00);
-    LCD_0IN85_SendData_8Bit(0X00);
-    LCD_0IN85_SendData_8Bit(0X00);
-    LCD_0IN85_SendData_8Bit(0X07);
-    LCD_0IN85_SendData_8Bit(0X0D);
-    LCD_0IN85_SendData_8Bit(0X11);
-    LCD_0IN85_SendData_8Bit(0X0f);
-
-    LCD_0IN85_SendCommand(0x21);
-
-    LCD_0IN85_SendCommand(0x11);
-    LCD_0IN85_SendCommand(0x29);
+    for (size_t i = 0; i < sizeof(init_cmds); ++i) {
+        if (i % 2 == 0) {
+            LCD_0IN85_SendCommand(init_cmds[i]);
+        } else {
+            LCD_0IN85_SendData_8Bit(init_cmds[i]);
+        }
+    }
 }
+
 
 /********************************************************************************
 function:   Set the resolution and scanning method of the screen
@@ -247,18 +197,18 @@ static void LCD_0IN85_SetAttributes(UBYTE Scan_dir)
     UBYTE MemoryAccessReg = 0x00;
 
     // Get GRAM and LCD width and height
-    if (Scan_dir == HORIZONTAL)
-    {
-        LCD.HEIGHT = LCD_HEIGHT;
-        LCD.WIDTH = LCD_WIDTH;
-        MemoryAccessReg = 0X70;
-    }
-    else
-    {
+    // if (Scan_dir == HORIZONTAL)
+    // {
+    //     LCD.HEIGHT = LCD_HEIGHT;
+    //     LCD.WIDTH = LCD_WIDTH;
+    //     MemoryAccessReg = 0X70;
+    // }
+    // else
+    // {
         LCD.HEIGHT = LCD_WIDTH;
         LCD.WIDTH = LCD_HEIGHT;
         MemoryAccessReg = 0XC8;
-    }
+    // }
 
     // Set the read / write scan direction of the frame memory
     LCD_0IN85_SendCommand(0x36);              // MX, MY, RGB mode
@@ -362,7 +312,7 @@ void LCD_0IN85_Clear(UWORD Color)
     DMA_ClearFlag(DMA1_FLAG_TC3); // 清除通道3传输完成标志
     // while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
     //     printf("等待SPI发送缓冲区为空\r\n"); // 等待SPI发送缓冲区为空
-    dmacircular = 0;
+    dma_circular = 0;
 
 #else
 
@@ -430,30 +380,20 @@ void Lcd_Refrsh_DMA(int pic_size)
     // printf("开始刷屏\r\n");
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
     DMA_Cmd(DMA1_Channel3, DISABLE);
-
-    // if (dmaFont->Width * dmaFont->Height * 2 < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
-    //    SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, dmaFont->Width * dmaFont->Height * 2, DMA_Mode_Normal);
-    // else
-    //     SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, Y_MAX_PIXEL * X_MAX_PIXEL * 2, DMA_Mode_Normal);
-
     SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, pic_size, DMA_Mode_Normal);
-
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
     DMA_Cmd(DMA1_Channel3, ENABLE);
-
-    // while (DMA_GetFlagStatus(DMA1_FLAG_TC3) == RESET)
-    //     printf("等待通道3传输完成标志\r\n"); // 等待通道3传输完成标志
-
-    // DMA_ClearFlag(DMA1_FLAG_TC3);            // 清除通道3传输完成标志
+//       while (DMA_GetFlagStatus(DMA1_FLAG_TC3) == RESET)
+//        printf("wait dma ok\r\n"); // 等待通道3传输完成标志
+//    DMA_ClearFlag(DMA1_FLAG_TC3);            // 清除通道3传输完成标志
 
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
         ;
     Delay_Ms(1); // 发送完成后要等一下彻底完成
-    // printf("等待SPI发送缓冲区为空\r\n"); // 等待SPI发送缓冲区为空
     LCD_CS_1;
 
-    while (dmacircular != 0)
-        printf("等待循环dma：%d\r\n", dmacircular);
+    while (dma_circular != 0)
+        printf("wait cycle dma：%d\r\n", dma_circular);
 
 #endif
 }
@@ -490,7 +430,7 @@ void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
         Lcd_Refrsh_DMA(Y_MAX_PIXEL * X_MAX_PIXEL * 2);
         dmaXoffset = X_MAX_PIXEL + dmaXoffset;
         dmaYoffset = Y_MAX_PIXEL + dmaYoffset;
-         printf("dma ok\r\n");
+        printf("dma ok\r\n");
     }
 
 #else
