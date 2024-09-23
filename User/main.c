@@ -57,33 +57,28 @@ int main(void)
   EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
   Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
 
+  SX1278_Init(434);                          // lora的初始化*****10268-9620=648
+                                             // startup_animation();                                               // 11732-10512=500
+  IWDG_Feed_Init(IWDG_Prescaler_128, 10000); // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****12467-12356=111字节
 
-  SX1278_Init(434);                                                  // lora的初始化*****10268-9620=648
- // startup_animation();                                               // 11732-10512=500
-  IWDG_Feed_Init(IWDG_Prescaler_128, 10000);                         // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****12467-12356=111字节
-
-
-//    LCD_0IN85_Clear(BLUE);
-//
-//    LCD_0IN85_Clear(RED);
-//
-//    LCD_0IN85_Clear(GREEN);
-//  show_battery(); // 电池电量显示出来1412-264=1100
+  //    LCD_0IN85_Clear(BLUE);
+  //
+  //    LCD_0IN85_Clear(RED);
+  //
+  //    LCD_0IN85_Clear(GREEN);
+  //  show_battery(); // 电池电量显示出来1412-264=1100
   chat_page(&Font8_En);
 
   while (1)
   {
-      //LCD_0IN85_SetBackLight(50);
-//      Paint_DrawLine(20, 55, 20, 75, BLUE, 1, LINE_STYLE_SOLID);
-//      Paint_DrawRectangle(0, 0, 50, 50, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-//      Paint_DrawRectangle(0, 100, 127, 127, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-
-
+    // LCD_0IN85_SetBackLight(50);
+    //      Paint_DrawLine(20, 55, 20, 75, BLUE, 1, LINE_STYLE_SOLID);
+    //      Paint_DrawRectangle(0, 0, 50, 50, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+    //      Paint_DrawRectangle(0, 100, 127, 127, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
 
     switch (page) // 处理页面
     {
     case PAGE_SEND: // 发送界面
-
 
       if (key.event == KEY_EVENT_LONG_CLICK) // 返回
 
@@ -103,10 +98,12 @@ int main(void)
 
       Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
       Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-      Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE,0);
+      Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);
       if (key.event == KEY_EVENT_CLICK)
       {
         LCD_0IN85_Clear(BLACK);
+        Paint_DrawChar(40, 40, 0, &Font24_icon, BLACK, BLUE, 0);
+         Delay_Ms(500);
         page = PAGE_SETTING;
       }
 
@@ -114,9 +111,12 @@ int main(void)
         page = PAGE_SEND;
       break;
 
+
+
+
     case PAGE_SETTING: // 设置界面
 
-       Paint_DrawChar(40, 40, 0, &Font24_icon, BLACK, BLUE,0);
+    setting_page();
 
       if (key.event == KEY_EVENT_LONG_CLICK)
       {
@@ -125,9 +125,12 @@ int main(void)
       }
       break;
 
+
+      
+
     case PAGE_INFO: // 信息界面
 
-     // info_page();
+      // info_page();
 
       if (key.event == KEY_EVENT_LONG_CLICK)
         page = PAGE_SEND;
@@ -151,6 +154,4 @@ int main(void)
     IWDG_ReloadCounter(); // 喂狗* 12484-12467=24字节
     Delay_Ms(10);
   }
-
-
 }

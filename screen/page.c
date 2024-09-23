@@ -18,7 +18,7 @@ void chat_page(sFONT *Font)
   Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
   Paint_DrawRectangle(0, 102, 127, 127, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
   Paint_DrawChar(2 + Englishposx * Font->Width, 103 + Englishposy * Font->Height, 'a' + Englishcount, Font, BLACK, WHITE, 'a');
-//  show_history_data();
+  //  show_history_data();
 
   if (encode.state == ENCODE_EVENT_UP) // 滚动
   {
@@ -108,6 +108,163 @@ void chat_history_page()
   {
   }
 }
+
+uint32_t *screen_light = TIM1->CH3CVR; // 初始屏幕亮度值
+extern int8_t shake_mode;
+extern u8 Lora_Freq;         //  默认频率设置= LORAFREQ_434MHZ
+extern u8 Lora_Power;        //  输出功率设置= LORAPOWER_20DBM
+extern u8 Lora_BandWide;     //  带宽设置= LORABW_125KHz
+extern u8 Lora_SpreadFactor; //  设置扩频因子在7~12= 7
+
+int current_setting = 0;    // 当前设置项索引
+const int num_settings = 6; // 设置项总数
+
+void update_current_setting(int value)
+{
+  switch (current_setting)
+  {
+  case 0:
+    *screen_light = value;
+    break;
+  case 1:
+    shake_mode = value;
+    break;
+  case 2:
+    Lora_Freq = value;
+    SX1278_Init();
+    break;
+  case 3:
+    Lora_Power = value;
+    SX1278_Init();
+    break;
+  case 4:
+    Lora_BandWide = value;
+    SX1278_Init();
+    break;
+  case 5:
+    Lora_SpreadFactor = value;
+     SX1278_Init();
+    break;
+  }
+}
+
+void setting_page()
+{
+  char strBuf[5]; // 要存储最多3位数字和一个终止符，所以数组大小为4
+
+  // 屏幕亮度设置
+  Paint_DrawString(0, 0, "screen light:", &Font8_En, BLACK, WHITE, 'a');
+  sprintf(strBuf, "%03d", screen_light);
+  Paint_DrawString(0 + Font8_En.Width * 14, 0, strBuf, &Font16_Num, BLACK, WHITE, '0');
+
+  // 震动模式设置
+  Paint_DrawString(0, 10, "shake mode:", &Font8_En, BLACK, WHITE, 'a');
+  sprintf(strBuf, "%03d", shake_mode);
+  Paint_DrawString(0 + Font8_En.Width * 12, 10, strBuf, &Font16_Num, BLACK, WHITE, '0');
+
+  // LoRa频率设置
+  Paint_DrawString(0, 30, "lora fre:", &Font8_En, BLACK, WHITE, 'a');
+  sprintf(strBuf, "%03d", Lora_Freq);
+  Paint_DrawString(0 + Font8_En.Width * 10, 30, strBuf, &Font16_Num, BLACK, WHITE, '0');
+
+  // LoRa功率设置
+  Paint_DrawString(0, 40, "lora power:", &Font8_En, BLACK, WHITE, 'a');
+  sprintf(strBuf, "%03d", Lora_Power);
+  Paint_DrawString(0 + Font8_En.Width * 12, 40, strBuf, &Font16_Num, BLACK, WHITE, '0');
+
+  // LoRa带宽设置
+  Paint_DrawString(0, 50, "lora bandwidth:", &Font8_En, BLACK, WHITE, 'a');
+  sprintf(strBuf, "%03d", Lora_BandWide);
+  Paint_DrawString(0 + Font8_En.Width * 16, 50, strBuf, &Font16_Num, BLACK, WHITE, '0');
+
+  // LoRa拓频因子
+  Paint_DrawString(0, 60, "lora SpreadFactor:", &Font8_En, BLACK, WHITE, 'a');
+  sprintf(strBuf, "%03d", Lora_SpreadFactor);
+  Paint_DrawString(0 + Font8_En.Width * 19, 60, strBuf, &Font16_Num, BLACK, WHITE, '0');
+
+  switch (current_setting)
+  {
+  case 0:
+    Paint_DrawString(0, 0, "screen light:", &Font8_En, BLACK, GREEN, 'a');
+    break;
+  case 1:
+    Paint_DrawString(0, 10, "shake mode:", &Font8_En, BLACK, GREEN, 'a');
+    break;
+  case 2:
+    Paint_DrawString(0, 30, "lora fre:", &Font8_En, BLACK, GREEN, 'a');
+    break;
+  case 3:
+    Paint_DrawString(0, 40, "lora power:", &Font8_En, BLACK, GREEN, 'a');
+    break;
+  case 4:
+    Paint_DrawString(0, 50, "lora bandwidth:", &Font8_En, BLACK, GREEN, 'a');
+    break;
+  case 5:
+    Paint_DrawString(0, 60, "lora SpreadFactor:", &Font8_En, BLACK, GREEN, 'a');
+    break;
+  }
+
+  if (encode.state == ENCODE_EVENT_UP) // 编码器向上滚动
+  {
+    int value = 0;
+    switch (current_setting)
+    {
+    case 0:
+      value = screen_light + 1;
+      break;
+    case 1:
+      value = shake_mode + 1;
+      break;
+    case 2:
+      value = Lora_Freq + 1;
+      break;
+    case 3:
+      value = Lora_Power + 1;
+      break;
+    case 4:
+      value = Lora_BandWide + 1;
+      break;
+    case 5:
+      value = Lora_SpreadFactor + 1;
+      break;
+    }
+    update_current_setting(value);
+  }
+
+  if (encode.state == ENCODE_EVENT_DOWN) // 编码器向下滚动
+  {
+    int value = 0;
+    switch (current_setting)
+    {
+    case 0:
+      value = screen_light - 1;
+      break;
+    case 1:
+      value = shake_mode - 1;
+      break;
+    case 2:
+      value = Lora_Freq - 1;
+      break;
+    case 3:
+      value = Lora_Power - 1;
+      break;
+    case 4:
+      value = Lora_BandWide - 1;
+      break;
+    case 5:
+      value = Lora_SpreadFactor - 1;
+      break;
+    }
+    update_current_setting(value);
+  }
+
+  if (key.event == KEY_EVENT_CLICK) // 确认键点击
+  {
+
+    current_setting = (current_setting + 1) % num_settings;
+  }
+}
+
 void show_history_data()
 {
 

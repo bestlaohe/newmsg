@@ -133,9 +133,9 @@ void EXTI7_0_IRQHandler(void)
   {
 
     // printf("have key msg\r\n"); // 按键
-    MOTOR_ON;
+    MOTOR_SET(1);
     Delay_Ms(100);
-    MOTOR_OFF;
+   MOTOR_SET(0);
     system_wokeup();                    // 系统唤醒
     EXTI_ClearITPendingBit(EXTI_Line2); /* Clear Flag */
 
@@ -177,9 +177,9 @@ void EXTI7_0_IRQHandler(void)
   if (EXTI_GetITStatus(EXTI_Line6) != RESET)
   {
     //  printf("have lora msg\r\n"); // 有消息发来就震动
-    MOTOR_ON;
+    MOTOR_SET(1);
     Delay_Ms(100);
-    MOTOR_OFF;
+   MOTOR_SET(0);
     system_wokeup(); // 系统唤醒
 
     u8 res; // 操作的返回
@@ -226,9 +226,9 @@ void EXTI7_0_IRQHandler(void)
       //   printf("end chage\r\n");
     }
 
-    MOTOR_ON;
+    MOTOR_SET(1);
     Delay_Ms(100);
-    MOTOR_OFF;
+   MOTOR_SET(0);
     system_wokeup();                    // 系统唤醒
     EXTI_ClearITPendingBit(EXTI_Line7); /* Clear Flag */
   }

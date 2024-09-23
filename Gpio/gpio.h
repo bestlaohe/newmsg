@@ -10,13 +10,9 @@
 #include "ch32v00x_gpio.h"
 
 void My_GPIO_Init();
+void MOTOR_SET(int state);
 #define MOTOR_ON   GPIO_ResetBits(GPIOA, GPIO_Pin_2)
 #define MOTOR_OFF   GPIO_SetBits(GPIOA, GPIO_Pin_2)
-
-#define KEY0 GPIO_ReadInputDataBit( GPIOD, GPIO_Pin_2)
-
-#define CHARGING GPIO_ReadInputDataBit( GPIOD, GPIO_Pin_7)
-
 
 #define LCD_CS_0       GPIO_ResetBits(GPIOC, GPIO_Pin_4)
 #define LCD_CS_1       GPIO_SetBits(GPIOC, GPIO_Pin_4)
@@ -33,10 +29,11 @@ void My_GPIO_Init();
 #define LCD_SDA_0  GPIO_ResetBits(GPIOC, GPIO_Pin_6)
 #define LCD_SDA_1    GPIO_SetBits(GPIOC, GPIO_Pin_6)
 
-
 #define LCD_BL_0   GPIO_ResetBits(GPIOC, GPIO_Pin_3)
 #define LCD_BL_1   GPIO_SetBits(GPIOC, GPIO_Pin_3)
 
+#define KEY0 GPIO_ReadInputDataBit( GPIOD, GPIO_Pin_2)
+#define CHARGING GPIO_ReadInputDataBit( GPIOD, GPIO_Pin_7)
 
 
 #endif /* GPIO_GPIO_H_ */

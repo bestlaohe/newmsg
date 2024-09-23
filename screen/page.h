@@ -27,4 +27,5 @@ void chat_page(sFONT *Font);
 void show_history_data();
 void chat_history_page();
 void info_page();
+void setting_page();
 #endif /* SCREEN_PAGE_H_ */

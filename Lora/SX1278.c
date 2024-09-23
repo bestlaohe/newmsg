@@ -505,7 +505,7 @@ u8 SX1278_ReadRSSI(void)
  参数：freq[in]: 载波频率设置 428 ~ 439 单位MHz
  返回：无
 ***************************************************************************/
-void SX1278_Init(u16 freq)
+void SX1278_Init()
 {
 //  SX1278_GPIO_Init();
 //  SX1278_SPI_Init(); // SPI初始化
@@ -513,10 +513,10 @@ void SX1278_Init(u16 freq)
 //       SET_SX1278_RST();
 //       SET_SX1278_MOSI();
 //       SET_SX1278_SCK();
-  if (freq >= 428 && freq <= 439) // 在设置范围内，不然就按照默认频率设置
-  {
-    Lora_Freq = freq % 428; // 设置载波频率
-  }
+  // if (freq >= 428 && freq <= 439) // 在设置范围内，不然就按照默认频率设置
+  // {
+  //   Lora_Freq = freq % 428; // 设置载波频率
+  // }
   CLR_SX1278_RST();
   SX1278_DelayMs(10);
   SET_SX1278_RST();

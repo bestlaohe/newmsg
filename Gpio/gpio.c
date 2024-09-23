@@ -39,7 +39,7 @@ void My_GPIO_Init()
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN; // 模拟输入模式
-    GPIO_Init(GPIOA, &GPIO_InitStructure); // pA1电池电量采集
+    GPIO_Init(GPIOA, &GPIO_InitStructure);        // pA1电池电量采集
 
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
@@ -48,9 +48,8 @@ void My_GPIO_Init()
     // LCD_DC_1   LCD_CS_1
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_2 | GPIO_Pin_4;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP; // 复用推挽输出模式
-    GPIO_Init(GPIOC, &GPIO_InitStructure); // 初始化 GPIOC
+    GPIO_Init(GPIOC, &GPIO_InitStructure);           // 初始化 GPIOC
 
-   
     GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0;
     GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
     GPIO_Init(GPIOD, &GPIO_InitStructure); // LCD_0IN85_RST_1
@@ -66,4 +65,16 @@ void My_GPIO_Init()
     GPIO_Init(GPIOD, &GPIO_InitStructure);
 
     MOTOR_OFF;
+}
+int8_t shake_mode = 1; // 初始震动模式值
+void MOTOR_SET(int state)
+{
+
+if(shake_mode){
+ if (state)
+        MOTOR_ON;
+    else
+        MOTOR_OFF;
+}
+   
 }
