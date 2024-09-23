@@ -14,10 +14,16 @@ void chat_page(sFONT *Font)
 {
 
   show_battery(); // 电池电量显示出来1412-264=1100
+  printf("chat_page1\r\n");
   Paint_DrawChar(0, 0, 0, &Font16_Operate, BLACK, BLUE, 0);
+  printf("chat_page2\r\n");
   Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+  printf("chat_page3\r\n");
   Paint_DrawRectangle(0, 102, 127, 127, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+  printf("chat_page4\r\n");
   Paint_DrawChar(2 + Englishposx * Font->Width, 103 + Englishposy * Font->Height, 'a' + Englishcount, Font, BLACK, WHITE, 'a');
+  printf("chat_page5\r\n");
+
   //  show_history_data();
 
   if (encode.state == ENCODE_EVENT_UP) // 滚动
@@ -143,7 +149,7 @@ void update_current_setting(int value)
     break;
   case 5:
     Lora_SpreadFactor = value;
-     SX1278_Init();
+    SX1278_Init();
     break;
   }
 }

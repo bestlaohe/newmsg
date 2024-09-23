@@ -558,7 +558,6 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     const unsigned char *ptr = &Font->table[Char_Offset];
 
 #if USE_DMA
-
     Delay_Ms(1);
     LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备好窗口和复位
 #endif
