@@ -58,7 +58,7 @@ int main(void)
   Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
 
   SX1278_Init(434);                          // lora的初始化*****10268-9620=648
-  startup_animation();                       // 11732-10512=500
+ // startup_animation();                       // 11732-10512=500
   IWDG_Feed_Init(IWDG_Prescaler_128, 10000); // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****12467-12356=111字节
 
   //    LCD_0IN85_Clear(BLUE);
@@ -67,7 +67,7 @@ int main(void)
   //
   //    LCD_0IN85_Clear(GREEN);
   //  show_battery(); // 电池电量显示出来1412-264=1100
-  chat_page(&Font8_En);
+ chat_page(&Font8_En);
 
   while (1)
   {

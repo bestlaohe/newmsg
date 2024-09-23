@@ -8,7 +8,7 @@
 int8_t Englishcount = 0; // 字符的位号
 int Englishposx = 0;     // 字符的位置
 int Englishposy = 0;     // 字符的位置
-static u8 lorasendbuf[100];
+static u8 lorasendbuf[2];
 
 void chat_page(sFONT *Font)
 {
@@ -26,40 +26,40 @@ void chat_page(sFONT *Font)
 
   //  show_history_data();
 
-  if (encode.state == ENCODE_EVENT_UP) // 滚动
-  {
-    Englishcount++;
-    if (Englishcount > 25)
-      Englishcount = 0;
-  }
+   if (encode.state == ENCODE_EVENT_UP) // 滚动
+   {
+     Englishcount++;
+     if (Englishcount > 25)
+       Englishcount = 0;
+   }
 
-  if (encode.state == ENCODE_EVENT_DOWN) // 滚动
-  {
-    Englishcount--;
-    if (Englishcount < 0)
-      Englishcount = 25;
-  }
+   if (encode.state == ENCODE_EVENT_DOWN) // 滚动
+   {
+     Englishcount--;
+     if (Englishcount < 0)
+       Englishcount = 25;
+   }
 
-  // printf(" encode.state:%d, key.state:%d\r\n", encode.state, key.state);
-  if (encode.state == ENCODE_EVENT_UP && key.state == KEY_STATE_HOLD) // 发送
-  {
+  // // printf(" encode.state:%d, key.state:%d\r\n", encode.state, key.state);
+   if (encode.state == ENCODE_EVENT_UP && key.state == KEY_STATE_HOLD) // 发送
+   {
 
-    // int16_t i;
-    // for (i = 0; i < Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width); i++)
-    // {
-    //   printf(" lorasendbuf[i]:%c\r\n", lorasendbuf[i]);
-    // }
+     // int16_t i;
+     // for (i = 0; i < Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width); i++)
+     // {
+     //   printf(" lorasendbuf[i]:%c\r\n", lorasendbuf[i]);
+     // }
 
-    if (!SX1278_LoRaTxPacket(lorasendbuf, Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)))
-    {
-      printf("lora send ok \r\n");
-    }
+     if (!SX1278_LoRaTxPacket(lorasendbuf, Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)))
+     {
+       printf("lora send ok \r\n");
+     }
 
-    key.enable = 0;
-  }
-  if (encode.state == ENCODE_EVENT_DOWN && key.state == KEY_STATE_HOLD) // 输入回去
-  {
-    Englishposx--;
+     key.enable = 0;
+   }
+   if (encode.state == ENCODE_EVENT_DOWN && key.state == KEY_STATE_HOLD) // 输入回去
+   {
+     Englishposx--;
 
     if (Englishposx <= 0)
     {
@@ -77,11 +77,11 @@ void chat_page(sFONT *Font)
     key.enable = 0;
   }
 
-  //    printf(" Englishcount:%d\r\n", Englishcount);
-  //    printf(" Font->Width:%d, Font->Height:%d\r\n", Font->Width, Font->Height);
-  // printf(" 2 + Englishposx * Font->Width:%d\r\n", 2 + Englishposx * Font->Width);
-  //
-  // printf("Paint_DrawChar rg,Width = %d, Height = %d\r\n", Font->Width, Font->Height);
+  // //    printf(" Englishcount:%d\r\n", Englishcount);
+  // //    printf(" Font->Width:%d, Font->Height:%d\r\n", Font->Width, Font->Height);
+  // // printf(" 2 + Englishposx * Font->Width:%d\r\n", 2 + Englishposx * Font->Width);
+  // //
+  // // printf("Paint_DrawChar rg,Width = %d, Height = %d\r\n", Font->Width, Font->Height);
 
   if (key.event == KEY_EVENT_CLICK) // 确认
   {
