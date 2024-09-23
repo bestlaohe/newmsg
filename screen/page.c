@@ -109,7 +109,7 @@ void chat_history_page()
   }
 }
 
-uint32_t *screen_light = TIM1->CH3CVR; // 初始屏幕亮度值
+uint32_t volatile *screen_light = &TIM1->CH3CVR; // 初始屏幕亮度值
 extern int8_t shake_mode;
 extern u8 Lora_Freq;         //  默认频率设置= LORAFREQ_434MHZ
 extern u8 Lora_Power;        //  输出功率设置= LORAPOWER_20DBM
@@ -154,7 +154,7 @@ void setting_page()
 
   // 屏幕亮度设置
   Paint_DrawString(0, 0, "screen light:", &Font8_En, BLACK, WHITE, 'a');
-  sprintf(strBuf, "%03d", screen_light);
+  sprintf(strBuf, "%03d", *screen_light);
   Paint_DrawString(0 + Font8_En.Width * 14, 0, strBuf, &Font16_Num, BLACK, WHITE, '0');
 
   // 震动模式设置
@@ -210,7 +210,7 @@ void setting_page()
     switch (current_setting)
     {
     case 0:
-      value = screen_light + 1;
+      value = *screen_light + 1;
       break;
     case 1:
       value = shake_mode + 1;
@@ -237,7 +237,7 @@ void setting_page()
     switch (current_setting)
     {
     case 0:
-      value = screen_light - 1;
+      value = *screen_light - 1;
       break;
     case 1:
       value = shake_mode - 1;
