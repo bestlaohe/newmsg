@@ -23,7 +23,7 @@
 
 
 // 开启或关闭调试信息输出
-#define DEBUG_ENABLED 0// 1为开启，0为关闭
+#define DEBUG_ENABLED 1// 1为开启，0为关闭
 
 #if DEBUG_ENABLED
     #define DEBUG_PRINT(fmt, ...) my_uart_print(fmt)//printf(fmt, ##__VA_ARGS__)

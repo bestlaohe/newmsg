@@ -28,7 +28,7 @@ Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
 // 去抖动和长按检测的常数
 #define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
-#define HOLD_TIME 5000   // 长按时间，单位：100us
+#define HOLD_TIME 3000   // 长按时间，单位：100us
 void TIM2_IRQHandler()
 {
 
@@ -93,7 +93,7 @@ void DMA1_Channel3_IRQHandler(void)
   {
       dmaTransferComplete = 1;
     // 传输完成处理
-    DEBUG_PRINT("一开始DMA传输完成%d\r\n", dmaTransferComplete);
+   // DEBUG_PRINT("一开始DMA传输完成%d\r\n", dmaTransferComplete);
 
   //  DEBUG_PRINT("CFGR%x\r\n", DMA1_Channel3->CFGR);
 

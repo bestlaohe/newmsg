@@ -25,6 +25,8 @@ void chat_page(sFONT *Font)
 
   // 绘制字符
   Paint_DrawChar(2 + Englishposx * Font->Width, 103 + Englishposy * Font->Height, 'a' + Englishcount, Font, BLACK, WHITE, 'a');
+ 
+ 
   DEBUG_PRINT("chat_page5\r\n");
 
   // 处理滚动状态
@@ -125,7 +127,6 @@ typedef enum
   SETTING_COUNT
 } SettingIndex;
 
-uint32_t volatile *screen_light = &TIM1->CH3CVR; // 初始屏幕亮度值
 extern u8 shake_mode;                            // 振动模式，0为off，1为on
 extern u8 Lora_Freq;                             // 默认频率设置
 extern u8 Lora_Power;                            // 输出功率设置
@@ -146,84 +147,93 @@ void update_Lora(void)
 
 // 定义设置数组
 Setting settings[SETTING_COUNT] = {
-    {"屏幕亮度:", NULL, NULL},
-    {"振动模式:", &shake_mode, NULL},
-    {"Lora频率:", &Lora_Freq, update_Lora},
-    {"Lora功率:", &Lora_Power, update_Lora},
-    {"Lora带宽:", &Lora_BandWide, update_Lora}, // 根据需要定义带宽的值
-    {"Lora扩频因子:", &Lora_SpreadFactor, update_Lora}};
+    {"light",(u8 *)&TIM1->CH3CVR, NULL},
+    {"shake", &shake_mode, NULL},
+    {"freq", &Lora_Freq, update_Lora},
+    {"power", &Lora_Power, update_Lora},
+    {"lorabw", &Lora_BandWide, update_Lora},
+    {"lorasf", &Lora_SpreadFactor, update_Lora}};
 
 int current_setting = 0;
 
-void clamp_value(u8 *value, u8 min, u8 max)
+void clamp_value(int *value, int min, int max)
 {
-  if (*value < min)
-    *value = min;
-  if (*value > max)
-    *value = max;
+    if (*value < min)
+        *value = min;
+    if (*value > max)
+        *value = max;
+}
+
+void update_setting_value(int value, int min, int max, int current_setting)
+{
+    clamp_value(&value, min, max);
+    *settings[current_setting].value = (u8)value;
 }
 
 void update_current_setting(int value)
 {
-  if (current_setting == SETTING_SCREEN_LIGHT)
-  {
-    // 限制亮度在0到100之间
-    value = (value < 0) ? 0 : (value > 100) ? 100
-                                            : value;
-    *screen_light = value;
-  }
-  else if (current_setting == SETTING_SHAKE_MODE)
-  {
-    // 切换振动模式
-    *settings[current_setting].value = !(*settings[current_setting].value);
-  }
-  else if (current_setting == SETTING_LORA_FREQ)
-  {
-    clamp_value(&Lora_Freq, LORAFREQ_MIN, LORAFREQ_MAX);
-  }
-  else if (current_setting == SETTING_LORA_POWER)
-  {
-    clamp_value(&Lora_Power, LORAPOWER_MIN, LORAPOWER_MAX);
-  }
-  else if (current_setting == SETTING_LORA_BANDWIDTH)
-  {
-    clamp_value(&Lora_BandWide, LORABANDWIDTH_MIN, LORABANDWIDTH_MAX);
-  }
-  else if (current_setting == SETTING_LORA_SPREAD_FACTOR)
-  {
-    clamp_value(&Lora_SpreadFactor, LORASpreadFactor_MIN, LORASpreadFactor_MAX);
-  }
-  if (settings[current_setting].update_func)
-  {
-    settings[current_setting].update_func();
-  }
+    switch (current_setting)
+    {
+    case SETTING_SCREEN_LIGHT:
+        value = (value < 0) ? 0 : (value > 100) ? 100 : value;
+        TIM1->CH3CVR = value;
+        break;
+    case SETTING_SHAKE_MODE:
+        *settings[current_setting].value = !(*settings[current_setting].value);
+        break;
+    case SETTING_LORA_FREQ:
+        update_setting_value(value, LORAFREQ_MIN, LORAFREQ_MAX, current_setting);
+        break;
+    case SETTING_LORA_POWER:
+        update_setting_value(value, LORAPOWER_MIN, LORAPOWER_MAX, current_setting);
+        break;
+    case SETTING_LORA_BANDWIDTH:
+        update_setting_value(value, LORABANDWIDTH_MIN, LORABANDWIDTH_MAX, current_setting);
+        break;
+    case SETTING_LORA_SPREAD_FACTOR:
+        update_setting_value(value, LORASpreadFactor_MIN, LORASpreadFactor_MAX, current_setting);
+        break;
+    default:
+        break;
+    }
+
+    if (settings[current_setting].update_func)
+    {
+        settings[current_setting].update_func();
+    }
 }
+
 
 void draw_setting(int index, int highlight)
 {
-  char strBuf[5]; // 用于存储最多3位数字和一个终止符
+  char strBuf[4]; // 用于存储最多3位数字和一个终止符
   UWORD bg_color = highlight ? GREEN : WHITE;
 
-  Paint_DrawString(0, index * 10, settings[index].name, &Font8_En, BLACK, bg_color, 'a');
+  Paint_DrawString(0, index * 20, settings[index].name, &Font16_En, BLACK, bg_color, 'a');
+  Paint_DrawChar(Font16_En.Width * strlen(settings[index].name), index * 20, 11, &Font16_Num, BLACK, bg_color, 0);
 
   // 根据当前设置类型绘制值
   if (index == SETTING_SHAKE_MODE)
-  { // 振动模式
-    // sprintf(strBuf, "%s", (*settings[index].value == ON) ? "on" : "off");
-
+  {
        if (*settings[index].value == ON) {
             strcpy(strBuf, "on");
         } else {
             strcpy(strBuf, "off");
         }
+       Paint_DrawChar(Font16_En.Width * (strlen(settings[index].name)+3), index * 20, 12, &Font16_Num, BLACK, BLACK, 0);
+
+       Paint_DrawString(Font16_En.Width * (strlen(settings[index].name)+1), index * 20, strBuf, &Font16_En, BLACK, bg_color, 'a');
+
+return;
   }
   else
   {
     //   sprintf(strBuf, "%03d", *settings[index].value);
+
     intToStr(*settings[index].value, strBuf, 3);
   }
 
-  Paint_DrawString(0 + Font8_En.Width * strlen(settings[index].name), index * 10, strBuf, &Font16_Num, BLACK, bg_color, '0');
+  Paint_DrawString(Font16_En.Width * (strlen(settings[index].name)+1), index * 20, strBuf, &Font16_Num, BLACK, bg_color, '0');
 }
 
 void display_settings()
@@ -269,10 +279,17 @@ void show_history_data()
 void show_info(int posx, int posy, const char *label, int value, int offset)
 {
   char strBuf[4];                                                    // 存储最多3位数字和一个终止符
-  Paint_DrawString(posx, posy, label, &Font8_En, BLACK, WHITE, 'a'); // 绘制标签
-                                                                     // sprintf(strBuf, "%03d:", value); // 显示3位数字
+  Paint_DrawString(posx, posy, label, &Font16_En, BLACK, WHITE, 'a'); // 绘制标签
+                                                                     // sprintf(strBuf, "%03d:", value); // 显示3位数字4
+  Paint_DrawChar(posx +Font16_En.Width * (offset-1), posy, 11, &Font16_Num, BLACK, WHITE, 0);
+
   intToStr(value, strBuf, 3);
-  Paint_DrawString(posx + Font8_En.Width * offset, posy, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 绘制值
+  Paint_DrawString(posx + Font16_Num.Width * offset, posy, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 绘制值
+
+
+
+
+
 }
 
 void info_page()
@@ -286,14 +303,14 @@ void info_page()
     sum += BattaryBuf[i];
   }
   sum /= 10;                                // 求平均值
-  show_info(0, 0, "battery adc:", sum, 13); // 调用显示电池信息
+  show_info(0, 0, "batadc", sum, 7); // 调用显示电池信息
 
   // 显示 Lora RSSI
-  show_info(0, 10, "lora rssi:", SX1278_ReadRSSI(), 11); // 调用显示 Lora RSSI
+  show_info(0, 20, "rssi", SX1278_ReadRSSI(), 5); // 调用显示 Lora RSSI
 
   // 显示 Lora ID
-  show_info(0, 30, "lora id:", SX1278_Read_Reg(REG_LR_VERSION), 9); // 调用显示 Lora ID
+  show_info(0, 40, "id", SX1278_Read_Reg(REG_LR_VERSION), 3); // 调用显示 Lora ID
 
   // 显示屏幕亮度
-  show_info(0, 40, "screen light:", TIM1->CH3CVR, 14); // 调用显示屏幕亮度
+  show_info(0, 60, "light", TIM1->CH3CVR, 6); // 调用显示屏幕亮度
 }

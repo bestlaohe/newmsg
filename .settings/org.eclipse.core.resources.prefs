@@ -2,6 +2,6 @@ eclipse.preferences.version=1
 encoding//Gpio/gpio.h=UTF-8
 encoding//User/main.c=GBK
 encoding//encode/encode.h=UTF-8
-encoding//screen/GUI_Paint.c=GBK
+encoding//screen/GUI_Paint.c=UTF-8
 encoding//screen/drive_screen.h=UTF-8
 encoding//screen/screen_api.c=GBK

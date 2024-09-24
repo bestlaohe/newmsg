@@ -204,6 +204,7 @@ void show_battery()
         }
 
         Paint_DrawString(strX, 0, strBuf, &Font16_Num, BLACK, WHITE, '0');
+        Paint_DrawChar(97, 0, 10, &Font16_Num, BLACK, WHITE, 0);
         Paint_DrawChar(108, 0, 0, &Font16_Bat, BLACK, color, 0);
 
         for (u8 i = 0; i < cnt; i++)

@@ -7,6 +7,7 @@
     "screen_api.h": "c",
     "gpio.h": "c",
     "drive_screen.h": "c",
-    "string.h": "c"
+    "string.h": "c",
+    "*.ipp": "c"
   }
 }

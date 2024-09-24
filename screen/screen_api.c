@@ -8,31 +8,24 @@
 #include "screen_api.h"
 #include <stdlib.h>
 #include <stdio.h>
-#define FINAL_SIZE 48   // 最终图标大小
-#define MAX_SIZE 80     // 最大放大尺寸
-#define STEP 2          // 每次放大步长
-#define WHITE_BASE 819  // 白色基数
-
-// 绘制图标的辅助函数
-void draw_icon(int size, int offsetX, int offsetY) {
-    int icon_x = offsetX - size / 2;
-    int icon_y = offsetY - size / 2;
-    Paint_DrawChar(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * WHITE_BASE, 0);
+void DrawIcon(int x, int y, int size, int final_size)
+{
+    Paint_DrawChar(x, y, 0, &Font24_logo, BLACK, WHITE - size * 819, 0);
 }
 
-void startup_animation() {
-    for (int size = 0; size <= MAX_SIZE; size += STEP) {
-        // 居中位置
-        int centerX = LCD_WIDTH / 2;
-        int centerY = LCD_HEIGHT / 2;
-
-        // 绘制四个位置的图标
-        draw_icon(size, centerX, centerY); // 中心
-        draw_icon(size, LCD_WIDTH - FINAL_SIZE, centerY); // 右上角
-        draw_icon(size, centerX, LCD_HEIGHT - FINAL_SIZE); // 左下角
-        draw_icon(size, 0, size); // 左上角
+void startup_animation()
+{
+    int final_size = 48; // 最终图标大小
+    int step = 2;        // 每次放大步长
+    for (int size = 0; size <= 80; size += step)
+    {
+        // 计算图标左上角位置，使其中心保持在屏幕中央
+        int offset = size / 2;
+        DrawIcon(LCD_WIDTH - final_size - offset, LCD_HEIGHT - final_size - offset, size, final_size);
+        DrawIcon(offset, offset, size, final_size);
+        DrawIcon(LCD_WIDTH - final_size - offset, offset, size, final_size);
+        DrawIcon(offset, LCD_HEIGHT - final_size - offset, size, final_size);
     }
-
     LCD_0IN85_Clear(BLACK);
     Paint_DrawChar(40, 40, 0, &Font24_logo, BLACK, WHITE, 0);
     Delay_Ms(500);
@@ -304,7 +297,6 @@ parameter:
 
 void LCD_0IN85_Clear(UWORD Color)
 {
-   
 
 #if USE_DMA
 
@@ -367,7 +359,7 @@ void LCD_0IN85_Clear(UWORD Color)
     DEBUG_PRINT("LCD_0IN85_Clear OK\r\n"); // 等待SPI发送缓冲区为空
 
 #else
- UWORD i, j;
+    UWORD i, j;
     LCD_0IN85_SetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
     LCD_DC_1;
     for (i = 0; i < LCD_WIDTH; i++)
@@ -429,7 +421,7 @@ void Lcd_Refrsh_DMA(int pic_size)
     // 将整个数据搬运一次到DMA
     LCD_DC_1;
     LCD_CS_0;
-    // DEBUG_PRINT("开始刷屏\r\n");
+   // DEBUG_PRINT("开始刷屏\r\n");
     dmaTransferComplete = 0;
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
     DMA_Cmd(DMA1_Channel3, DISABLE);
@@ -443,7 +435,7 @@ void Lcd_Refrsh_DMA(int pic_size)
 
     while (!dmaTransferComplete)
     {
-        DEBUG_PRINT("wait normoldma ok %d\r\n", dmaTransferComplete); // 等待通道3传输完成标志
+      //  DEBUG_PRINT("wait normoldma ok %d\r\n", dmaTransferComplete); // 等待通道3传输完成标志
     }
     dmaTransferComplete = 0;
     DMA_ClearFlag(DMA1_FLAG_TC3); // 清除通道3传输完成标志
@@ -460,7 +452,7 @@ void Lcd_Refrsh_DMA(int pic_size)
 
     //    while (dma_circular != 0)
     //        DEBUG_PRINT("wait cycle dma：%d\r\n", dma_circular);
-    DEBUG_PRINT("end normoldma ok\r\n");
+   // DEBUG_PRINT("end normoldma ok\r\n");
 #endif
 }
 /******************************************************************************
