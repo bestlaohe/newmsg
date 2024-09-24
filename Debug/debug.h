@@ -20,6 +20,19 @@
 #include <ch32v00x.h>
 #include <stdio.h>
 
+
+
+// 开启或关闭调试信息输出
+#define DEBUG_ENABLED 0// 1为开启，0为关闭
+
+#if DEBUG_ENABLED
+    #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)
+#else
+    #define DEBUG_PRINT(fmt, ...)
+#endif
+
+
+
 /* UART Printf Definition */
 #define DEBUG_UART1_NoRemap   1  //Tx-PD5
 #define DEBUG_UART1_Remap1    2  //Tx-PD0
@@ -44,7 +57,7 @@ void Delay_Us(uint32_t n);
 void Delay_Ms(uint32_t n);
 void USART_Printf_Init(uint32_t baudrate);
 void SDI_Printf_Enable(void);
-
+void intToStr(int num, char *str, int minWidth) ;
 #ifdef __cplusplus
 }
 #endif

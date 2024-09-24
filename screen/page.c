@@ -13,78 +13,63 @@ static u8 lora_send_buf[50];
 
 void chat_page(sFONT *Font)
 {
+  // 显示电池信息
+  show_battery();
 
-  show_battery(); // 电池电量显示出来1412-264=1100
-  printf("chat_page1\r\n");
+  // 绘制聊天页面的基本组件
   Paint_DrawChar(0, 0, 0, &Font16_Operate, BLACK, BLUE, 0);
-  printf("chat_page2\r\n");
+
   Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-  printf("chat_page3\r\n");
+
   Paint_DrawRectangle(0, 102, 127, 127, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-  printf("chat_page4\r\n");
+
+  // 绘制字符
   Paint_DrawChar(2 + Englishposx * Font->Width, 103 + Englishposy * Font->Height, 'a' + Englishcount, Font, BLACK, WHITE, 'a');
-  printf("chat_page5\r\n");
+  DEBUG_PRINT("chat_page5\r\n");
 
-  //  show_history_data();
-
-  if (encode.state == ENCODE_EVENT_UP) // 滚动
+  // 处理滚动状态
+  if (encode.state == ENCODE_EVENT_UP)
   {
-    Englishcount++;
-    if (Englishcount > 25)
-      Englishcount = 0;
+    Englishcount = (Englishcount + 1) % 26; // 循环计数
+  }
+  else if (encode.state == ENCODE_EVENT_DOWN)
+  {
+    Englishcount = (Englishcount - 1 + 26) % 26; // 循环计数
   }
 
-  if (encode.state == ENCODE_EVENT_DOWN) // 滚动
+  // 发送数据
+  if (key.state == KEY_STATE_HOLD)
   {
-    Englishcount--;
-    if (Englishcount < 0)
-      Englishcount = 25;
-  }
-
-  // // printf(" encode.state:%d, key.state:%d\r\n", encode.state, key.state);
-  if (encode.state == ENCODE_EVENT_UP && key.state == KEY_STATE_HOLD) // 发送
-  {
-
-    //      int16_t i;
-    //     for (i = 0; i < Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width); i++)
-    //     {
-    //       printf(" lora_send_buf[i]:%c\r\n", lora_send_buf[i]);
-    //     }
-
-    if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)))
+    if (encode.state == ENCODE_EVENT_UP)
     {
-      printf("lora send ok \r\n");
+      // 发送数据
+      if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)))
+      {
+        DEBUG_PRINT("lora send ok \r\n");
+      }
+      key.enable = 0; // 禁用键
     }
-
-    key.enable = 0;
-  }
-  if (encode.state == ENCODE_EVENT_DOWN && key.state == KEY_STATE_HOLD) // 输入回去
-  {
-    Englishposx--;
-
-    if (Englishposx <= 0)
+    else if (encode.state == ENCODE_EVENT_DOWN)
     {
-      if (Englishposy > 0)
+      // 输入回退
+      if (--Englishposx < 0)
       {
-        Englishposy--;
-
-        Englishposx = LCD_WIDTH - 2 - (LCD_WIDTH - 2) / Font->Width;
+        if (Englishposy > 0)
+        {
+          Englishposy--;
+          Englishposx = (LCD_WIDTH - 2) / Font->Width - 1; // 重置列位置
+        }
+        else
+        {
+          Englishposx = 0;
+        }
       }
-      else
-      {
-        Englishposx = 0;
-      }
+      key.enable = 0; // 禁用键
     }
-    key.enable = 0;
   }
 
-  // //    printf(" Englishcount:%d\r\n", Englishcount);
-  // //    printf(" Font->Width:%d, Font->Height:%d\r\n", Font->Width, Font->Height);
-  // // printf(" 2 + Englishposx * Font->Width:%d\r\n", 2 + Englishposx * Font->Width);
-  // //
-  // // printf("Paint_DrawChar rg,Width = %d, Height = %d\r\n", Font->Width, Font->Height);
-
-  if (key.event == KEY_EVENT_CLICK) // 确认
+  // 确认输入
+  if (key.event == KEY_EVENT_CLICK)
   {
     lora_send_buf[Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)] = 'a' + Englishcount;
     Englishposx++;
@@ -95,10 +80,10 @@ void chat_page(sFONT *Font)
       Englishposy++;
       if (103 + Englishposy * Font->Height >= LCD_HEIGHT - 1)
       {
-        Englishposy = 0;
+        Englishposy = 0; // 重置行位置
       }
     }
-    Englishcount = 0;
+    Englishcount = 0; // 重置计数
   }
 }
 
@@ -224,11 +209,18 @@ void draw_setting(int index, int highlight)
   // 根据当前设置类型绘制值
   if (index == SETTING_SHAKE_MODE)
   { // 振动模式
-    sprintf(strBuf, "%s", (*settings[index].value == ON) ? "on" : "off");
+    // sprintf(strBuf, "%s", (*settings[index].value == ON) ? "on" : "off");
+
+       if (*settings[index].value == ON) {
+            strcpy(strBuf, "on");
+        } else {
+            strcpy(strBuf, "off");
+        }
   }
   else
   {
-    sprintf(strBuf, "%03d", *settings[index].value);
+    //   sprintf(strBuf, "%03d", *settings[index].value);
+    intToStr(*settings[index].value, strBuf, 3);
   }
 
   Paint_DrawString(0 + Font8_En.Width * strlen(settings[index].name), index * 10, strBuf, &Font16_Num, BLACK, bg_color, '0');
@@ -274,65 +266,34 @@ void show_history_data()
   Paint_DrawString(2, 22, lora_receive_buf, &Font8_En, BLACK, WHITE, 'a');
 }
 
-void show_battery_info(int posx, int posy)
+void show_info(int posx, int posy, const char *label, int value, int offset)
 {
+  char strBuf[4];                                                    // 存储最多3位数字和一个终止符
+  Paint_DrawString(posx, posy, label, &Font8_En, BLACK, WHITE, 'a'); // 绘制标签
+                                                                     // sprintf(strBuf, "%03d:", value); // 显示3位数字
+  intToStr(value, strBuf, 3);
+  Paint_DrawString(posx + Font8_En.Width * offset, posy, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 绘制值
+}
 
+void info_page()
+{
+  // 显示各项信息
   u16 sum = 0;
 
-  char strBuf[5]; // 要存储最多3位数字和一个终止符，所以数组大小为4
+  // 计算电池平均值
   for (u8 i = 0; i < 10; i++)
   {
     sum += BattaryBuf[i];
   }
+  sum /= 10;                                // 求平均值
+  show_info(0, 0, "battery adc:", sum, 13); // 调用显示电池信息
 
-  sum = sum / 10;
+  // 显示 Lora RSSI
+  show_info(0, 10, "lora rssi:", SX1278_ReadRSSI(), 11); // 调用显示 Lora RSSI
 
-  Paint_DrawString(posx, posy, "battery adc:", &Font8_En, BLACK, WHITE, 'a'); // 13692
+  // 显示 Lora ID
+  show_info(0, 30, "lora id:", SX1278_Read_Reg(REG_LR_VERSION), 9); // 调用显示 Lora ID
 
-  sprintf(strBuf, "%04d:", sum);                                                              // 显示2位数字
-  Paint_DrawString(posx + Font8_En.Width * 13, posy, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-}
-void show_lora_rssi(int posx, int posy)
-{
-
-  char strBuf[5]; // 要存储最多3位数字和一个终止符，所以数组大小为4
-
-  //  printf("lora ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION));
-  //  printf("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
-  //  printf("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
-
-  Paint_DrawString(posx, posy, "lora rssi:", &Font8_En, BLACK, WHITE, 'a'); // 13692
-
-  sprintf(strBuf, "%04d:", SX1278_ReadRSSI());                                                // 显示2位数字
-  Paint_DrawString(posx + Font8_En.Width * 11, posy, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-}
-void show_lora_id(int posx, int posy)
-{
-
-  char strBuf[5]; // 要存储最多3位数字和一个终止符，所以数组大小为4
-
-  Paint_DrawString(posx, posy, "lora id:", &Font8_En, BLACK, WHITE, 'a'); // 13692
-
-  sprintf(strBuf, "%04d:", SX1278_Read_Reg(REG_LR_VERSION));                                 // 显示2位数字
-  Paint_DrawString(posx + Font8_En.Width * 9, posy, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-}
-void show_screen_light(int posx, int posy)
-{
-
-  char strBuf[5]; // 要存储最多3位数字和一个终止符，所以数组大小为4
-
-  Paint_DrawString(posx, posy, "lora id:", &Font8_En, BLACK, WHITE, 'a'); // 13692
-
-  sprintf(strBuf, "%04d:", TIM1->CH3CVR);                                                    // 显示2位数字
-  Paint_DrawString(posx + Font8_En.Width * 9, posy, strBuf, &Font16_Num, BLACK, WHITE, '0'); // 13692
-}
-void info_page()
-{
-
-  show_battery_info(0, 0);
-
-  show_lora_rssi(0, 10);
-  show_lora_id(0, 30);
-
-  show_screen_light(0, 40);
+  // 显示屏幕亮度
+  show_info(0, 40, "screen light:", TIM1->CH3CVR, 14); // 调用显示屏幕亮度
 }

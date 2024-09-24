@@ -54,9 +54,9 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 void SX1278_test() // SPI初始化14196-13828=368
 {
 
-  //  printf("lora ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION));
-  //  printf("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
-  //  printf("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
+  //  DEBUG_PRINT("lora ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION));
+  //  DEBUG_PRINT("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
+  //  DEBUG_PRINT("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
 
   // u8 lora_send_buf[255] = "abcd"; //{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
   // u8 lora_receive_buf[21];
@@ -66,26 +66,26 @@ void SX1278_test() // SPI初始化14196-13828=368
 
   // if (!SX1278_LoRaTxPacket(lora_send_buf, 4))
   //  {
-  //    printf("lora发送成功 \r\n");
+  //    DEBUG_PRINT("lora发送成功 \r\n");
   //  }
 
   // res = SX1278_LoRaRxPacket(lora_receive_buf, &len, 5000);
 
   //  if (res == 0)
   //  {
-  //    printf("lora接收到数据长度  %d\r\n", len);
+  //    DEBUG_PRINT("lora接收到数据长度  %d\r\n", len);
   //    for (var = 0; var < len; ++var)
   //    {
-  //      printf("RX sucess %d\r\n", lora_receive_buf[var]);
+  //      DEBUG_PRINT("RX sucess %d\r\n", lora_receive_buf[var]);
   //    }
   //  }
   //  else if (res == 1)
   //  {
-  //    printf("lora接收超时!\r\n");
+  //    DEBUG_PRINT("lora接收超时!\r\n");
   //  }
   //  else if (res == 2)
   //  {
-  //    printf("lora的CRC eeror!\r\n");
+  //    DEBUG_PRINT("lora的CRC eeror!\r\n");
   //  }
 }
 
@@ -111,7 +111,7 @@ u8 SX1278_SPI_RW(u8 byte)
     retry++;
     if (retry > 200)
     {
-      printf("send spi outtime!\r\n");
+      DEBUG_PRINT("send spi outtime!\r\n");
       return 0;
     }
 
@@ -123,7 +123,7 @@ u8 SX1278_SPI_RW(u8 byte)
     retry++;
     if (retry > 200)
     {
-      printf("rec spi outtime!\r\n");
+      DEBUG_PRINT("rec spi outtime!\r\n");
       return 0;
     }
   } // 还没收完
@@ -319,7 +319,7 @@ void SX1278_Config(void)
   //		tmp |= 0x05;
   //		SX1278_Write_Reg(0x31,tmp);
   //		SX1278_Write_Reg(0x37,0x0C);
-  //        printf("SFactor=6\r\n");
+  //        DEBUG_PRINT("SFactor=6\r\n");
   //	}
   //	else
   //	{
@@ -401,7 +401,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
       timeout--;
     if (READ_SX1278_NIRQ())
     {
-      printf("SX1278_RX_NIRQ()\r\n");
+      DEBUG_PRINT("SX1278_RX_NIRQ()\r\n");
       irq_flag = SX1278_Read_Reg(LR_RegIrqFlags);
 
       if ((irq_flag & RFLR_IRQFLAGS_PAYLOADCRCERROR) == RFLR_IRQFLAGS_PAYLOADCRCERROR) // 如果是CRC校验错误中断
@@ -412,7 +412,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
       }
 
       addr = SX1278_Read_Reg(LR_RegFifoRxCurrentaddr); // last packet addr
-      printf("addr  %d\r\n", addr);
+      DEBUG_PRINT("addr  %d\r\n", addr);
       SX1278_Write_Reg(LR_RegFifoAddrPtr, addr);      // RxBaseAddr -> FiFoAddrPtr
       packet_size = SX1278_Read_Reg(LR_RegRxNbBytes); // Number for received bytes
       SX1278_Burst_Read(0x00, valid_data, packet_size);
@@ -474,7 +474,7 @@ u8 SX1278_LoRaTxPacket(u8 *valid_data, u8 packet_length)
     SX1278_DelayMs(5);
     if (READ_SX1278_NIRQ()) // Packet send over
     {
-      printf("SX1278_TX_NIRQ\r\n");
+      DEBUG_PRINT("SX1278_TX_NIRQ\r\n");
       SX1278_Read_Reg(LR_RegIrqFlags);
       SX1278_LoRaClearIrq(); // Clear irq
       //			SX1278_Standby();                                     //Entry Standby mode

@@ -37,8 +37,8 @@ void TIM2_IRQHandler()
   if (TIM_GetITStatus(TIM2, TIM_IT_Update))
   {
 
-    //     printf("当前计数=%d\r\n", tempcnt);
-    //     printf("重装载值=%d\r\n", temparr);
+    //     DEBUG_PRINT("当前计数=%d\r\n", tempcnt);
+    //     DEBUG_PRINT("重装载值=%d\r\n", temparr);
 
     if (tempcnt < temparr / 2)
     {
@@ -70,7 +70,7 @@ void TIM1_UP_IRQHandler(void)
     SleepCounter++;
     if (SleepCounter >= 150000) // 15s触发一次
     {
-      printf("EnterSTANDBYMode\r\n");
+      DEBUG_PRINT("EnterSTANDBYMode\r\n");
       SleepCounter = 0;
       // PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
     }
@@ -93,13 +93,13 @@ void DMA1_Channel3_IRQHandler(void)
   {
       dmaTransferComplete = 1;
     // 传输完成处理
-    printf("一开始DMA传输完成%d\r\n", dmaTransferComplete);
+    DEBUG_PRINT("一开始DMA传输完成%d\r\n", dmaTransferComplete);
 
-  //  printf("CFGR%x\r\n", DMA1_Channel3->CFGR);
+  //  DEBUG_PRINT("CFGR%x\r\n", DMA1_Channel3->CFGR);
 
-    //  printf("DMA_Mode_Circular%x\r\n", DMA_Mode_Circular);
+    //  DEBUG_PRINT("DMA_Mode_Circular%x\r\n", DMA_Mode_Circular);
 
-    // printf("结果%x\r\n", DMA1_Channel3->CFGR & 0x00b0);
+    // DEBUG_PRINT("结果%x\r\n", DMA1_Channel3->CFGR & 0x00b0);
 
 //    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0) // 0x00b0是循环，92是正常
 //      dma_circular++;
@@ -114,7 +114,7 @@ void DMA1_Channel3_IRQHandler(void)
 //      LCD_CS_1;
 //    }
 //   // Delay_Ms(1);
-//  printf("结束DMA传输完成%d\r\n", dma_circular);
+//  DEBUG_PRINT("结束DMA传输完成%d\r\n", dma_circular);
 
     // 清除中断标志
    DMA_ClearITPendingBit(DMA1_IT_TC3);
@@ -132,7 +132,7 @@ void EXTI7_0_IRQHandler(void)
   if (EXTI_GetITStatus(EXTI_Line2) != RESET)
   {
 
-    // printf("have key msg\r\n"); // 按键
+    // DEBUG_PRINT("have key msg\r\n"); // 按键
     MOTOR_SET(1);
     Delay_Ms(100);
    MOTOR_SET(0);
@@ -142,21 +142,21 @@ void EXTI7_0_IRQHandler(void)
     if (!KEY0)
     {
       key.state = KEY_STATE_PRESS;
-      printf("start press\r\n");
+      DEBUG_PRINT("start press\r\n");
     }
     else
     {
-      printf("end press\r\n");
+      DEBUG_PRINT("end press\r\n");
       if (key.LongKeyCounter <= HOLD_TIME)
       {
 
         key.event = KEY_EVENT_CLICK;
-         printf("KEY_EVENT_CLICK ontime\r\n");
+         DEBUG_PRINT("KEY_EVENT_CLICK ontime\r\n");
       }
       else
       {
         key.event = KEY_EVENT_LONG_CLICK;
-        printf("KEY_STATE_HOLD ontime\r\n");
+        DEBUG_PRINT("KEY_STATE_HOLD ontime\r\n");
         key.LongKeyCounter = 0;
       }
 
@@ -170,13 +170,13 @@ void EXTI7_0_IRQHandler(void)
       key.state = KEY_STATE_IDLE;
       key.LongKeyCounter = 0;
       key.enable = 1;
-      //  printf("disable key operate\r\n"); // 有消息发来就震动
+      //  DEBUG_PRINT("disable key operate\r\n"); // 有消息发来就震动
     }
   }
 
   if (EXTI_GetITStatus(EXTI_Line6) != RESET)
   {
-    //  printf("have lora msg\r\n"); // 有消息发来就震动
+    //  DEBUG_PRINT("have lora msg\r\n"); // 有消息发来就震动
     MOTOR_SET(1);
     Delay_Ms(100);
    MOTOR_SET(0);
@@ -189,21 +189,21 @@ void EXTI7_0_IRQHandler(void)
 
     if (res == 0)
     {
-      printf("lora接收到数据长度  %d\r\n", len);
+      DEBUG_PRINT("lora接收到数据长度  %d\r\n", len);
       for (var = 0; var < len; ++var)
       {
-        printf("RX sucess %d\r\n", lora_receive_buf[var]);
+        DEBUG_PRINT("RX sucess %d\r\n", lora_receive_buf[var]);
       }
 
 
     }
     else if (res == 1)
     {
-      printf("lora接收超时!\r\n");
+      DEBUG_PRINT("lora接收超时!\r\n");
     }
     else if (res == 2)
     {
-      printf("lora的CRC erro!\r\n");
+      DEBUG_PRINT("lora的CRC erro!\r\n");
     }
 
     EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
@@ -217,13 +217,13 @@ void EXTI7_0_IRQHandler(void)
     if (CHARGING)
     {
 
-      // printf("start chage\r\n");
+      DEBUG_PRINT("start chage\r\n");
     }
 
     else
     {
 
-      //   printf("end chage\r\n");
+     DEBUG_PRINT("end chage\r\n");
     }
 
     MOTOR_SET(1);
@@ -243,7 +243,7 @@ void EXTI7_0_IRQHandler(void)
 void NMI_Handler(void)
 { // 处理 NMI 异常的代码
   // 例如，记录错误信息或触发系统安全机制
-  printf("start NMI_Handler\r\n");
+  DEBUG_PRINT("start NMI_Handler\r\n");
   while (1)
   {
   }
@@ -260,7 +260,7 @@ void HardFault_Handler(void)
 {
   // 处理 HardFault 异常的代码
   // 例如，记录故障信息、尝试恢复系统或重启系统
-  printf("start HardFault_Handler\r\n");
+  DEBUG_PRINT("start HardFault_Handler\r\n");
   while (1)
   {
   }

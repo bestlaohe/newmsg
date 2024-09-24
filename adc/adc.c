@@ -186,17 +186,21 @@ void show_battery()
         {
             strX = 64;                            // 3 位数的显示位置
             color = GREEN;                        // 颜色
-            sprintf(strBuf, "%03d:", percentage); // 显示3位数字
+           // sprintf(strBuf, "%03d:", percentage); // 显示3位数字
+
+             intToStr(percentage, strBuf, 3) ;
         }
         else if (percentage < 10)
         {
             strX = 86;                            // 1 位数的显示位置
             color = RED;                          // 颜色
-            sprintf(strBuf, "%01d:", percentage); // 显示1位数字
+            //sprintf(strBuf, "%01d:", percentage); // 显示1位数字
+             intToStr(percentage, strBuf, 1) ;
         }
         else
         {
-            sprintf(strBuf, "%02d:", percentage); // 显示2位数字
+             intToStr(percentage, strBuf, 2) ;
+           // sprintf(strBuf, "%02d:", percentage); // 显示2位数字
         }
 
         Paint_DrawString(strX, 0, strBuf, &Font16_Num, BLACK, WHITE, '0');

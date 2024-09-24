@@ -240,3 +240,37 @@ void *_sbrk(ptrdiff_t incr)
 
 
 
+void intToStr(int num, char *str, int minWidth) {
+    int i = 0;
+    _Bool isNegative = 0;
+
+    // 处理负数
+    if (num < 0) {
+        isNegative = 1;
+        num = -num;
+    }
+
+    // 处理数字部分
+    do {
+        str[i++] = (num % 10) + '0';
+        num /= 10;
+    } while (num > 0);
+
+    // 添加负号
+    if (isNegative) {
+        str[i++] = '-';
+    }
+
+    // 如果需要，填充前导零
+    while (i < minWidth) {
+        str[i++] = '0';
+    }
+
+    // 反转字符串
+    str[i] = '\0';
+    for (int j = 0; j < i / 2; j++) {
+        char temp = str[j];
+        str[j] = str[i - j - 1];
+        str[i - j - 1] = temp;
+    }
+}

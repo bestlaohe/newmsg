@@ -98,7 +98,7 @@ void Paint_NewImage(UWORD Width, UWORD Height, UWORD Rotate, UWORD Color)
     Paint.Color = Color;
     Paint.WidthByte = Width;
     Paint.HeightByte = Height;
-    // printf("WidthByte = %d, HeightByte = %d\r\n", Paint.WidthByte, Paint.HeightByte);
+    // DEBUG_PRINT("WidthByte = %d, HeightByte = %d\r\n", Paint.WidthByte, Paint.HeightByte);
 
     Paint.Rotate = Rotate;
     Paint.Mirror = MIRROR_NONE;
@@ -142,12 +142,12 @@ void Paint_SetRotate(UWORD Rotate)
 {
     if (Rotate == ROTATE_0 || Rotate == ROTATE_90 || Rotate == ROTATE_180 || Rotate == ROTATE_270)
     {
-        // printf("Set image Rotate %d\r\n", Rotate);
+        // DEBUG_PRINT("Set image Rotate %d\r\n", Rotate);
         Paint.Rotate = Rotate;
     }
     else
     {
-        // printf("rotate = 0, 90, 180, 270\r\n");
+        // DEBUG_PRINT("rotate = 0, 90, 180, 270\r\n");
         //   exit(0);
     }
 }
@@ -162,12 +162,12 @@ void Paint_SetMirroring(UBYTE mirror)
     if (mirror == MIRROR_NONE || mirror == MIRROR_HORIZONTAL ||
         mirror == MIRROR_VERTICAL || mirror == MIRROR_ORIGIN)
     {
-        //  printf("mirror image x:%s, y:%s\r\n", (mirror & 0x01) ? "mirror" : "none", ((mirror >> 1) & 0x01) ? "mirror" : "none");
+        //  DEBUG_PRINT("mirror image x:%s, y:%s\r\n", (mirror & 0x01) ? "mirror" : "none", ((mirror >> 1) & 0x01) ? "mirror" : "none");
         Paint.Mirror = mirror;
     }
     else
     {
-        //  printf("mirror should be MIRROR_NONE, MIRROR_HORIZONTAL, \
+        //  DEBUG_PRINT("mirror should be MIRROR_NONE, MIRROR_HORIZONTAL, \
         MIRROR_VERTICAL or MIRROR_ORIGIN\r\n");
         // exit(0);
     }
@@ -184,7 +184,7 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
 {
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
-        printf("Paint_SetPixel1 erro %d,%d\r\n", Xpoint, Ypoint);
+        DEBUG_PRINT("Paint_SetPixel1 erro %d,%d\r\n", Xpoint, Ypoint);
         return;
     }
     UWORD X, Y;
@@ -212,27 +212,27 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
         return;
     }
 
-    switch (Paint.Mirror)
-    {
-    case MIRROR_NONE:
-        break;
-    case MIRROR_HORIZONTAL:
-        X = Paint.WidthMemory - X - 1;
-        break;
-    case MIRROR_VERTICAL:
-        Y = Paint.HeightMemory - Y - 1;
-        break;
-    case MIRROR_ORIGIN:
-        X = Paint.WidthMemory - X - 1;
-        Y = Paint.HeightMemory - Y - 1;
-        break;
-    default:
-        return;
-    }
+    // switch (Paint.Mirror)
+    // {
+    // case MIRROR_NONE:
+    //     break;
+    // case MIRROR_HORIZONTAL:
+    //     X = Paint.WidthMemory - X - 1;
+    //     break;
+    // case MIRROR_VERTICAL:
+    //     Y = Paint.HeightMemory - Y - 1;
+    //     break;
+    // case MIRROR_ORIGIN:
+    //     X = Paint.WidthMemory - X - 1;
+    //     Y = Paint.HeightMemory - Y - 1;
+    //     break;
+    // default:
+    //     return;
+    // }
 
     if (X > Paint.WidthMemory || Y > Paint.HeightMemory)
     {
-        printf("Paint_SetPixel2 erro,x = %d, y = %d\r\n", X, Y);
+        DEBUG_PRINT("Paint_SetPixel2 erro,x = %d, y = %d\r\n", X, Y);
         return;
     }
 
@@ -274,7 +274,7 @@ void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color, DOT_PIXEL Dot_Pixe
 {
     if (Xpoint >= Paint.Width || Ypoint >= Paint.Height)
     {
-        printf("Paint_DrawPoint erro,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
+        DEBUG_PRINT("Paint_DrawPoint erro,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
         return;
     }
 
@@ -330,7 +330,7 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     if (Xstart > Paint.Width || Ystart > Paint.Height ||
         Xend > Paint.Width || Yend > Paint.Height)
     {
-        printf("Paint_DrawLine erro,Xstart = %d, Ystart = %d,Xend = %d, Yend = %d\r\n", Xstart, Ystart, Xend, Yend);
+        DEBUG_PRINT("Paint_DrawLine erro,Xstart = %d, Ystart = %d,Xend = %d, Yend = %d\r\n", Xstart, Ystart, Xend, Yend);
 
         return;
     }
@@ -357,8 +357,8 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
 
     Delay_Ms(1);
     LCD_0IN85_SetWindows(Xstart, Ystart, Xend, Yend); // 准备好窗口和复位
-// printf("Xstart, Ystart, Xend, Yend = %d= %d= %d= %d\r\n", Xstart, Ystart, Xend, Yend);
-// printf("wwwwdmaFont->Width:%d\r\n", dmaFont->Width);
+// DEBUG_PRINT("Xstart, Ystart, Xend, Yend = %d= %d= %d= %d\r\n", Xstart, Ystart, Xend, Yend);
+// DEBUG_PRINT("wwwwdmaFont->Width:%d\r\n", dmaFont->Width);
 
 #endif
 
@@ -368,7 +368,7 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
         // Painted dotted line, 2 point is really virtual
         if (Line_Style == LINE_STYLE_DOTTED && Dotted_Len % 3 == 0)
         {
-            // printf("LINE_DOTTED\r\n");
+            // DEBUG_PRINT("LINE_DOTTED\r\n");
             // Paint_DrawPoint(Xpoint, Ypoint, IMAGE_BACKGROUND, Line_width, DOT_STYLE_DFT);
             // Dotted_Len = 0;
         }
@@ -385,14 +385,14 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
         }
         if (2 * Esp <= dx) // 跑这里
         {
-            // printf("2 * Esp = %d\r\n", 2 * Esp );
+            // DEBUG_PRINT("2 * Esp = %d\r\n", 2 * Esp );
             if (Ypoint == Yend)
                 break;
             Esp += dx;
             Ypoint += YAddway;
         }
     }
-    // printf("Dotted_Len = %d\r\n", Dotted_Len);
+    // DEBUG_PRINT("Dotted_Len = %d\r\n", Dotted_Len);
 
 #if USE_DMA
     Lcd_Refrsh_DMA(Dotted_Len * 2);
@@ -417,7 +417,7 @@ void Paint_DrawRectangle(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     if (Xstart > Paint.Width || Ystart > Paint.Height ||
         Xend > Paint.Width || Yend > Paint.Height)
     {
-        printf("Paint_DrawRectangle erro,Xstart = %d, Ystart = %d,Xend = %d, Yend = %d\r\n", Xstart, Ystart, Xend, Yend);
+        DEBUG_PRINT("Paint_DrawRectangle erro,Xstart = %d, Ystart = %d,Xend = %d, Yend = %d\r\n", Xstart, Ystart, Xend, Yend);
 
         return;
     }
@@ -454,7 +454,7 @@ void Paint_DrawCircle(UWORD X_Center, UWORD Y_Center, UWORD Radius,
 {
     if (X_Center > Paint.Width || Y_Center >= Paint.Height)
     {
-        printf("Paint_DrawCircle erro,X_Center = %d, Y_Center = %d\r\n", X_Center, Y_Center);
+        DEBUG_PRINT("Paint_DrawCircle erro,X_Center = %d, Y_Center = %d\r\n", X_Center, Y_Center);
 
         return;
     }
@@ -533,82 +533,61 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
                     sFONT *Font, UWORD Color_Background, UWORD Color_Foreground,
                     const char offsetAcsii)
 {
+    // 局部变量
     UWORD Page, Column;
-    dmaXpoint = Xpoint;
-    dmaYpoint = Ypoint;
-    dmaFont = Font;
+    uint32_t Char_Offset = (Acsii_Char - offsetAcsii) * Font->Height * ((Font->Width + 7) / 8);
+    const unsigned char *ptr = &Font->table[Char_Offset];
 
+    // 检查坐标范围
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
-
-        printf("Paint_DrawChar erro,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
-
+        DEBUG_PRINT("Paint_DrawChar error, Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
         return;
     }
 
-    uint32_t Char_Offset = (Acsii_Char - offsetAcsii) * Font->Height * (Font->Width / 8 + (Font->Width % 8 ? 1 : 0));
-    const unsigned char *ptr = &Font->table[Char_Offset];
-
 #if USE_DMA
     Delay_Ms(1);
-    LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备好窗口和复位
+    LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备窗口
 #endif
 
-    // printf("Paint_DrawChar rg,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
-
+    // 遍历字符的每一行和每一列
     for (Page = 0; Page < Font->Height; Page++)
     {
         for (Column = 0; Column < Font->Width; Column++)
         {
-            // printf("Paint_DrawChar rg,Xpoint + Column = %d, Column = %d\r\n", Xpoint + Column, Column);
-            // To determine whether the font background color and screen background color is consistent
-            if (FONT_BACKGROUND == Color_Background)
+            // 计算当前像素的位
+            uint8_t pixel_bit = *ptr & (0x80 >> (Column % 8));
+            if (pixel_bit)
             {
-                // 当背景色和字体背景色相同时，意味着不需要绘制背景，只需要绘制前景色
-                if (*ptr & (0x80 >> (Column % 8)))
-                {
-                    Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Foreground);
-                    // Paint_DrawPoint(Xpoint + Column, Ypoint + Page, Color_Foreground, DOT_PIXEL_DFT, DOT_STYLE_DFT);
-                }
+                Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Foreground);
             }
-            else
+            else if (Color_Background != FONT_BACKGROUND) // 如果背景色不同，绘制背景色
             {
-                // 当背景色和字体背景色不同时，需要同时绘制前景色和背景色
-                if (*ptr & (0x80 >> (Column % 8)))
-                {
-                    Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Foreground);
-                    // Paint_DrawPoint(Xpoint + Column, Ypoint + Page, Color_Foreground, DOT_PIXEL_DFT, DOT_STYLE_DFT);
-                }
-                else
-                {
-                    Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Background);
-                    // Paint_DrawPoint(Xpoint + Column, Ypoint + Page, Color_Background, DOT_PIXEL_DFT, DOT_STYLE_DFT);
-                }
+                Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Background);
             }
 
-            // One pixel is 8 bits
+            // 每8列更新一次指针
             if (Column % 8 == 7)
                 ptr++;
-        } // Write a line
+        }
+        // 每行结束后可能需要更新指针
         if (Font->Width % 8 != 0)
             ptr++;
-    } // Write all
+    }
 
 #if USE_DMA
-    // printf("显示小图%d\r\n",dmaFont->Width * dmaFont->Height * 2 / Y_MAX_PIXEL * X_MAX_PIXEL * 2);
-    if (dmaFont->Width * dmaFont->Height * 2 < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
+    int total_pixels = dmaFont->Width * dmaFont->Height * 2;
+    if (total_pixels < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
     {
-        // printf("显示小图\r\n");
-        Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2);
+        Lcd_Refrsh_DMA(total_pixels); // 刷新小图
     }
-    if (dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2 && dmaFont->Width * dmaFont->Height * 2 > Y_MAX_PIXEL * X_MAX_PIXEL * 2) // 补包操作
+    if (total_pixels % (Y_MAX_PIXEL * X_MAX_PIXEL * 2) && total_pixels > Y_MAX_PIXEL * X_MAX_PIXEL * 2)
     {
-        // printf("Surplus package\r\n");
-        Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2); // 把余数显示掉
+        Lcd_Refrsh_DMA(total_pixels % (Y_MAX_PIXEL * X_MAX_PIXEL * 2)); // 补包操作
     }
-
 #endif
 }
+
 
 void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
                     sFONT *Font, UWORD Color_Background, UWORD Color_Foreground)
@@ -618,7 +597,7 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
 
-        printf("Paint_Drawicon erro,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
+        DEBUG_PRINT("Paint_Drawicon erro,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
 
         return;
     }
@@ -637,7 +616,7 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     {
         for (Column = 0; Column < Font->Width; Column++)
         {
-            // printf("nwo:%08x\r\n", DBGMCU_GetCHIPID());
+            // DEBUG_PRINT("nwo:%08x\r\n", DBGMCU_GetCHIPID());
 
             // To determine whether the font background color and screen background color is consistent
             if (FONT_BACKGROUND == Color_Background)
@@ -669,15 +648,15 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     } // Write all
 
 #if USE_DMA
-    // printf("显示小图%d\r\n",dmaFont->Width * dmaFont->Height * 2 / Y_MAX_PIXEL * X_MAX_PIXEL * 2);
+    // DEBUG_PRINT("显示小图%d\r\n",dmaFont->Width * dmaFont->Height * 2 / Y_MAX_PIXEL * X_MAX_PIXEL * 2);
     if (dmaFont->Width * dmaFont->Height * 2 < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
     {
-        // printf("显示小图\r\n");
+        // DEBUG_PRINT("显示小图\r\n");
         Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2);
     }
     if (dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2) // 补包操作
     {
-        // printf("EnterSTANDBYMode\r\n");
+        // DEBUG_PRINT("EnterSTANDBYMode\r\n");
         Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2); // 把余数显示掉
     }
 
@@ -703,7 +682,7 @@ void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
 
     if (Xstart > Paint.Width || Ystart > Paint.Height)
     {
-        printf("Paint_DrawString erro,Xstart = %d, Ystart = %d\r\n", Xstart, Ystart);
+        DEBUG_PRINT("Paint_DrawString erro,Xstart = %d, Ystart = %d\r\n", Xstart, Ystart);
 
         return;
     }
@@ -879,7 +858,7 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
 
-        printf("Paint_DrawNum erro %d,%d\r\n", Xpoint, Ypoint);
+        DEBUG_PRINT("Paint_DrawNum erro %d,%d\r\n", Xpoint, Ypoint);
 
         return;
     }

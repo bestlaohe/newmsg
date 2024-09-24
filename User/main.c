@@ -23,6 +23,8 @@
 #define PWM_FRE 10000
 #define PWM_Duty 50
 
+
+
 // 定义按键事件
 typedef enum
 {
@@ -41,9 +43,12 @@ int main(void)
 
   /*********************基本内容初始化******************************/
   SystemCoreClockUpdate();   // 48000000系统时钟刷新3324-3212=100k
+#if DEBUG_ENABLED
   USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死3956-3324=600k
-  printf("\r\n\r\n\r\n\r\nSystemClk:%d\r\n", SystemCoreClock);
-  //  printf("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
+#endif
+
+  DEBUG_PRINT("\r\n\r\n\r\n\r\nSystemClk:%d\r\n", SystemCoreClock);
+  //  DEBUG_PRINT("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
   Delay_Init(); // 延时初始化需要在延时前，不然会卡死4012-3956=100字节
   FLASH_Unlock();
   FLASH_UserOptionByteConfig(OB_IWDG_SW, OB_STDBY_NoRST, OB_RST_NoEN, OB_PowerON_Start_Mode_BOOT);
@@ -77,7 +82,7 @@ int main(void)
     switch (page) // 处理页面
     {
     case PAGE_SEND: // 发送界面
-      //chat_page(&Font8_En);
+     chat_page(&Font8_En);
       if (key.event == KEY_EVENT_LONG_CLICK) // 返回
 
         page = PAGE_HISTROY_CHAT;

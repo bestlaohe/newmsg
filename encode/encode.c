@@ -25,17 +25,17 @@ void Encoder_Scan()
     if (precircle * 12 + precnt > circle * 12 + TIM2->CNT)
     {
       encode.state = ENCODE_EVENT_DOWN;
-      // printf("向上");
+      // DEBUG_PRINT("向上");
     }
     encode.state = ENCODE_EVENT_UP;
     if (precircle * 12 + precnt < circle * 12 + TIM2->CNT)
     {
       encode.state = ENCODE_EVENT_DOWN;
-      // printf("向下");
+      // DEBUG_PRINT("向下");
     }
 
-    // printf("precircle*12+precnt= %d circle*12+TIM2->CNT %d step\r\n", precircle * 12 + precnt, circle * 12 + TIM2->CNT);
-    // printf("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
+    // DEBUG_PRINT("precircle*12+precnt= %d circle*12+TIM2->CNT %d step\r\n", precircle * 12 + precnt, circle * 12 + TIM2->CNT);
+    // DEBUG_PRINT("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
     precircle = circle;
     precnt = TIM2->CNT;
 

@@ -8,40 +8,37 @@
 #include "screen_api.h"
 #include <stdlib.h>
 #include <stdio.h>
-void startup_animation()
-{
+#define FINAL_SIZE 48   // 最终图标大小
+#define MAX_SIZE 80     // 最大放大尺寸
+#define STEP 2          // 每次放大步长
+#define WHITE_BASE 819  // 白色基数
 
-    int final_size = 48; // 最终图标大小
-    int step = 2;        // 每次放大步长
+// 绘制图标的辅助函数
+void draw_icon(int size, int offsetX, int offsetY) {
+    int icon_x = offsetX - size / 2;
+    int icon_y = offsetY - size / 2;
+    Paint_DrawChar(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * WHITE_BASE, 0);
+}
 
-    for (int size = 0; size <= 80; size += step)
-    {
+void startup_animation() {
+    for (int size = 0; size <= MAX_SIZE; size += STEP) {
+        // 居中位置
+        int centerX = LCD_WIDTH / 2;
+        int centerY = LCD_HEIGHT / 2;
 
-        // 计算图标左上角位置，使其中心保持在屏幕中央
-        int icon_x = LCD_WIDTH - final_size - size / 2;
-        int icon_y = LCD_HEIGHT - final_size - size / 2;
-
-        Paint_DrawChar(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819, 0);
-
-        icon_x = size / 2;
-        icon_y = size / 2;
-        Paint_DrawChar(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819, 0);
-
-        // 从右上角移动到中心
-        icon_x = LCD_WIDTH - final_size - size / 2;
-        icon_y = size / 2;
-        Paint_DrawChar(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819, 0);
-
-        // 从左下角移动到中心
-        icon_x = size / 2;
-        icon_y = LCD_HEIGHT - final_size - size / 2;
-        Paint_DrawChar(icon_x, icon_y, 0, &Font24_logo, BLACK, WHITE - size * 819, 0);
+        // 绘制四个位置的图标
+        draw_icon(size, centerX, centerY); // 中心
+        draw_icon(size, LCD_WIDTH - FINAL_SIZE, centerY); // 右上角
+        draw_icon(size, centerX, LCD_HEIGHT - FINAL_SIZE); // 左下角
+        draw_icon(size, 0, size); // 左上角
     }
+
     LCD_0IN85_Clear(BLACK);
     Paint_DrawChar(40, 40, 0, &Font24_logo, BLACK, WHITE, 0);
     Delay_Ms(500);
     LCD_0IN85_Clear(BLACK);
 }
+
 
 LCD_0IN85_ATTRIBUTES LCD;
 uint8_t lcd_gram[Y_MAX_PIXEL * X_MAX_PIXEL * 2] = {0}; ///< 开辟一块内存空间当显存使用
@@ -51,36 +48,36 @@ void LCD_SHOW_API_INIT()
 
     LCD_0IN85_Init(VERTICAL);
     Delay_Ms(300);
-    // printf("Set Clear and Display Funtion\r\n");
+    // DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     LCD_0IN85_Clear(BLACK);
-    //  printf("Set Clear and Display Funtion\r\n");
+    //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
 
-    //  printf("Set Clear and Display Funtion\r\n");
+    //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
 
     //    LCD_0IN85_Init(VERTICAL);
     //      LCD_0IN85_Clear(BLACK);
     //
-    //      printf("Paint_NewImage\r\n");
+    //      DEBUG_PRINT("Paint_NewImage\r\n");
     //      Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_180, WHITE);
     //
-    //      printf("Set Clear and Display Funtion\r\n");
+    //      DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     //      //Paint_SetClearFuntion(LCD_0IN85_Clear);
     //     // Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
     //
-    //      printf("Paint_Clear\r\n");
+    //      DEBUG_PRINT("Paint_Clear\r\n");
     //      //Paint_Clear(BLACK);
     //
-    //      printf("drawing...\r\n");
+    //      DEBUG_PRINT("drawing...\r\n");
     //      Paint_SetRotate(0);
 
-    //  printf("Set Clear and Display Funtion\r\n");
+    //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     // Paint_SetClearFuntion(LCD_0IN85_Clear);
     // Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
 
-    //  printf("LCD_0IN85_Clear\r\n");
+    //  DEBUG_PRINT("LCD_0IN85_Clear\r\n");
 
-    // printf("drawing...\r\n");
+    // DEBUG_PRINT("drawing...\r\n");
     //  Paint_SetRotate(0);
 
     //       Paint_DrawString(5, 10, "123",        &Font24,  YELLOW, RED);
@@ -102,7 +99,7 @@ void LCD_SHOW_API_INIT()
     //    Paint_DrawCircle(80,75,  25,        GREEN   ,DOT_PIXEL_2X2,DRAW_FILL_EMPTY);
     //    Delay_Ms(3000);
     //
-    //    printf("quit...\r\n");
+    //    DEBUG_PRINT("quit...\r\n");
     //    //DEV_Module_Exit();
 }
 
@@ -347,7 +344,7 @@ void LCD_0IN85_Clear(UWORD Color)
             dma_circular++;
 
             // 打印当前传输次数，帮助调试
-            printf("Current DMA transfers: %d/%d\r\n", dma_circular, total_dma_transfers);
+            DEBUG_PRINT("Current DMA transfers: %d/%d\r\n", dma_circular, total_dma_transfers);
         }
     }
 
@@ -358,7 +355,7 @@ void LCD_0IN85_Clear(UWORD Color)
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
     {
         // 可以考虑在此处添加超时逻辑，以防死循环
-        printf("Waiting for SPI transmit buffer to be empty...\r\n"); // 打印等待信息
+        DEBUG_PRINT("Waiting for SPI transmit buffer to be empty...\r\n"); // 打印等待信息
     }
 
     // 禁用DMA和SPI
@@ -367,7 +364,7 @@ void LCD_0IN85_Clear(UWORD Color)
     DMA_ClearITPendingBit(DMA1_IT_TC3);
 
     LCD_CS_1;
-    printf("LCD_0IN85_Clear OK\r\n"); // 等待SPI发送缓冲区为空
+    DEBUG_PRINT("LCD_0IN85_Clear OK\r\n"); // 等待SPI发送缓冲区为空
 
 #else
  UWORD i, j;
@@ -432,7 +429,7 @@ void Lcd_Refrsh_DMA(int pic_size)
     // 将整个数据搬运一次到DMA
     LCD_DC_1;
     LCD_CS_0;
-    // printf("开始刷屏\r\n");
+    // DEBUG_PRINT("开始刷屏\r\n");
     dmaTransferComplete = 0;
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
     DMA_Cmd(DMA1_Channel3, DISABLE);
@@ -442,11 +439,11 @@ void Lcd_Refrsh_DMA(int pic_size)
     DMA_Cmd(DMA1_Channel3, ENABLE);
 
     //       while (DMA_GetFlagStatus(DMA1_FLAG_TC3) == RESET)
-    //        printf("wait dma ok\r\n"); // 等待通道3传输完成标志
+    //        DEBUG_PRINT("wait dma ok\r\n"); // 等待通道3传输完成标志
 
     while (!dmaTransferComplete)
     {
-        printf("wait normoldma ok %d\r\n", dmaTransferComplete); // 等待通道3传输完成标志
+        DEBUG_PRINT("wait normoldma ok %d\r\n", dmaTransferComplete); // 等待通道3传输完成标志
     }
     dmaTransferComplete = 0;
     DMA_ClearFlag(DMA1_FLAG_TC3); // 清除通道3传输完成标志
@@ -462,8 +459,8 @@ void Lcd_Refrsh_DMA(int pic_size)
     LCD_CS_1;
 
     //    while (dma_circular != 0)
-    //        printf("wait cycle dma：%d\r\n", dma_circular);
-    printf("end normoldma ok\r\n");
+    //        DEBUG_PRINT("wait cycle dma：%d\r\n", dma_circular);
+    DEBUG_PRINT("end normoldma ok\r\n");
 #endif
 }
 /******************************************************************************
@@ -477,27 +474,27 @@ void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
 {
 
     //
-    //   printf("x = %d, y = %d,dmaXpoint:%d,dmaYpoint:%d\r\n",x,y,dmaXpoint,dmaYpoint);
-    //      printf("dmaFont->Width:%d\r\n", dmaFont->Width);
+    //   DEBUG_PRINT("x = %d, y = %d,dmaXpoint:%d,dmaYpoint:%d\r\n",x,y,dmaXpoint,dmaYpoint);
+    //      DEBUG_PRINT("dmaFont->Width:%d\r\n", dmaFont->Width);
     //
 
 #if USE_DMA
 
     ///< 使用DMA的话，从对点刷屏到对显存数组写入数据，DMA传输数据的时候再统一进行传输
     int index = ((y - dmaYpoint) * (dmaFont->Width) + (x - dmaXpoint)) * 2;
-    // printf("index开始偏移前:%d\r\n", index );
+    // DEBUG_PRINT("index开始偏移前:%d\r\n", index );
 
     index = index - X_MAX_PIXEL * Y_MAX_PIXEL * 2 * dmaXoffset / X_MAX_PIXEL;
     lcd_gram[index] = (Color >> 8) & 0xff; // 高字节
     lcd_gram[index + 1] = Color & 0xFF;    // 低字节
-                                           //  printf("开始偏移:%d\r\n", index + 1);
+                                           //  DEBUG_PRINT("开始偏移:%d\r\n", index + 1);
     if ((index + 1) == (Y_MAX_PIXEL * X_MAX_PIXEL * 2 - 1))
     {
 
         Lcd_Refrsh_DMA(Y_MAX_PIXEL * X_MAX_PIXEL * 2);
         dmaXoffset = X_MAX_PIXEL + dmaXoffset;
         dmaYoffset = Y_MAX_PIXEL + dmaYoffset;
-        printf("dma ok\r\n");
+        DEBUG_PRINT("dma ok\r\n");
     }
 
 #else
