@@ -26,7 +26,7 @@
 #define DEBUG_ENABLED 0// 1为开启，0为关闭
 
 #if DEBUG_ENABLED
-    #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)
+    #define DEBUG_PRINT(fmt, ...) my_uart_print(fmt)//printf(fmt, ##__VA_ARGS__)
 #else
     #define DEBUG_PRINT(fmt, ...)
 #endif
@@ -58,6 +58,7 @@ void Delay_Ms(uint32_t n);
 void USART_Printf_Init(uint32_t baudrate);
 void SDI_Printf_Enable(void);
 void intToStr(int num, char *str, int minWidth) ;
+void my_uart_print(char *str);
 #ifdef __cplusplus
 }
 #endif

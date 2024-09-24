@@ -43,9 +43,9 @@ int main(void)
 
   /*********************基本内容初始化******************************/
   SystemCoreClockUpdate();   // 48000000系统时钟刷新3324-3212=100k
-#if DEBUG_ENABLED
+
   USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死3956-3324=600k
-#endif
+
 
   DEBUG_PRINT("\r\n\r\n\r\n\r\nSystemClk:%d\r\n", SystemCoreClock);
   //  DEBUG_PRINT("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
