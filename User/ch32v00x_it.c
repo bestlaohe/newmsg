@@ -22,7 +22,7 @@ volatile int dmaTransferComplete = 0;
 
 volatile int circle = 0;
 int SleepCounter = 0;
-char lorareceivebuf[100]={0};
+char lora_receive_buf[50]={0};
 
 Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
@@ -185,14 +185,14 @@ void EXTI7_0_IRQHandler(void)
     u8 res; // 操作的返回
     u8 len;
     u8 var;
-    res = SX1278_LoRaRxPacket(lorareceivebuf, &len, 100);
+    res = SX1278_LoRaRxPacket(lora_receive_buf, &len, 100);
 
     if (res == 0)
     {
       printf("lora接收到数据长度  %d\r\n", len);
       for (var = 0; var < len; ++var)
       {
-        printf("RX sucess %d\r\n", lorareceivebuf[var]);
+        printf("RX sucess %d\r\n", lora_receive_buf[var]);
       }
 
 

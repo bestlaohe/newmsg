@@ -21,8 +21,8 @@ const u8 sx1276_7_8FreqTbl[][3] =
 #define SX1278_MAX_BUFSIZE 64 // 定义接收最大数据长度
 
 // 参数配置部分，其中只有载波频率是可以通过程序更改，其参数设置后为固定值
-u8 Lora_Freq = LORAFREQ_434MHZ;         //  默认频率设置
-u8 Lora_Power = LORAPOWER_20DBM;        //  输出功率设置
+u8 Lora_Freq = LORAFREQ_434MHZ;         //  默认频率设置428-439MHz
+u8 Lora_Power = LORAPOWER_20DBM;        //  输出功率设置11，14，17，20
 u8 Lora_SpreadFactor = 7;               //  设置扩频因子在7~12
 u8 Lora_BandWide = LORABW_125KHz;       //  带宽设置
 u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
@@ -58,25 +58,25 @@ void SX1278_test() // SPI初始化14196-13828=368
   //  printf("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
   //  printf("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
 
-  // u8 lorasendbuf[255] = "abcd"; //{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-  // u8 lorareceivebuf[21];
+  // u8 lora_send_buf[255] = "abcd"; //{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  // u8 lora_receive_buf[21];
   // u8 res; // 操作的返回
   // u8 len;
   // u8 var;
 
-  // if (!SX1278_LoRaTxPacket(lorasendbuf, 4))
+  // if (!SX1278_LoRaTxPacket(lora_send_buf, 4))
   //  {
   //    printf("lora发送成功 \r\n");
   //  }
 
-  // res = SX1278_LoRaRxPacket(lorareceivebuf, &len, 5000);
+  // res = SX1278_LoRaRxPacket(lora_receive_buf, &len, 5000);
 
   //  if (res == 0)
   //  {
   //    printf("lora接收到数据长度  %d\r\n", len);
   //    for (var = 0; var < len; ++var)
   //    {
-  //      printf("RX sucess %d\r\n", lorareceivebuf[var]);
+  //      printf("RX sucess %d\r\n", lora_receive_buf[var]);
   //    }
   //  }
   //  else if (res == 1)

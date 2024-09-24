@@ -204,7 +204,6 @@ void Paint_SetRotate(UWORD Rotate);
 void Paint_SetMirroring(UBYTE mirror);
 void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color);
 
-void LCD_0IN85_Clear(UWORD Color);
 void Paint_ClearWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD Color);
 
 

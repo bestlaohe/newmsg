@@ -19,7 +19,7 @@ extern Key key;
 extern Encode encode;
 
 
-extern char lorareceivebuf[255];
+extern char lora_receive_buf[50];
 
 
 

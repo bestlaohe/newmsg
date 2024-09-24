@@ -240,15 +240,7 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
     LCD_0IN85_DrawPaint(X, Y, Color); // LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
 }
 
-///******************************************************************************
-// function:	Clear the color of the picture
-// parameter:
-//     Color   :   Painted colors
-//******************************************************************************/
-// void LCD_0IN85_Clear(UWORD Color)
-//{
-//     CLEAR(Color);
-// }
+
 
 /******************************************************************************
 function:	Clear the color of a window

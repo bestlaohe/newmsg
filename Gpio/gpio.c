@@ -66,7 +66,7 @@ void My_GPIO_Init()
 
     MOTOR_OFF;
 }
-int8_t shake_mode = 1; // 初始震动模式值
+u8 shake_mode = 1; // 初始震动模式值
 void MOTOR_SET(int state)
 {
 

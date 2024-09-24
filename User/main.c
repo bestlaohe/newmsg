@@ -56,9 +56,8 @@ int main(void)
   LCD_SHOW_API_INIT();                                               // 屏幕测试******8404-6224=2180
   EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
   Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
-
   SX1278_Init(434);                          // lora的初始化*****10268-9620=648
- // startup_animation();                       // 11732-10512=500
+  startup_animation();                       // 11732-10512=500
   IWDG_Feed_Init(IWDG_Prescaler_128, 10000); // 4秒不喂狗就复位   低频时钟内部128khz除以128=1000，1除以1000乘以4000=4s****12467-12356=111字节
 
   //    LCD_0IN85_Clear(BLUE);
@@ -67,7 +66,6 @@ int main(void)
   //
   //    LCD_0IN85_Clear(GREEN);
   //  show_battery(); // 电池电量显示出来1412-264=1100
- chat_page(&Font8_En);
 
   while (1)
   {
@@ -79,7 +77,7 @@ int main(void)
     switch (page) // 处理页面
     {
     case PAGE_SEND: // 发送界面
-
+      //chat_page(&Font8_En);
       if (key.event == KEY_EVENT_LONG_CLICK) // 返回
 
         page = PAGE_HISTROY_CHAT;
@@ -113,7 +111,7 @@ int main(void)
 
     case PAGE_SETTING: // 设置界面
 
-    //  setting_page();
+      setting_page();
 
       if (key.event == KEY_EVENT_LONG_CLICK)
       {
@@ -124,7 +122,7 @@ int main(void)
 
     case PAGE_INFO: // 信息界面
 
-      // info_page();
+      info_page();
 
       if (key.event == KEY_EVENT_LONG_CLICK)
         page = PAGE_SEND;
