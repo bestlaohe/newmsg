@@ -15,6 +15,7 @@ void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void DMA1_Channel3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void DMA1_Channel1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast"))); // 作为倒计时10ms一次触发中断
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
@@ -22,7 +23,7 @@ volatile int dmaTransferComplete = 0;
 
 volatile int circle = 0;
 int SleepCounter = 0;
-char lora_receive_buf[50]={0};
+char lora_receive_buf[50] = {0};
 
 Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
@@ -88,36 +89,25 @@ void TIM1_UP_IRQHandler(void)
 
 void DMA1_Channel3_IRQHandler(void)
 {
-
   if (DMA_GetITStatus(DMA1_IT_TC3))
   {
-      dmaTransferComplete = 1;
-    // 传输完成处理
-   // DEBUG_PRINT("一开始DMA传输完成%d\r\n", dmaTransferComplete);
+    dmaTransferComplete = 1;
+    DMA_ClearITPendingBit(DMA1_IT_TC3); // 清除中断标志
+  }
+}
+    u16 Battery_ADC_Average = 0;
+void DMA1_Channel1_IRQHandler(void)
+{
 
-  //  DEBUG_PRINT("CFGR%x\r\n", DMA1_Channel3->CFGR);
-
-    //  DEBUG_PRINT("DMA_Mode_Circular%x\r\n", DMA_Mode_Circular);
-
-    // DEBUG_PRINT("结果%x\r\n", DMA1_Channel3->CFGR & 0x00b0);
-
-//    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0) // 0x00b0是循环，92是正常
-//      dma_circular++;
-//
-//    if ((DMA1_Channel3->CFGR & 0x00b0) == 0x00b0 && dma_circular >=29)
-//    {
-//      dma_circular = 0;
-//      DMA_Cmd(DMA1_Channel3, DISABLE);
-//      SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
-//      DMA_ClearITPendingBit(DMA1_IT_TC3);
-//
-//      LCD_CS_1;
-//    }
-//   // Delay_Ms(1);
-//  DEBUG_PRINT("结束DMA传输完成%d\r\n", dma_circular);
-
-    // 清除中断标志
-   DMA_ClearITPendingBit(DMA1_IT_TC3);
+  if (DMA_GetITStatus(DMA1_IT_TC1))
+  {
+    // 计算电池平均值
+    for (u8 i = 0; i < 10; i++)
+    {
+      Battery_ADC_Average += BattaryBuf[i];
+    }
+    Battery_ADC_Average /= 10;                          // 求平均值
+    DMA_ClearITPendingBit(DMA1_IT_TC1); // 清除中断标志
   }
 }
 /*********************************************************************
@@ -135,7 +125,7 @@ void EXTI7_0_IRQHandler(void)
     // DEBUG_PRINT("have key msg\r\n"); // 按键
     MOTOR_SET(1);
     Delay_Ms(100);
-   MOTOR_SET(0);
+    MOTOR_SET(0);
     system_wokeup();                    // 系统唤醒
     EXTI_ClearITPendingBit(EXTI_Line2); /* Clear Flag */
 
@@ -151,7 +141,7 @@ void EXTI7_0_IRQHandler(void)
       {
 
         key.event = KEY_EVENT_CLICK;
-         DEBUG_PRINT("KEY_EVENT_CLICK ontime\r\n");
+        DEBUG_PRINT("KEY_EVENT_CLICK ontime\r\n");
       }
       else
       {
@@ -179,7 +169,7 @@ void EXTI7_0_IRQHandler(void)
     //  DEBUG_PRINT("have lora msg\r\n"); // 有消息发来就震动
     MOTOR_SET(1);
     Delay_Ms(100);
-   MOTOR_SET(0);
+    MOTOR_SET(0);
     system_wokeup(); // 系统唤醒
 
     u8 res; // 操作的返回
@@ -194,8 +184,6 @@ void EXTI7_0_IRQHandler(void)
       {
         DEBUG_PRINT("RX sucess %d\r\n", lora_receive_buf[var]);
       }
-
-
     }
     else if (res == 1)
     {
@@ -209,8 +197,6 @@ void EXTI7_0_IRQHandler(void)
     EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
   }
 
-
-
   if (EXTI_GetITStatus(EXTI_Line7) != RESET)
   {
 
@@ -223,12 +209,12 @@ void EXTI7_0_IRQHandler(void)
     else
     {
 
-     DEBUG_PRINT("end chage\r\n");
+      DEBUG_PRINT("end chage\r\n");
     }
 
     MOTOR_SET(1);
     Delay_Ms(100);
-   MOTOR_SET(0);
+    MOTOR_SET(0);
     system_wokeup();                    // 系统唤醒
     EXTI_ClearITPendingBit(EXTI_Line7); /* Clear Flag */
   }

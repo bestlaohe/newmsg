@@ -11,7 +11,9 @@
 #include "debug.h"
 #include "screen_api.h"
 
-extern u16 BattaryBuf[10];
+
+extern u16 Battery_ADC_Average;
+
 
 void Battery_Init(void);
 u16 Get_ADC_Val(u8 ch);

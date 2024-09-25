@@ -10,18 +10,51 @@
 #include "debug.h"
 #include "encode.h"
 #include "adc.h"
-//#include "SX1278.h"
-
-
+// #include "SX1278.h"
 
 extern Key key;
 
 extern Encode encode;
 
-
 extern char lora_receive_buf[50];
+extern u16 Battery_ADC_Average;
+#define ON 1
+#define OFF 0
 
+// Lora参数范围定义
+#define LORAFREQ_MIN 1
+#define LORAFREQ_MAX 11
+#define LORAPOWER_MIN 11
+#define LORAPOWER_MAX 20
+#define LORASpreadFactor_MIN 7
+#define LORASpreadFactor_MAX 12
+#define LORABANDWIDTH_MIN 0
+#define LORABANDWIDTH_MAX 9
 
+// 定义设置参数
+typedef enum
+{
+    SETTING_SCREEN_LIGHT,
+    SETTING_SHAKE_MODE,
+    SETTING_LORA_FREQ,
+    SETTING_LORA_POWER,
+    SETTING_LORA_BANDWIDTH,
+    SETTING_LORA_SPREAD_FACTOR,
+    SETTING_COUNT
+} SettingIndex;
+
+extern u8 shake_mode;        // 振动模式，0为off，1为on
+extern u8 Lora_Freq;         // 默认频率设置
+extern u8 Lora_Power;        // 输出功率设置
+extern u8 Lora_BandWide;     // 带宽设置
+extern u8 Lora_SpreadFactor; // 扩频因子设置在7~12= 7
+
+typedef struct
+{
+    const char *name;
+    u8 *value;
+    void (*update_func)(void);
+} Setting;
 
 void chat_page(sFONT *Font);
 void show_history_data();

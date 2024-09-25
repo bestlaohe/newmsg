@@ -15,7 +15,7 @@
 #include "debug.h"
 #include "gpio.h"
 #include "SX1278.h"
-
+extern u16 BattaryBuf[10];
 // ¶¨Òå°´¼ü×´Ì¬
 typedef enum
 {
