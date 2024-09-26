@@ -2189,7 +2189,7 @@ typedef struct
 #define EXTEN_LDO_TRIM                          ((uint32_t)0x00000400) /* Bit 10 */
 
 #define EXTEN_OPA_EN                            ((uint32_t)0x00010000)
-#define EXTEN_OPA_NSEL                          ((uint32_t)0x00020000)
+#define EXTEN_OPA_NSS                          ((uint32_t)0x00020000)
 #define EXTEN_OPA_PSEL                          ((uint32_t)0x00040000)
 
 #include <ch32v00x_conf.h>

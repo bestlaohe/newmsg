@@ -430,8 +430,6 @@ void Lcd_Refrsh_DMA(int pic_size)
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
     DMA_Cmd(DMA1_Channel3, ENABLE);
 
-    //       while (DMA_GetFlagStatus(DMA1_FLAG_TC3) == RESET)
-    //        DEBUG_PRINT("wait dma ok\r\n"); // 等待通道3传输完成标志
 
     while (!dmaTransferComplete)
     {
@@ -450,9 +448,7 @@ void Lcd_Refrsh_DMA(int pic_size)
 
     LCD_CS_1;
 
-    //    while (dma_circular != 0)
-    //        DEBUG_PRINT("wait cycle dma：%d\r\n", dma_circular);
-   // DEBUG_PRINT("end normoldma ok\r\n");
+
 #endif
 }
 /******************************************************************************

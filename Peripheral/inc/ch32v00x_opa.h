@@ -26,19 +26,19 @@ typedef enum
     CHP1
 } OPA_PSEL_TypeDef;
 
-/* OPA NSEL enumeration */
+/* OPA NSS enumeration */
 typedef enum
 {
     CHN0 = 0,
     CHN1
-} OPA_NSEL_TypeDef;
+} OPA_NSS_TypeDef;
 
 
 /* OPA Init Structure definition */
 typedef struct
 {
     OPA_PSEL_TypeDef PSEL;    /* Specifies the positive channel of OPA */
-    OPA_NSEL_TypeDef NSEL;    /* Specifies the negative channel of OPA */
+    OPA_NSS_TypeDef NSS;    /* Specifies the negative channel of OPA */
 } OPA_InitTypeDef;
 
 void OPA_DeInit(void);

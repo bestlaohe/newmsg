@@ -219,6 +219,10 @@
 /*********************************************************/
 //command
 /*********************************************************/
+void SX1278_LoRaClearIrq(void);
+void SX1278_Sleep(void);
+void SX1278_Burst_Read(u8 adr, u8 *ptr, u8 length);
+u8 SX1278_LoRaEntryRx(void);
 
 u8 SX1278_Read_Reg(u8 adr);
 void SX1278_Standby(void);

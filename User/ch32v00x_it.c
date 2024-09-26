@@ -95,7 +95,7 @@ void DMA1_Channel3_IRQHandler(void)
     DMA_ClearITPendingBit(DMA1_IT_TC3); // 清除中断标志
   }
 }
-    u16 Battery_ADC_Average = 0;
+u16 Battery_ADC_Average = 0;
 void DMA1_Channel1_IRQHandler(void)
 {
 
@@ -106,7 +106,7 @@ void DMA1_Channel1_IRQHandler(void)
     {
       Battery_ADC_Average += BattaryBuf[i];
     }
-    Battery_ADC_Average /= 10;                          // 求平均值
+    Battery_ADC_Average /= 10;          // 求平均值
     DMA_ClearITPendingBit(DMA1_IT_TC1); // 清除中断标志
   }
 }
@@ -146,7 +146,7 @@ void EXTI7_0_IRQHandler(void)
       else
       {
         key.event = KEY_EVENT_LONG_CLICK;
-        DEBUG_PRINT("KEY_STATE_HOLD ontime\r\n");
+        DEBUG_PRINT("KEY_EVENT_LONG_CLICK ontime\r\n");
         key.LongKeyCounter = 0;
       }
 
@@ -166,35 +166,42 @@ void EXTI7_0_IRQHandler(void)
 
   if (EXTI_GetITStatus(EXTI_Line6) != RESET)
   {
-    //  DEBUG_PRINT("have lora msg\r\n"); // 有消息发来就震动
+
+ EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
+// SX1278_LoRaEntryRx(); // 进入接收模式
+//    u8 packet_length;
+//
+//    u8 addr, irq_flag;
+//    u8 packet_size;
+//
+//    irq_flag = SX1278_Read_Reg(LR_RegIrqFlags);
+//
+//    if ((irq_flag & RFLR_IRQFLAGS_PAYLOADCRCERROR) == RFLR_IRQFLAGS_PAYLOADCRCERROR) // 如果是CRC校验错误中断
+//    {
+//      SX1278_LoRaClearIrq();
+//      SX1278_Sleep(); // 进入睡眠模式，为config做准备
+//      DEBUG_PRINT(" lora crc error ");
+//     // return;
+//    }
+//
+//    addr = SX1278_Read_Reg(LR_RegFifoRxCurrentaddr); // last packet addr
+//    DEBUG_PRINT("addr  %d\r\n", addr);
+//    SX1278_Write_Reg(LR_RegFifoAddrPtr, addr);      // RxBaseAddr -> FiFoAddrPtr
+//    packet_size = SX1278_Read_Reg(LR_RegRxNbBytes); // Number for received bytes
+//    SX1278_Burst_Read(0x00, lora_receive_buf, packet_size);
+//    packet_length = packet_size;
+//
+//    SX1278_LoRaClearIrq();
+//    SX1278_Sleep(); // 进入睡眠模式，
+//
+//    DEBUG_PRINT("have lora msg %d\r\n", packet_length); // 有消息发来就震动
+//
     MOTOR_SET(1);
     Delay_Ms(100);
     MOTOR_SET(0);
     system_wokeup(); // 系统唤醒
 
-    u8 res; // 操作的返回
-    u8 len;
-    u8 var;
-    res = SX1278_LoRaRxPacket(lora_receive_buf, &len, 100);
-
-    if (res == 0)
-    {
-      DEBUG_PRINT("lora接收到数据长度  %d\r\n", len);
-      for (var = 0; var < len; ++var)
-      {
-        DEBUG_PRINT("RX sucess %d\r\n", lora_receive_buf[var]);
-      }
-    }
-    else if (res == 1)
-    {
-      DEBUG_PRINT("lora接收超时!\r\n");
-    }
-    else if (res == 2)
-    {
-      DEBUG_PRINT("lora的CRC erro!\r\n");
-    }
-
-    EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
+   
   }
 
   if (EXTI_GetITStatus(EXTI_Line7) != RESET)

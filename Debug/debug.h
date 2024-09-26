@@ -26,7 +26,7 @@
 #define DEBUG_ENABLED 1// 1为开启，0为关闭
 
 #if DEBUG_ENABLED
-    #define DEBUG_PRINT(fmt, ...) my_uart_print(fmt)//printf(fmt, ##__VA_ARGS__)
+    #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)//      my_uart_print(fmt)//
 #else
     #define DEBUG_PRINT(fmt, ...)
 #endif

@@ -31,10 +31,10 @@ void chat_page(sFONT *Font)
   // 绘制字符
   Paint_DrawChar(2 + Englishposx * Font->Width, 103 + Englishposy * Font->Height, 'a' + Englishcount, Font, BLACK, WHITE, 'a');
 
-  Paint_DrawString(0, 103 + Englishposy * Font->Height, lora_send_buf, Font, BLACK, WHITE, 'a');
+  Paint_DrawString(2, 103 + Englishposy * Font->Height, lora_send_buf, Font, BLACK, WHITE, 'a');
 
-  DEBUG_PRINT("chat_page5\r\n");
 
+  show_history_data();
   // 处理滚动状态
   if (encode.state == ENCODE_EVENT_UP)
   {
@@ -50,6 +50,7 @@ void chat_page(sFONT *Font)
   {
     if (encode.state == ENCODE_EVENT_UP)
     {
+        DEBUG_PRINT("start lora send  \r\n");
       // 发送数据
       if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)))
       {
@@ -92,6 +93,13 @@ void chat_page(sFONT *Font)
       }
     }
     Englishcount = 0; // 重置计数
+
+    DEBUG_PRINT("start lora send  \r\n");
+  // 发送数据
+  if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)))
+  {
+    DEBUG_PRINT("lora send ok \r\n");
+  }
   }
 }
 
