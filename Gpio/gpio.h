@@ -35,24 +35,24 @@ void MOTOR_SET(int state);
 #define KEY0 GPIO_ReadInputDataBit( GPIOD, GPIO_Pin_2)
 #define CHARGING GPIO_ReadInputDataBit( GPIOD, GPIO_Pin_7)
 
-#define SX1278_GPIO GPIOC      // GPIOÑ¡Ôñ
-#define SX1278_NSS GPIO_Pin_0 // Òý½Å¶¨Òå
-#define SX1278_MOSI GPIO_Pin_6 // Òý½Å¶¨Òå
-#define SX1278_MISO GPIO_Pin_7 // Òý½Å¶¨Òå
-#define SX1278_SCK GPIO_Pin_5  // Òý½Å¶¨Òå
-#define SX1278_SDNN GPIO_Pin_1 // ¸´Î»Òý½Å¶¨Òå
-#define SX1278_NIRQ GPIO_Pin_6 // Òý½Å¶¨Òå
+#define SX1278_GPIO GPIOC      // GPIOÑ¡ï¿½ï¿½
+#define SX1278_NSS GPIO_Pin_0 // ï¿½ï¿½ï¿½Å¶ï¿½ï¿½ï¿½
+#define SX1278_MOSI GPIO_Pin_6 // ï¿½ï¿½ï¿½Å¶ï¿½ï¿½ï¿½
+#define SX1278_MISO GPIO_Pin_7 // ï¿½ï¿½ï¿½Å¶ï¿½ï¿½ï¿½
+#define SX1278_SCK GPIO_Pin_5  // ï¿½ï¿½ï¿½Å¶ï¿½ï¿½ï¿½
+#define SX1278_SDNN GPIO_Pin_1 // ï¿½ï¿½Î»ï¿½ï¿½ï¿½Å¶ï¿½ï¿½ï¿½
+#define SX1278_NIRQ GPIO_Pin_6 // ï¿½ï¿½ï¿½Å¶ï¿½ï¿½ï¿½
 
-#define SX1278_NSS_DISABLE() GPIO_SetBits(SX1278_GPIO, SX1278_NSS)
-#define SX1278_NSS_ENABLE() GPIO_ResetBits(SX1278_GPIO, SX1278_NSS) // Ê¹ÄÜ
+#define SX1278_NSS_DISABLE GPIO_SetBits(SX1278_GPIO, SX1278_NSS)
+#define SX1278_NSS_ENABLE GPIO_ResetBits(SX1278_GPIO, SX1278_NSS) // Ê¹ï¿½ï¿½
 #define READ_SX1278_MISO() GPIO_ReadInputDataBit(SX1278_GPIO, SX1278_MISO)
 #define SET_SX1278_SCK() GPIO_SetBits(SX1278_GPIO, SX1278_SCK)
 #define CLR_SX1278_SCK() GPIO_ResetBits(SX1278_GPIO, SX1278_SCK)
 #define SET_SX1278_MOSI() GPIO_SetBits(SX1278_GPIO, SX1278_MOSI)
 #define CLR_SX1278_MOSI() GPIO_ResetBits(SX1278_GPIO, SX1278_MOSI)
-#define SET_SX1278_RST() GPIO_SetBits(SX1278_GPIO, SX1278_SDNN)      // ¸´Î»Òý½Å¶¨Òå
-#define CLR_SX1278_RST() GPIO_ResetBits(SX1278_GPIO, SX1278_SDNN)    // ÓÃÓÚ½« SX1278 Ä£¿éÖÃÓÚ¹Ø»úÄ£Ê½
-#define READ_SX1278_NIRQ() GPIO_ReadInputDataBit(GPIOD, SX1278_NIRQ) // Òý½ÅÊÇ SX1278 Ä£¿éµÄÖÐ¶ÏÇëÇóÒý½Å
+#define SET_SX1278_RST() GPIO_SetBits(SX1278_GPIO, SX1278_SDNN)      // ï¿½ï¿½Î»ï¿½ï¿½ï¿½Å¶ï¿½ï¿½ï¿½
+#define CLR_SX1278_RST() GPIO_ResetBits(SX1278_GPIO, SX1278_SDNN)    // ï¿½ï¿½ï¿½Ú½ï¿½ SX1278 Ä£ï¿½ï¿½ï¿½ï¿½ï¿½Ú¹Ø»ï¿½Ä£Ê½
+#define READ_SX1278_NIRQ() GPIO_ReadInputDataBit(GPIOD, SX1278_NIRQ) // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SX1278 Ä£ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 
 

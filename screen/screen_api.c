@@ -307,7 +307,7 @@ void LCD_0IN85_Clear(UWORD Color)
     }
     LCD_0IN85_SetWindows(0, 0, LCD_WIDTH, LCD_HEIGHT);
     static u16 save_color;
-    save_color = color;
+    save_color = Color;
 
     LCD_DC_1;
     LCD_CS_ENABLE;
