@@ -55,11 +55,11 @@ int main(void)
   LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
   LCD_SHOW_API_INIT();                                               // 屏幕测试******8404-6224=2180
   Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
-  SX1278_Init();                                                  // lora的初始化*****10268-9620=648
+  SX1278_Init();                                                     // lora的初始化*****10268-9620=648
   EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
 
- //startup_animation();                                               // 11732-10512=500
-  IWDG_Feed_Init(IWDG_Prescaler_256, 4000);                          //    该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500，1除以500乘以4000=8s****12467-12356=111字节
+  // startup_animation();                                               // 11732-10512=500
+  IWDG_Feed_Init(IWDG_Prescaler_256, 4000); //    该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500，1除以500乘以4000=8s****12467-12356=111字节
 
   // LCD_0IN85_Clear(BLUE);
   //
@@ -69,34 +69,32 @@ int main(void)
   //  show_battery(); // 电池电量显示出来1412-264=1100
   // 显示电池信息
   // show_battery();
- //  Paint_DrawChar(40, 40, 0, &Font24_logo, BLACK, WHITE, 0);
+  //  Paint_DrawChar(40, 40, 0, &Font24_logo, BLACK, WHITE, 0);
 
-
-   while (SX1278_Read_Reg(REG_LR_VERSION)!=0x12)
-   {
-        Delay_Ms(10);
-   }
-   DEBUG_PRINT("lora init ok=0x%X \r\n",SX1278_Read_Reg(REG_LR_VERSION));//0x89  0100 0101
-
+  while (SX1278_Read_Reg(REG_LR_VERSION) != 0x12)
+  {
+    Delay_Ms(10);
+  }
+  DEBUG_PRINT("lora init ok=0x%X \r\n", SX1278_Read_Reg(REG_LR_VERSION)); // 0x89  0100 0101
 
   //  LCD_0IN85_Clear(BLACK);
   //  Paint_DrawChar(40, 40, 0, &Font24_icon, BLACK, BLUE, 0);
   //  Delay_Ms(500);
   // setting_page();
   //  info_page();
-//    while (1)
-//    {
-//        chat_page(&Font8_En);
-//        IWDG_ReloadCounter(); // 喂狗* 12484-12467=24字节
-//         Delay_Ms(10);
-//    }
+  //    while (1)
+  //    {
+  //        chat_page(&Font8_En);
+  //        IWDG_ReloadCounter(); // 喂狗* 12484-12467=24字节
+  //         Delay_Ms(10);
+  //    }
   while (1)
   {
-    //LCD_0IN85_SetBackLight(50);
-    //    Paint_DrawLine(20, 55, 20, 75, BLUE, 1, LINE_STYLE_SOLID);
-    //      Paint_DrawRectangle(0, 0, 50, 50, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-    //      Paint_DrawRectangle(0, 100, 127, 127, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-    //  page = PAGE_SETTING;
+    // LCD_0IN85_SetBackLight(50);
+    //     Paint_DrawLine(20, 55, 20, 75, BLUE, 1, LINE_STYLE_SOLID);
+    //       Paint_DrawRectangle(0, 0, 50, 50, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+    //       Paint_DrawRectangle(0, 100, 127, 127, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+    //   page = PAGE_SETTING;
     switch (page) // 处理页面
     {
     case PAGE_SEND: // 发送界面
@@ -107,7 +105,7 @@ int main(void)
 
     case PAGE_HISTROY_CHAT: // 聊天记录界面
 
-  chat_history_page();
+      chat_history_page();
 
       if (key.event == KEY_EVENT_LONG_CLICK)
         page = PAGE_PERPARE_SETTING;
@@ -115,9 +113,9 @@ int main(void)
 
     case PAGE_PERPARE_SETTING: // 准备设置界面
 
-//      Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-//      Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-//      Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);
+      //      Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+      //      Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+      //      Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);
       if (key.event == KEY_EVENT_CLICK)
       {
         LCD_0IN85_Clear(BLACK);
@@ -136,7 +134,7 @@ int main(void)
 
     case PAGE_SETTING: // 设置界面
 
-    // setting_page();
+      // setting_page();
 
       if (key.event == KEY_EVENT_LONG_CLICK)
       {
@@ -147,7 +145,7 @@ int main(void)
 
     case PAGE_INFO: // 信息界面
 
-   // info_page();
+      // info_page();
 
       if (key.event == KEY_EVENT_LONG_CLICK)
       {
@@ -166,11 +164,10 @@ int main(void)
     key.event = KEY_EVENT_NONE;
     encode.state = ENCODE_EVENT_NONE;
 
-
-SX1278_test(); //  16180-15028=1652             会减少368
+    SX1278_test(); //  16180-15028=1652             会减少368
 
     Encoder_Scan();
     IWDG_ReloadCounter(); // 喂狗* 12484-12467=24字节
-   Delay_Ms(2000);
+    Delay_Ms(2000);
   }
 }
