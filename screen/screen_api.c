@@ -32,7 +32,6 @@ void startup_animation()
     LCD_0IN85_Clear(BLACK);
 }
 
-
 LCD_0IN85_ATTRIBUTES LCD;
 uint8_t lcd_gram[Y_MAX_PIXEL * X_MAX_PIXEL * 2] = {0}; ///< 开辟一块内存空间当显存使用
 u8 dmaXoffset, dmaYoffset = 0;
@@ -119,10 +118,11 @@ parameter:
 ******************************************************************************/
 static void LCD_0IN85_SendCommand(UBYTE Reg)
 {
+
     LCD_DC_0;
-    LCD_CS_0;
+    LCD_CS_ENABLE;
     DEV_SPI_WRite(Reg);
-    LCD_CS_1;
+    LCD_CS_DISABLE;
 }
 
 /******************************************************************************
@@ -132,10 +132,11 @@ parameter:
 ******************************************************************************/
 static void LCD_0IN85_SendData_8Bit(UBYTE Data)
 {
+
     LCD_DC_1;
-    LCD_CS_0;
+    LCD_CS_ENABLE;
     DEV_SPI_WRite(Data);
-    LCD_CS_1;
+    LCD_CS_DISABLE;
 }
 
 /******************************************************************************
@@ -147,10 +148,10 @@ parameter:
 static void LCD_0IN85_SendData_16Bit(UWORD Data)
 {
     LCD_DC_1;
-    LCD_CS_0;
+    LCD_CS_ENABLE;
     DEV_SPI_WRite((Data >> 8) & 0xFF);
     DEV_SPI_WRite(Data & 0xFF);
-    LCD_CS_1;
+    LCD_CS_DISABLE;
 }
 #endif
 
@@ -229,8 +230,7 @@ static void LCD_0IN85_SetAttributes(UBYTE Scan_dir)
 
 static void LCD_0IN85_Reset(void)
 {
-    LCD_CS_0;
-    Delay_Ms(20);
+ 
     LCD_RST_0;
     Delay_Ms(20);
     LCD_RST_1;
@@ -298,8 +298,46 @@ parameter:
 void LCD_0IN85_Clear(UWORD Color)
 {
 
-#if USE_DMA
+    // 简单的清屏，需要测试
 
+#if USE_DMA
+    while (!READ_LORA_CS)
+    {
+        DEBUG_PRINT("wait lora cs 1!\r\n");
+    }
+    LCD_0IN85_SetWindows(0, 0, LCD_WIDTH, LCD_HEIGHT);
+    static u16 save_color;
+    save_color = color;
+
+    LCD_DC_1;
+    LCD_CS_ENABLE;
+
+    // 初始化DMA传输
+    SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)save_color, Y_MAX_PIXEL * X_MAX_PIXEL * 2, DMA_Mode_Normal, DMA_MemoryInc_Disable);
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
+    DMA_Cmd(DMA1_Channel3, ENABLE);
+
+    while (!dmaTransferComplete)
+    {
+        //  DEBUG_PRINT("wait normoldma ok %d\r\n", dmaTransferComplete); // 等待通道3传输完成标志
+    }
+    dmaTransferComplete = 0;
+    DMA_ClearFlag(DMA1_FLAG_TC3); // 清除通道3传输完成标志
+
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
+        ;
+   
+    DMA_Cmd(DMA1_Channel3, DISABLE);
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
+    DMA_ClearITPendingBit(DMA1_IT_TC3);
+     LCD_CS_DISABLE;
+#endif
+
+#if 0
+    while (!READ_LORA_CS)
+    {
+        DEBUG_PRINT("wait lora cs 1!\r\n");
+    }
     int dma_circular = 0;
     LCD_0IN85_SetWindows(0, 0, LCD_WIDTH, LCD_HEIGHT);
     int index = 0; // 用于跟踪lcd_gram数组的索引
@@ -318,10 +356,10 @@ void LCD_0IN85_Clear(UWORD Color)
     }
 
     LCD_DC_1;
-    LCD_CS_0;
+    LCD_CS_ENABLE;
 
     // 初始化DMA传输
-    SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, Y_MAX_PIXEL * X_MAX_PIXEL * 2, DMA_Mode_Circular);
+    SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, Y_MAX_PIXEL * X_MAX_PIXEL * 2, DMA_Mode_Circular,DMA_MemoryInc_Enable);
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
     DMA_Cmd(DMA1_Channel3, ENABLE);
 
@@ -355,7 +393,7 @@ void LCD_0IN85_Clear(UWORD Color)
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
     DMA_ClearITPendingBit(DMA1_IT_TC3);
 
-    LCD_CS_1;
+    LCD_CS_DISABLE;
     DEBUG_PRINT("LCD_0IN85_Clear OK\r\n"); // 等待SPI发送缓冲区为空
 
 #else
@@ -366,11 +404,11 @@ void LCD_0IN85_Clear(UWORD Color)
     {
         for (j = 0; j < LCD_HEIGHT; j++)
         {
-            LCD_CS_0;
             LCD_DC_1;
+            LCD_CS_ENABLE;
             DEV_SPI_WRite((Color >> 8) & 0xff);
             DEV_SPI_WRite(Color & 0xff);
-            LCD_CS_1;
+            LCD_CS_DISABLE;
         }
     }
 #endif
@@ -418,22 +456,26 @@ void Lcd_Refrsh_DMA(int pic_size)
 {
 
 #if USE_DMA
+    while (!READ_LORA_CS)
+    {
+        DEBUG_PRINT("wait lora cs 1!\r\n");
+    }
+
     // 将整个数据搬运一次到DMA
     LCD_DC_1;
-    LCD_CS_0;
-   // DEBUG_PRINT("开始刷屏\r\n");
+    LCD_CS_ENABLE;
+    // DEBUG_PRINT("开始刷屏\r\n");
     dmaTransferComplete = 0;
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
     DMA_Cmd(DMA1_Channel3, DISABLE);
 
-    SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, pic_size, DMA_Mode_Normal);
+    SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)lcd_gram, pic_size, DMA_Mode_Normal, DMA_MemoryInc_Enable);
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
     DMA_Cmd(DMA1_Channel3, ENABLE);
 
-
     while (!dmaTransferComplete)
     {
-      //  DEBUG_PRINT("wait normoldma ok %d\r\n", dmaTransferComplete); // 等待通道3传输完成标志
+        //  DEBUG_PRINT("wait normoldma ok %d\r\n", dmaTransferComplete); // 等待通道3传输完成标志
     }
     dmaTransferComplete = 0;
     DMA_ClearFlag(DMA1_FLAG_TC3); // 清除通道3传输完成标志
@@ -446,8 +488,7 @@ void Lcd_Refrsh_DMA(int pic_size)
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
     DMA_ClearITPendingBit(DMA1_IT_TC3);
 
-    LCD_CS_1;
-
+    LCD_CS_DISABLE;
 
 #endif
 }

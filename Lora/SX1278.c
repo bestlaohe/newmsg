@@ -31,74 +31,49 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 /****************以下是移植需要实现的对应接口部分***********************************/
 #define SX1278_DelayMs(t) Delay_Ms(t) // 毫秒延时函数的实现
 
-#define SX1278_GPIO GPIOC      // GPIO选择
-#define SX1278_NSS GPIO_Pin_0 // 引脚定义
-#define SX1278_MOSI GPIO_Pin_6 // 引脚定义
-#define SX1278_MISO GPIO_Pin_7 // 引脚定义
-#define SX1278_SCK GPIO_Pin_5  // 引脚定义
-#define SX1278_SDNN GPIO_Pin_1 // 复位引脚定义
-#define SX1278_NIRQ GPIO_Pin_6 // 引脚定义
-
-#define SET_SX1278_NSS() GPIO_SetBits(SX1278_GPIO, SX1278_NSS)
-#define CLR_SX1278_NSS() GPIO_ResetBits(SX1278_GPIO, SX1278_NSS) // 使能
-#define READ_SX1278_MISO() GPIO_ReadInputDataBit(SX1278_GPIO, SX1278_MISO)
-#define SET_SX1278_SCK() GPIO_SetBits(SX1278_GPIO, SX1278_SCK)
-#define CLR_SX1278_SCK() GPIO_ResetBits(SX1278_GPIO, SX1278_SCK)
-#define SET_SX1278_MOSI() GPIO_SetBits(SX1278_GPIO, SX1278_MOSI)
-#define CLR_SX1278_MOSI() GPIO_ResetBits(SX1278_GPIO, SX1278_MOSI)
-#define SET_SX1278_RST() GPIO_SetBits(SX1278_GPIO, SX1278_SDNN)      // 复位引脚定义
-#define CLR_SX1278_RST() GPIO_ResetBits(SX1278_GPIO, SX1278_SDNN)    // 用于将 SX1278 模块置于关机模式
-#define READ_SX1278_NIRQ() GPIO_ReadInputDataBit(GPIOD, SX1278_NIRQ) // 引脚是 SX1278 模块的中断请求引脚
-
 // 控制口配置初始化，中断口配置在完成中断初始化中
 void SX1278_test() // SPI初始化14196-13828=368
 {
 
+  DEBUG_PRINT("lora ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION)); // 0x12
+  DEBUG_PRINT("lora mode  0x%X\r\n", SX1278_Read_Reg(LR_RegOpMode)); // 0x89  0100 0101
 
-    DEBUG_PRINT("lora ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION));//0x12
-    DEBUG_PRINT("lora mode  0x%X\r\n", SX1278_Read_Reg(LR_RegOpMode));//0x89  0100 0101
+  DEBUG_PRINT("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
+  DEBUG_PRINT("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
 
-    
+  u8 lora_send_buf[255] = "abcd"; //{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+  u8 lora_receive_buf[255];
+  u8 res; // 操作的返回
+  u8 len;
+  u8 var;
 
-//    DEBUG_PRINT("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
-//    DEBUG_PRINT("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
+  //   if (!SX1278_LoRaTxPacket(lora_send_buf, 4))
+  //    {
+  //      DEBUG_PRINT("lora发送成功 \r\n");
+  //    }else{
+  //        DEBUG_PRINT("lora发送失败 \r\n");
+  //
+  //    }
 
-   u8 lora_send_buf[255] = "abcd"; //{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-   u8 lora_receive_buf[255];
-   u8 res; // 操作的返回
-   u8 len;
-   u8 var;
+  res = SX1278_LoRaRxPacket(lora_receive_buf, &len, 5000);
 
-//   if (!SX1278_LoRaTxPacket(lora_send_buf, 4))
-//    {
-//      DEBUG_PRINT("lora发送成功 \r\n");
-//    }else{
-//        DEBUG_PRINT("lora发送失败 \r\n");
-//
-//    }
-
-
-    res = SX1278_LoRaRxPacket(lora_receive_buf, &len, 5000);
-
-     if (res == 0)
-     {
-       DEBUG_PRINT("lora接收到数据长度  %d\r\n", len);
-       for (var = 0; var < len; ++var)
-       {
-         DEBUG_PRINT("RX sucess %d\r\n", lora_receive_buf[var]);
-       }
-     }
-     else if (res == 2)
-     {
-       DEBUG_PRINT("lora的CRC eeror!\r\n");
-     }
-
-
+  if (res == 0)
+  {
+    DEBUG_PRINT("lora接收到数据长度  %d\r\n", len);
+    for (var = 0; var < len; ++var)
+    {
+      DEBUG_PRINT("RX sucess %d\r\n", lora_receive_buf[var]);
+    }
+  }
+  else if (res == 2)
+  {
+    DEBUG_PRINT("lora的CRC eeror!\r\n");
+  }
 }
 
 // void SX1278_GPIO_Init()
 // {
-//   SET_SX1278_NSS();
+//   SX1278_NSS_DISABLE;
 //   SET_SX1278_RST();
 // }
 // void SX1278_SPI_Init()
@@ -136,12 +111,7 @@ u8 SX1278_SPI_RW(u8 byte)
   } // 还没收完
 
   return (uint8_t)SPI_I2S_ReceiveData(SPI1);
-
-
-
 }
-
-
 
 /*****************以上是移植需要实现的部分**************************************************************/
 
@@ -154,14 +124,19 @@ u8 SX1278_SPI_RW(u8 byte)
 **********************************************************/
 u8 SX1278_Read_Reg(u8 adr)
 {
+
+  while (!READ_LCD_CS)
+  {
+
+    DEBUG_PRINT("wait lcd cs 1!\r\n");
+  }
   u8 tmp;
-  CLR_SX1278_NSS();
+  SX1278_NSS_ENABLE;
   SX1278_SPI_RW(adr);
   tmp = SX1278_SPI_RW(adr);
-  SET_SX1278_NSS();
+  SX1278_NSS_DISABLE;
   return (tmp);
 }
-
 
 /**********************************************************
 **Name:     SX1278_Write_Reg
@@ -171,13 +146,16 @@ u8 SX1278_Read_Reg(u8 adr)
 **********************************************************/
 void SX1278_Write_Reg(u8 adr, u8 WrPara)
 {
+  while (!READ_LCD_CS)
+  {
 
-  CLR_SX1278_NSS();
-
+    DEBUG_PRINT("wait lcd cs 1!\r\n");
+  }
+  SX1278_NSS_ENABLE;
   SX1278_SPI_RW(adr | 0x80);
   SX1278_SPI_RW(WrPara); // 写入数据
 
-  SET_SX1278_NSS();
+  SX1278_NSS_DISABLE;
 }
 /**********************************************************
 **Name:     SX1278_Burst_Read
@@ -194,11 +172,16 @@ void SX1278_Burst_Read(u8 adr, u8 *ptr, u8 length)
     return;
   else
   {
-    CLR_SX1278_NSS();
+    while (!READ_LCD_CS)
+    {
+
+      DEBUG_PRINT("wait lcd cs 1!\r\n");
+    }
+    SX1278_NSS_ENABLE;
     SX1278_SPI_RW(adr);
     for (i = 0; i < length; i++)
       ptr[i] = SX1278_SPI_RW(0);
-    SET_SX1278_NSS();
+    SX1278_NSS_DISABLE;
   }
 }
 
@@ -215,11 +198,16 @@ void SX1278_Burst_Write(u8 adr, u8 *ptr, u8 length)
   u8 i;
   if (length > 0) // length must more than one
   {
-    CLR_SX1278_NSS();
+    while (!READ_LCD_CS)
+    {
+
+      DEBUG_PRINT("wait lcd cs 1!\r\n");
+    }
+    SX1278_NSS_ENABLE;
     SX1278_SPI_RW(adr | 0x80);
     for (i = 0; i < length; i++)
       SX1278_SPI_RW(ptr[i]);
-    SET_SX1278_NSS();
+    SX1278_NSS_DISABLE;
   }
 }
 
@@ -227,7 +215,12 @@ void SX1278_Burst_Write(u8 adr, u8 *ptr, u8 length)
 void SX1276ReadBuffer(unsigned char addr, unsigned char *buffer, unsigned char size)
 {
   uint8_t i;
-  CLR_SX1278_NSS();
+  while (!READ_LCD_CS)
+  {
+
+    DEBUG_PRINT("wait lcd cs 1!\r\n");
+  }
+  SX1278_NSS_ENABLE;
 
   SX1278_SPI_RW(addr & 0x7F);
 
@@ -235,17 +228,22 @@ void SX1276ReadBuffer(unsigned char addr, unsigned char *buffer, unsigned char s
   {
     buffer[i] = SX1278_SPI_RW(0);
   }
-  SET_SX1278_NSS();
+  SX1278_NSS_DISABLE;
 }
 
-// 功能: SX1278 单个寄存器读搓澡
+// 功能: SX1278 单个寄存器读操作
 unsigned char SX1276ReadReg(unsigned char addr)
 {
   unsigned char dat;
-  CLR_SX1278_NSS();
+  while (!READ_LCD_CS)
+  {
+
+    DEBUG_PRINT("wait lcd cs 1!\r\n");
+  }
+  SX1278_NSS_ENABLE;
   SX1278_SPI_RW(addr & 0x7F);
   dat = SX1278_SPI_RW(0);
-  SET_SX1278_NSS();
+  SX1278_NSS_DISABLE;
   return dat;
 }
 
@@ -360,15 +358,12 @@ u8 SX1278_LoRaEntryRx(void)
   SX1278_Write_Reg(REG_LR_PADAC, 0x84); // zhen and Rx
 
   SX1278_Write_Reg(LR_RegHopPeriod, 0xFF);    // 接收模式跳频周期写0XFF不跳频
- SX1278_Write_Reg(REG_LR_DIOMAPPING1, 0x01); // DIO0=00, DIO1=00, DIO2=00, DIO3=01
- 
+  SX1278_Write_Reg(REG_LR_DIOMAPPING1, 0x01); // DIO0=00, DIO1=00, DIO2=00, DIO3=01
 
   SX1278_Write_Reg(LR_RegIrqFlagsMask, 0x9F); // Open RxDone interrupt & CRC  8001 1111
 
-
-//  SX1278_Write_Reg(REG_LR_DIOMAPPING1, 0x41); // DIO0=01, DIO1=00, DIO2=00, DIO3=01
-//  SX1278_Write_Reg(LR_RegIrqFlagsMask, 0x0F); // Open RxDone interrupt & CRC  8001
-
+  //  SX1278_Write_Reg(REG_LR_DIOMAPPING1, 0x41); // DIO0=01, DIO1=00, DIO2=00, DIO3=01
+  //  SX1278_Write_Reg(LR_RegIrqFlagsMask, 0x0F); // Open RxDone interrupt & CRC  8001
 
   SX1278_LoRaClearIrq();
 
@@ -414,7 +409,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
 
   while (timeout != 1) // timeout 减到1就退出 如果是0 就永远不能退出
   {
-     // DEBUG_PRINT("timeout()=%d\r\n",timeout);
+    // DEBUG_PRINT("timeout()=%d\r\n",timeout);
     SX1278_DelayMs(5);
     if (timeout > 1)
       timeout--;
@@ -494,10 +489,10 @@ u8 SX1278_LoRaTxPacket(u8 *valid_data, u8 packet_length)
     if (READ_SX1278_NIRQ()) // Packet send over
 
     {
-     // DEBUG_PRINT("1SX1278_TX_NIRQ%d\r\n",SX1278_Read_Reg(LR_RegIrqFlags));
+      // DEBUG_PRINT("1SX1278_TX_NIRQ%d\r\n",SX1278_Read_Reg(LR_RegIrqFlags));
       SX1278_Read_Reg(LR_RegIrqFlags);
       SX1278_LoRaClearIrq(); // Clear irq
-     // DEBUG_PRINT("2SX1278_TX_NIRQ%d\r\n",SX1278_Read_Reg(LR_RegIrqFlags));
+                             // DEBUG_PRINT("2SX1278_TX_NIRQ%d\r\n",SX1278_Read_Reg(LR_RegIrqFlags));
       //			SX1278_Standby();                                     //Entry Standby mode
       SX1278_Sleep(); // 进入睡眠模式
       return 0;
@@ -528,12 +523,12 @@ u8 SX1278_ReadRSSI(void)
 ***************************************************************************/
 void SX1278_Init()
 {
-//  SX1278_GPIO_Init();
-//  SX1278_SPI_Init(); // SPI初始化
-//       SET_SX1278_NSS();
-//       SET_SX1278_RST();
-//       SET_SX1278_MOSI();
-//       SET_SX1278_SCK();
+  //  SX1278_GPIO_Init();
+  //  SX1278_SPI_Init(); // SPI初始化
+  //       SX1278_NSS_DISABLE;
+  //       SET_SX1278_RST();
+  //       SET_SX1278_MOSI();
+  //       SET_SX1278_SCK();
   // if (freq >= 428 && freq <= 439) // 在设置范围内，不然就按照默认频率设置
   // {
   //   Lora_Freq = freq % 428; // 设置载波频率
@@ -543,12 +538,5 @@ void SX1278_Init()
   SET_SX1278_RST();
   SX1278_DelayMs(10); // 复位操作
 
-
-
   SX1278_Config();
-
-
-
 }
-
-

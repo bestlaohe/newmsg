@@ -34,7 +34,7 @@ void My_GPIO_Init() {
     GPIO_Init_Pin(GPIOA, GPIO_Pin_1, GPIO_Mode_AIN);
     // pc3调光的pwm
     GPIO_Init_Pin(GPIOC, GPIO_Pin_3, GPIO_Mode_AF_PP);
-    // 复用推挽输出模式，LCD_DC_1   LCD_CS_1
+    // 复用推挽输出模式，LCD_DC_1   LCD_CS_DISABLE
     GPIO_Init_Pin(GPIOC, GPIO_Pin_2 | GPIO_Pin_4, GPIO_Mode_Out_PP);
     // LCD_0IN85_RST_1
     GPIO_Init_Pin(GPIOD, GPIO_Pin_0, GPIO_Mode_Out_PP);
@@ -44,6 +44,8 @@ void My_GPIO_Init() {
     GPIO_Init_Pin(GPIOC, GPIO_Pin_5 | GPIO_Pin_6, GPIO_Mode_AF_PP);
 
     MOTOR_OFF; // 关闭电机
+    LCD_CS_DISABLE;
+    SX1278_NSS_DISABLE;
 }
 
 u8 shake_mode = 1; // 初始震动模式值

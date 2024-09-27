@@ -16,7 +16,7 @@
  * 1.Fix:
  *       Paint_DrawNum
  *         Fixed a BUG where the Paint_DrawNum function failed to display 0
- * 2.Addï¼š Paint_DrawFloatNum
+ * 2.Add£º Paint_DrawFloatNum
  *     Can display FloatNum
  *
  * -----------------------------------------------------------------------------
@@ -153,7 +153,7 @@ void Paint_SetRotate(UWORD Rotate)
 }
 
 /******************************************************************************
-function:	Select Image mirror   è®¾ç½®å›¾åƒçš„é•œåƒæ•ˆæœ
+function:	Select Image mirror   ÉèÖÃÍ¼ÏñµÄ¾µÏñĞ§¹û
 parameter:
 mirror   :       Not mirror,Horizontal mirror,Vertical mirror,Origin mirror
 ******************************************************************************/
@@ -288,7 +288,7 @@ void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color, DOT_PIXEL Dot_Pixe
                 int16_t x = Xpoint + XDir_Num - Dot_Pixel + 1;
                 int16_t y = Ypoint + YDir_Num - Dot_Pixel + 1;
 
-                // è¾¹ç•Œæ£€æŸ¥
+                // ±ß½ç¼ì²é
                 if (x >= 0 && y >= 0 && x < Paint.Width && y < Paint.Height)
                 {
                     Paint_SetPixel(x, y, Color);
@@ -305,7 +305,7 @@ void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color, DOT_PIXEL Dot_Pixe
     //             int16_t x = Xpoint + XDir_Num;
     //             int16_t y = Ypoint + YDir_Num;
 
-    //             // è¾¹ç•Œæ£€æŸ¥
+    //             // ±ß½ç¼ì²é
     //             if (x >= 0 && y >= 0 && x < Paint.Width && y < Paint.Height)
     //             {
     //                 Paint_SetPixel(x, y, Color);
@@ -318,11 +318,11 @@ void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color, DOT_PIXEL Dot_Pixe
 /******************************************************************************
 function:	Draw a line of arbitrary slope
 parameter:
-    Xstart ï¼šStarting Xpoint point coordinates
-    Ystart ï¼šStarting Xpoint point coordinates
-    Xend   ï¼šEnd point Xpoint coordinate
-    Yend   ï¼šEnd point Ypoint coordinate
-    Color  ï¼šThe color of the line segment
+    Xstart £ºStarting Xpoint point coordinates
+    Ystart £ºStarting Xpoint point coordinates
+    Xend   £ºEnd point Xpoint coordinate
+    Yend   £ºEnd point Ypoint coordinate
+    Color  £ºThe color of the line segment
 ******************************************************************************/
 void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
                     UWORD Color, DOT_PIXEL Line_width, LINE_STYLE Line_Style)
@@ -356,7 +356,7 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     dmaFont = &Fontline;
 
     Delay_Ms(1);
-    LCD_0IN85_SetWindows(Xstart, Ystart, Xend, Yend); // å‡†å¤‡å¥½çª—å£å’Œå¤ä½
+    LCD_0IN85_SetWindows(Xstart, Ystart, Xend, Yend); // ×¼±¸ºÃ´°¿ÚºÍ¸´Î»
 // DEBUG_PRINT("Xstart, Ystart, Xend, Yend = %d= %d= %d= %d\r\n", Xstart, Ystart, Xend, Yend);
 // DEBUG_PRINT("wwwwdmaFont->Width:%d\r\n", dmaFont->Width);
 
@@ -383,7 +383,7 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
             Esp += dy;
             Xpoint += XAddway;
         }
-        if (2 * Esp <= dx) // è·‘è¿™é‡Œ
+        if (2 * Esp <= dx) // ÅÜÕâÀï
         {
             // DEBUG_PRINT("2 * Esp = %d\r\n", 2 * Esp );
             if (Ypoint == Yend)
@@ -403,13 +403,13 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
 /******************************************************************************
 function:	Draw a rectangle
 parameter:
-    Xstart ï¼šRectangular  Starting Xpoint point coordinates
-    Ystart ï¼šRectangular  Starting Xpoint point coordinates
-    Xend   ï¼šRectangular  End point Xpoint coordinate
-    Yend   ï¼šRectangular  End point Ypoint coordinate
-    Color  ï¼šThe color of the Rectangular segment
-    Filled : Whether it is filled--- 1 solid 0ï¼šempty
-    è¾“å…¥0åˆ°127
+    Xstart £ºRectangular  Starting Xpoint point coordinates
+    Ystart £ºRectangular  Starting Xpoint point coordinates
+    Xend   £ºRectangular  End point Xpoint coordinate
+    Yend   £ºRectangular  End point Ypoint coordinate
+    Color  £ºThe color of the Rectangular segment
+    Filled : Whether it is filled--- 1 solid 0£ºempty
+    ÊäÈë0µ½127
 ******************************************************************************/
 void Paint_DrawRectangle(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
                          UWORD Color, DOT_PIXEL Line_width, DRAW_FILL Filled)
@@ -443,11 +443,11 @@ void Paint_DrawRectangle(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
 function:	Use the 8-point method to draw a circle of the
             specified size at the specified position->
 parameter:
-    X_Center  ï¼šCenter X coordinate
-    Y_Center  ï¼šCenter Y coordinate
-    Radius    ï¼šcircle Radius
-    Color     ï¼šThe color of the ï¼šcircle segment
-    Filled    : Whether it is filled: 1 filling 0ï¼šDo not
+    X_Center  £ºCenter X coordinate
+    Y_Center  £ºCenter Y coordinate
+    Radius    £ºcircle Radius
+    Color     £ºThe color of the £ºcircle segment
+    Filled    : Whether it is filled: 1 filling 0£ºDo not
 ******************************************************************************/
 void Paint_DrawCircle(UWORD X_Center, UWORD Y_Center, UWORD Radius,
                       UWORD Color, DOT_PIXEL Line_width, DRAW_FILL Draw_Fill)
@@ -521,10 +521,10 @@ void Paint_DrawCircle(UWORD X_Center, UWORD Y_Center, UWORD Radius,
 /******************************************************************************
 function:	Show English characters
 parameter:
-    Xpoint           ï¼šX coordinate
-    Ypoint           ï¼šY coordinate
-    Acsii_Char       ï¼šTo display the English characters
-    Font             ï¼šA structure pointer that displays a character size
+    Xpoint           £ºX coordinate
+    Ypoint           £ºY coordinate
+    Acsii_Char       £ºTo display the English characters
+    Font             £ºA structure pointer that displays a character size
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
@@ -533,13 +533,13 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
                     sFONT *Font, UWORD Color_Background, UWORD Color_Foreground,
                     const char offsetAcsii)
 {
-    // å±€éƒ¨å˜é‡
+    // ¾Ö²¿±äÁ¿
     UWORD Page, Column;
     uint32_t Char_Offset = (Acsii_Char - offsetAcsii) * Font->Height * ((Font->Width + 7) / 8);
 
     const unsigned char *ptr = &Font->table[Char_Offset];
 
-    // æ£€æŸ¥åæ ‡èŒƒå›´
+    // ¼ì²é×ø±ê·¶Î§
     if (Xpoint > Paint.Width || Ypoint > Paint.Height)
     {
         DEBUG_PRINT("Paint_DrawChar error, Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
@@ -552,30 +552,30 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     dmaYpoint = Ypoint;
     dmaFont = Font;
     Delay_Ms(1);
-    LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // å‡†å¤‡çª—å£
+    LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // ×¼±¸´°¿Ú
 #endif
 
-    // éå†å­—ç¬¦çš„æ¯ä¸€è¡Œå’Œæ¯ä¸€åˆ—
+    // ±éÀú×Ö·ûµÄÃ¿Ò»ĞĞºÍÃ¿Ò»ÁĞ
     for (Page = 0; Page < Font->Height; Page++)
     {
         for (Column = 0; Column < Font->Width; Column++)
         {
-            // è®¡ç®—å½“å‰åƒç´ çš„ä½
+            // ¼ÆËãµ±Ç°ÏñËØµÄÎ»
             uint8_t pixel_bit = *ptr & (0x80 >> (Column % 8));
             if (pixel_bit)
             {
                 Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Foreground);
             }
-            else if (Color_Background != FONT_BACKGROUND) // å¦‚æœèƒŒæ™¯è‰²ä¸åŒï¼Œç»˜åˆ¶èƒŒæ™¯è‰²
+            else if (Color_Background != FONT_BACKGROUND) // Èç¹û±³¾°É«²»Í¬£¬»æÖÆ±³¾°É«
             {
                 Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Background);
             }
 
-            // æ¯8åˆ—æ›´æ–°ä¸€æ¬¡æŒ‡é’ˆ
+            // Ã¿8ÁĞ¸üĞÂÒ»´ÎÖ¸Õë
             if (Column % 8 == 7)
                 ptr++;
         }
-        // æ¯è¡Œç»“æŸåå¯èƒ½éœ€è¦æ›´æ–°æŒ‡é’ˆ
+        // Ã¿ĞĞ½áÊøºó¿ÉÄÜĞèÒª¸üĞÂÖ¸Õë
         if (Font->Width % 8 != 0)
             ptr++;
     }
@@ -584,11 +584,11 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     int total_pixels = dmaFont->Width * dmaFont->Height * 2;
     if (total_pixels < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
     {
-        Lcd_Refrsh_DMA(total_pixels); // åˆ·æ–°å°å›¾
+        Lcd_Refrsh_DMA(total_pixels); // Ë¢ĞÂĞ¡Í¼
     }
     if (total_pixels % (Y_MAX_PIXEL * X_MAX_PIXEL * 2) && total_pixels > Y_MAX_PIXEL * X_MAX_PIXEL * 2)
     {
-        Lcd_Refrsh_DMA(total_pixels % (Y_MAX_PIXEL * X_MAX_PIXEL * 2)); // è¡¥åŒ…æ“ä½œ
+        Lcd_Refrsh_DMA(total_pixels % (Y_MAX_PIXEL * X_MAX_PIXEL * 2)); // ²¹°ü²Ù×÷
     }
 #endif
 }
@@ -614,7 +614,7 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
 
 #if USE_DMA
     Delay_Ms(1);
-    LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // å‡†å¤‡å¥½çª—å£å’Œå¤ä½
+    LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // ×¼±¸ºÃ´°¿ÚºÍ¸´Î»
 #endif
 
     for (Page = 0; Page < Font->Height; Page++)
@@ -653,16 +653,16 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     } // Write all
 
 #if USE_DMA
-    // DEBUG_PRINT("æ˜¾ç¤ºå°å›¾%d\r\n",dmaFont->Width * dmaFont->Height * 2 / Y_MAX_PIXEL * X_MAX_PIXEL * 2);
+    // DEBUG_PRINT("ÏÔÊ¾Ğ¡Í¼%d\r\n",dmaFont->Width * dmaFont->Height * 2 / Y_MAX_PIXEL * X_MAX_PIXEL * 2);
     if (dmaFont->Width * dmaFont->Height * 2 < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
     {
-        // DEBUG_PRINT("æ˜¾ç¤ºå°å›¾\r\n");
+        // DEBUG_PRINT("ÏÔÊ¾Ğ¡Í¼\r\n");
         Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2);
     }
-    if (dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2) // è¡¥åŒ…æ“ä½œ
+    if (dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2) // ²¹°ü²Ù×÷
     {
         // DEBUG_PRINT("EnterSTANDBYMode\r\n");
-        Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2); // æŠŠä½™æ•°æ˜¾ç¤ºæ‰
+        Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2); // °ÑÓàÊıÏÔÊ¾µô
     }
 
 #endif
@@ -671,14 +671,14 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
 /******************************************************************************
 function:	Display the string
 parameter:
-    Xstart           ï¼šX coordinate
-    Ystart           ï¼šY coordinate
-    pString          ï¼šThe first address of the English string to be displayed
-    Font             ï¼šA structure pointer that displays a character size
+    Xstart           £ºX coordinate
+    Ystart           £ºY coordinate
+    pString          £ºThe first address of the English string to be displayed
+    Font             £ºA structure pointer that displays a character size
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
-// æ•°å­—çš„åç§»ä¸º'/'ï¼Œè‹±æ–‡çš„åç§»ä¸º'`'
+// Êı×ÖµÄÆ«ÒÆÎª'/'£¬Ó¢ÎÄµÄÆ«ÒÆÎª'`'
 void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
                       sFONT *Font, UWORD Color_Background, UWORD Color_Foreground, const char offsetAcsii)
 {
@@ -720,11 +720,11 @@ void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
 /******************************************************************************
 function:	Display the string
 parameter:
-    Xstart           ï¼šX coordinate
-    Ystart           ï¼šY coordinate
-    pString          ï¼šThe first address of the Chinese string and English
+    Xstart           £ºX coordinate
+    Ystart           £ºY coordinate
+    pString          £ºThe first address of the Chinese string and English
                         string to be displayed
-    Font             ï¼šA structure pointer that displays a character size
+    Font             £ºA structure pointer that displays a character size
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
@@ -845,10 +845,10 @@ void Paint_DrawString_CN(UWORD Xstart, UWORD Ystart, const char *pString, cFONT 
 /******************************************************************************
 function:	Display nummber
 parameter:
-    Xstart           ï¼šX coordinate
+    Xstart           £ºX coordinate
     Ystart           : Y coordinate
     Nummber          : The number displayed
-    Font             ï¼šA structure pointer that displays a character size
+    Font             £ºA structure pointer that displays a character size
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
@@ -890,11 +890,11 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
 // /******************************************************************************
 // function:	Display float number
 // parameter:
-//     Xstart           ï¼šX coordinate
+//     Xstart           £ºX coordinate
 //     Ystart           : Y coordinate
 //     Nummber          : The float data that you want to display
 //     Decimal_Point	 : Show decimal places
-//     Font             ï¼šA structure pointer that displays a character size
+//     Font             £ºA structure pointer that displays a character size
 //     Color            : Select the background color of the English character
 // ******************************************************************************/
 // void Paint_DrawFloatNum(UWORD Xpoint, UWORD Ypoint, double Nummber, UBYTE Decimal_Point,
@@ -917,10 +917,10 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
 /******************************************************************************
 function:	Display time
 parameter:
-    Xstart           ï¼šX coordinate
+    Xstart           £ºX coordinate
     Ystart           : Y coordinate
     pTime            : Time-related structures
-    Font             ï¼šA structure pointer that displays a character size
+    Font             £ºA structure pointer that displays a character size
     Color            : Select the background color of the English character
 ******************************************************************************/
 void Paint_DrawTime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT *Font,
@@ -944,10 +944,10 @@ void Paint_DrawTime(UWORD Xstart, UWORD Ystart, PAINT_TIME *pTime, sFONT *Font,
 /******************************************************************************
 function:	Display image
 parameter:
-    image            ï¼šImage start address
+    image            £ºImage start address
     xStart           : X starting coordinates
     yStart           : Y starting coordinates
-    xEnd             ï¼šImage width
+    xEnd             £ºImage width
     yEnd             : Image height
 ******************************************************************************/
 void Paint_DrawImage(const unsigned char *image, UWORD xStart, UWORD yStart, UWORD W_Image, UWORD H_Image)
@@ -959,7 +959,7 @@ void Paint_DrawImage(const unsigned char *image, UWORD xStart, UWORD yStart, UWO
         {
             if (xStart + i < Paint.WidthMemory && yStart + j < Paint.HeightMemory) // Exceeded part does not display
                 Paint_SetPixel(xStart + i, yStart + j, (*(image + j * W_Image * 2 + i * 2 + 1)) << 8 | (*(image + j * W_Image * 2 + i * 2)));
-            ////ä½¿ç”¨æ•°ç»„æ˜¯é¡ºåºå­˜å‚¨çš„ä¸€ä¸ªç‰¹æ€§ï¼Œé€šè¿‡ç®—æ³•è®¿é—®åŸå§‹æ•°ç»„
+            ////Ê¹ÓÃÊı×éÊÇË³Ğò´æ´¢µÄÒ»¸öÌØĞÔ£¬Í¨¹ıËã·¨·ÃÎÊÔ­Ê¼Êı×é
             // j*W_Image*2 			   Y offset
             // i*2              	   X offset
         }

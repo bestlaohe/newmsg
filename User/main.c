@@ -74,7 +74,6 @@ int main(void)
 
    while (SX1278_Read_Reg(REG_LR_VERSION)!=0x12)
    {
-
         Delay_Ms(10);
    }
    DEBUG_PRINT("lora init ok=0x%X \r\n",SX1278_Read_Reg(REG_LR_VERSION));//0x89  0100 0101

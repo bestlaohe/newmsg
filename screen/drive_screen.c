@@ -35,7 +35,7 @@ void SPI_FullDuplex_Init(void)
     SPI_Cmd(SPI1, ENABLE);                   // Ê¹ÄÜ SPI1
 }
 
-void SPI_DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsize, uint32_t mode)
+void SPI_DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsize, uint32_t mode,uint32_t MemoryInc)
 {
     DMA_InitTypeDef DMA_InitStructure = {0};
 
@@ -48,7 +48,7 @@ void SPI_DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bu
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralDST;
     DMA_InitStructure.DMA_BufferSize = bufsize;
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-    DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;
+    DMA_InitStructure.DMA_MemoryInc = MemoryInc;
     DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Byte;
     DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_Byte;
     DMA_InitStructure.DMA_Mode = mode;
@@ -86,6 +86,11 @@ void delay_us(uint16_t num)
 
 void DEV_SPI_WRite(uint8_t _dat)
 {
+    while (!READ_LORA_CS)
+    {
+        DEBUG_PRINT("wait lora cs 1!\r\n");
+    }
+    
     SPI_I2S_SendData(SPI1, _dat);
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY))
         ;
@@ -94,8 +99,6 @@ void DEV_SPI_WRite(uint8_t _dat)
 int LCD_Drive_Init(void)
 {
     SPI_FullDuplex_Init();
-    LCD_DC_0;
-    LCD_CS_0;
     TIM_CtrlPWMOutputs(TIM1, ENABLE);
 
 #if USE_DMA
@@ -111,7 +114,7 @@ int LCD_Drive_Init(void)
 void DEV_Module_Exit(void)
 {
     LCD_DC_1;
-    LCD_CS_1;
+    LCD_CS_DISABLE;
 
     TIM_CtrlPWMOutputs(TIM1, DISABLE);
 }
