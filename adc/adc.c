@@ -164,7 +164,7 @@ void show_battery()
 {
   
     static u8 percentage = 0;
-    static u8 Prepercentage = 101;
+    //static u8 Prepercentage = 101;
     char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
 
 
@@ -178,7 +178,7 @@ void show_battery()
 
     // if (Prepercentage != percentage)
     // {
-    Prepercentage = percentage;
+   // Prepercentage = percentage;
 
     u8 cnt = percentage / 25;
     u16 strX = 75;    // 默认 2 位数的显示位置

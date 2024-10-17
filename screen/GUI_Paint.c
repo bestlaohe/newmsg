@@ -424,11 +424,11 @@ void Paint_DrawRectangle(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
 
     if (Filled)
     {
-        // UWORD Ypoint;
-        // for (Ypoint = Ystart; Ypoint < Yend; Ypoint++)
-        // {
-        //     Paint_DrawLine(Xstart, Ypoint, Xend, Ypoint, Color, Line_width, LINE_STYLE_SOLID);
-        // }
+        UWORD Ypoint;
+        for (Ypoint = Ystart; Ypoint < Yend; Ypoint++)
+        {
+            Paint_DrawLine(Xstart, Ypoint, Xend, Ypoint, Color, Line_width, LINE_STYLE_SOLID);
+        }
     }
     else
     {
@@ -551,6 +551,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     dmaXpoint = Xpoint;
     dmaYpoint = Ypoint;
     dmaFont = Font;
+
     Delay_Ms(1);
     LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // ×¼±¸´°¿Ú
 #endif
@@ -695,7 +696,7 @@ void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
     while (*pString != '\0')
     {
         // if X direction filled , reposition to(Xstart,Ypoint),Ypoint is Y direction plus the Height of the character
-        if ((Xpoint + Font->Width) > Paint.Width)
+        if ((Xpoint + Font->Width) > Paint.Width-1)
         {
             Xpoint = Xstart;
             Ypoint += Font->Height;

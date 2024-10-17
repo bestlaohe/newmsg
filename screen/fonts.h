@@ -87,6 +87,8 @@ extern sFONT Font24_icon;
 extern sFONT Font24_logo;
 
 
+extern sFONT Font12_En;
+
 
 extern sFONT Font20;
 extern sFONT Font16;

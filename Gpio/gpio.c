@@ -34,7 +34,7 @@ void My_GPIO_Init() {
     GPIO_Init_Pin(GPIOA, GPIO_Pin_1, GPIO_Mode_AIN);
     // pc3调光的pwm
     GPIO_Init_Pin(GPIOC, GPIO_Pin_3, GPIO_Mode_AF_PP);
-    // 复用推挽输出模式，LCD_DC_1   LCD_CS_DISABLE
+    // 复用推挽输出模式，LCD_DC_1   LCD_CS
     GPIO_Init_Pin(GPIOC, GPIO_Pin_2 | GPIO_Pin_4, GPIO_Mode_Out_PP);
     // LCD_0IN85_RST_1
     GPIO_Init_Pin(GPIOD, GPIO_Pin_0, GPIO_Mode_Out_PP);

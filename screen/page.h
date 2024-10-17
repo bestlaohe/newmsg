@@ -15,9 +15,12 @@
 extern Key key;
 
 extern Encode encode;
+extern u8 lora_receive_len;
+extern u8 lora_receive_flag;
 
-extern char lora_receive_buf[50];
+extern char lora_receive_buf[90];
 extern u16 Battery_ADC_Average;
+
 #define ON 1
 #define OFF 0
 
@@ -59,6 +62,7 @@ typedef struct
 void chat_page(sFONT *Font);
 void show_history_data();
 void chat_history_page();
+void perpare_setting_page();
 void info_page();
 void setting_page();
 #endif /* SCREEN_PAGE_H_ */

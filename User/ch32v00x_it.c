@@ -20,10 +20,12 @@ void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast"))); 
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 volatile int dmaTransferComplete = 0;
+volatile int loraComplete = 0;
+
 
 volatile int circle = 0;
 int SleepCounter = 0;
-char lora_receive_buf[50] = {0};
+
 
 Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
@@ -91,8 +93,10 @@ void DMA1_Channel3_IRQHandler(void)
 {
   if (DMA_GetITStatus(DMA1_IT_TC3))
   {
+   //   DEBUG_PRINT("dmaTransferComplete\r\n");
     dmaTransferComplete = 1;
     DMA_ClearITPendingBit(DMA1_IT_TC3); // 清除中断标志
+
   }
 }
 u16 Battery_ADC_Average = 0;
@@ -167,35 +171,12 @@ void EXTI7_0_IRQHandler(void)
   if (EXTI_GetITStatus(EXTI_Line6) != RESET)
   {
 
+
+
  EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
-// SX1278_LoRaEntryRx(); // 进入接收模式
-//    u8 packet_length;
-//
-//    u8 addr, irq_flag;
-//    u8 packet_size;
-//
-//    irq_flag = SX1278_Read_Reg(LR_RegIrqFlags);
-//
-//    if ((irq_flag & RFLR_IRQFLAGS_PAYLOADCRCERROR) == RFLR_IRQFLAGS_PAYLOADCRCERROR) // 如果是CRC校验错误中断
-//    {
-//      SX1278_LoRaClearIrq();
-//      SX1278_Sleep(); // 进入睡眠模式，为config做准备
-//      DEBUG_PRINT(" lora crc error ");
-//     // return;
-//    }
-//
-//    addr = SX1278_Read_Reg(LR_RegFifoRxCurrentaddr); // last packet addr
-//    DEBUG_PRINT("addr  %d\r\n", addr);
-//    SX1278_Write_Reg(LR_RegFifoAddrPtr, addr);      // RxBaseAddr -> FiFoAddrPtr
-//    packet_size = SX1278_Read_Reg(LR_RegRxNbBytes); // Number for received bytes
-//    SX1278_Burst_Read(0x00, lora_receive_buf, packet_size);
-//    packet_length = packet_size;
-//
-//    SX1278_LoRaClearIrq();
-//    SX1278_Sleep(); // 进入睡眠模式，
-//
-//    DEBUG_PRINT("have lora msg %d\r\n", packet_length); // 有消息发来就震动
-//
+ loraComplete = 1;
+ DEBUG_PRINT("lora msg\r\n");
+
     MOTOR_SET(1);
     Delay_Ms(100);
     MOTOR_SET(0);
@@ -279,11 +260,18 @@ void EXTI_INT_INIT(void)
   GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource2);
   GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource7);
 
-  EXTI_InitStructure.EXTI_Line = EXTI_Line6 | EXTI_Line2 | EXTI_Line7;
+  EXTI_InitStructure.EXTI_Line = EXTI_Line2 | EXTI_Line7;
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
+
+  EXTI_InitStructure.EXTI_Line = EXTI_Line6 ;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
+
 
   NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;

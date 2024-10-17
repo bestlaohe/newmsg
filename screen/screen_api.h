@@ -52,16 +52,16 @@ function:
 ********************************************************************************/
 void LCD_SHOW_API_INIT();
 void LCD_0IN85_Init(UBYTE Scan_dir);
-void LCD_0IN85_Clear(UWORD Color);
+u8 LCD_0IN85_Clear(UWORD Color);
 void LCD_0IN85_Display(UWORD *Image);
 void LCD_0IN85_DisplayWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD *Image);
 void LCD_0IN85_DisplayPoint(UWORD X, UWORD Y, UWORD Color);
 void LCD_0IN85_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend);
 void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color);
 void LCD_0IN85_SetBackLight(UWORD Value);
-void Lcd_Refrsh_DMA(int pic_size);
+u8 Lcd_Refrsh_DMA(int pic_size);
 void startup_animation();
-
+void LCD_0IN85_SendCommand(UBYTE Reg);
 #endif /* SCREEN_SCREEN_API_H_ */
 
 

@@ -84,16 +84,42 @@ void delay_us(uint16_t num)
     }
 }
 
-void DEV_SPI_WRite(uint8_t _dat)
+u8 DEV_SPI_WRite(uint8_t _dat)
 {
     while (!READ_LORA_CS)
     {
         DEBUG_PRINT("wait lora cs 1!\r\n");
     }
-    
-    SPI_I2S_SendData(SPI1, _dat);
-    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY))
-        ;
+    u8 retry=0;
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
+    {
+      retry++;
+      if (retry > 200)
+      {
+        DEBUG_PRINT("send spi outtime!\r\n");
+        return 0;
+      }
+
+    } // 还没发完
+   SPI_I2S_SendData(SPI1,  (uint16_t)_dat);
+
+
+
+
+    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
+    {
+      retry++;
+      if (retry > 200)
+      {
+        DEBUG_PRINT("rec spi outtime!\r\n");
+        return 0;
+      }
+    } // 还没收完
+
+
+  return (uint8_t)SPI_I2S_ReceiveData(SPI1);
+
+
 }
 
 int LCD_Drive_Init(void)

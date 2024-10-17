@@ -7,9 +7,9 @@
 #include "page.h"
 #include <string.h>
 int8_t Englishcount = 0; // 字符的位号
-int Englishposx = 0;     // 字符的位置
-int Englishposy = 0;     // 字符的位置
-static u8 lora_send_buf[50];
+int Englishposx = 0;     // x的个数
+int Englishposy = 0;     // y的个数
+u8 lora_send_buf[54];
 // 定义设置数组
 Setting settings[SETTING_COUNT] = {
     {"light", (u8 *)&TIM1->CH3CVR, NULL},
@@ -20,29 +20,42 @@ Setting settings[SETTING_COUNT] = {
     {"lorasf", &Lora_SpreadFactor, SX1278_Init}};
 
 int current_setting = 0;
+
+#define Font_WIDTH 7                                                                                      // 字体宽度
+#define Font_HEIGH 12                                                                                     // 字体高度
+#define EDGE 1                                                                                            // 边缘
+#define OPERATE_DOWN 20                                                                                   // 操作界面下边缘
+#define CHAT_DOWN 127                                                                                     // 输入框下边缘
+#define COLUMN ((LCD_WIDTH - EDGE - EDGE) / Font_WIDTH)                                                   // 行个数18
+#define CHAT_HISTORY_DOWN ((sizeof(lora_receive_buf) / COLUMN) * Font_HEIGH) + OPERATE_DOWN + EDGE + EDGE // 聊天记录下边缘5行90/18=5*12=60
+#define CHAT_UP CHAT_HISTORY_DOWN + 2
 void chat_page(sFONT *Font)
 {
 
-  show_battery();                                           // 显示电池信息
-  Paint_DrawChar(0, 0, 0, &Font16_Operate, BLACK, BLUE, 0); // 绘制聊天页面的基本组件
-  Paint_DrawRectangle(0, 20, 127, 100, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-  Paint_DrawRectangle(0, 102, 127, 127, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+  show_battery();                                                                                    // 显示电池信息
+  Paint_DrawChar(0, 0, 0, &Font16_Operate, BLACK, BLUE, 0);                                          // 绘制聊天页面的基本组件
+  Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面
+  Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);            // 输入框
 
   // 绘制字符
-  Paint_DrawChar(2 + Englishposx * Font->Width, 103 + Englishposy * Font->Height, 'a' + Englishcount, Font, BLACK, WHITE, 'a');
+  Paint_DrawChar(EDGE + Englishposx * Font->Width, CHAT_UP + EDGE + Englishposy * Font->Height, 'a' + Englishcount, Font, BLACK, WHITE, 'a');
 
-  Paint_DrawString(2, 103 + Englishposy * Font->Height, lora_send_buf, Font, BLACK, WHITE, 'a');
-
+  Paint_DrawString(EDGE, CHAT_UP + EDGE, lora_send_buf, Font, BLACK, WHITE, 'a');
 
   show_history_data();
   // 处理滚动状态
   if (encode.state == ENCODE_EVENT_UP)
   {
-    Englishcount = (Englishcount + 1) % 26; // 循环计数
+    Englishcount = (Englishcount + 1) % 27; // 循环计数
   }
   else if (encode.state == ENCODE_EVENT_DOWN)
   {
-    Englishcount = (Englishcount - 1 + 26) % 26; // 循环计数
+    Englishcount = (Englishcount - 1 + 27) % 27; // 循环计数
+  }
+
+  if (lora_receive_flag == 2)
+  {
+    SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT / Font->Width));
   }
 
   // 发送数据
@@ -50,12 +63,20 @@ void chat_page(sFONT *Font)
   {
     if (encode.state == ENCODE_EVENT_UP)
     {
-        DEBUG_PRINT("start lora send  \r\n");
-      // 发送数据
-      if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)))
+      DEBUG_PRINT("start lora send\r\n");
+      lora_receive_flag = 2;
+      if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT / Font->Width)))
       {
-        DEBUG_PRINT("lora send ok \r\n");
+        DEBUG_PRINT("lora send ok\r\n");
+        SX1278_LoRaEntryRx(); // 进入接收模式
       }
+      // 清空一切
+      Englishposy = 0; // 重置行位置
+      Englishposx = 0; // 重置行位置
+      memset(lora_send_buf, 0, sizeof(lora_send_buf));
+
+      Paint_DrawRectangle(EDGE, CHAT_UP + EDGE, 127 - EDGE, 127 - EDGE, BLACK, DOT_PIXEL_1X1, DRAW_FILL_FULL);
+
       key.enable = 0; // 禁用键
     }
     else if (encode.state == ENCODE_EVENT_DOWN)
@@ -66,7 +87,7 @@ void chat_page(sFONT *Font)
         if (Englishposy > 0)
         {
           Englishposy--;
-          Englishposx = (LCD_WIDTH - 2) / Font->Width - 1; // 重置列位置
+          Englishposx = (LCD_WIDTH) / Font->Width - Font->Width; // 重置列位置
         }
         else
         {
@@ -80,33 +101,33 @@ void chat_page(sFONT *Font)
   // 确认输入
   if (key.event == KEY_EVENT_CLICK)
   {
-    lora_send_buf[Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)] = 'a' + Englishcount;
+    lora_send_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
     Englishposx++;
+    // DEBUG_PRINT("我111的数字=%d \r\n", EDGE + EDGE + Englishposx * Font->Width);
 
-    if (2 + Englishposx * Font->Width >= LCD_WIDTH - 1)
+    if (EDGE + EDGE + (Englishposx + 1) * Font->Width > LCD_WIDTH)
     {
       Englishposx = 0;
       Englishposy++;
-      if (103 + Englishposy * Font->Height >= LCD_HEIGHT - 1)
+      //  DEBUG_PRINT("我的数字=%d \r\n", CHAT_UP + EDGE + Englishposy * Font->Height);
+      if (CHAT_UP + EDGE + ((Englishposy + 1) * Font->Height) >= LCD_HEIGHT)
       {
         Englishposy = 0; // 重置行位置
       }
     }
     Englishcount = 0; // 重置计数
-
-    DEBUG_PRINT("start lora send  \r\n");
-  // 发送数据
-  if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT - 3 / Font->Width)))
-  {
-    DEBUG_PRINT("lora send ok \r\n");
-  }
   }
 }
 
 void chat_history_page()
 {
-  Paint_DrawRectangle(0, 20, 127, 100, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-  Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+
+  // Paint_DrawRectangle(0, 20, 127, 100, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+  // Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
+
+  Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面
+  Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);               // 输入框
+
   show_history_data();
   if (encode.state == ENCODE_EVENT_UP) // 滚动
   {
@@ -115,6 +136,12 @@ void chat_history_page()
   if (encode.state == ENCODE_EVENT_DOWN) // 滚动
   {
   }
+}
+void perpare_setting_page()
+{
+  Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面
+  Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);             // 输入框
+  Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);
 }
 
 void clamp_value(int *value, int min, int max)
@@ -233,7 +260,11 @@ void setting_page()
 }
 void show_history_data()
 {
-  Paint_DrawString(2, 22, lora_receive_buf, &Font8_En, BLACK, WHITE, 'a');
+
+  memset(lora_receive_buf + lora_receive_len, 0, sizeof(lora_receive_buf) - lora_receive_len);
+  //   DEBUG_PRINT("lora_receive_len=%d\r\n", lora_receive_len);
+
+  Paint_DrawString(1, 22, lora_receive_buf, &Font12_En, BLACK, WHITE, 'a');
 }
 
 void show_info(int posx, int posy, const char *label, int value, int offset)
@@ -248,8 +279,8 @@ void show_info(int posx, int posy, const char *label, int value, int offset)
 void info_page()
 {
 
-  show_info(0, 0, "batadc", Battery_ADC_Average, 7);          // 调用显示电池信息
-  show_info(0, 20, "rssi", SX1278_ReadRSSI(), 5);             // 调用显示 Lora RSSI
-  show_info(0, 40, "id", SX1278_Read_Reg(REG_LR_VERSION), 3); // 调用显示 Lora ID
-  show_info(0, 60, "light", TIM1->CH3CVR, 6);                 // 调用显示屏幕亮度
+  show_info(0, 0, "batadc", Battery_ADC_Average, 7);              // 调用显示电池信息
+  show_info(0, 20, "rssi", SX1278_LoRaReadRSSI(), 5);             // 调用显示 Lora RSSI
+  show_info(0, 40, "loraid", SX1278_Read_Reg(REG_LR_VERSION), 7); // 调用显示 Lora ID
+  show_info(0, 60, "light", TIM1->CH3CVR, 6);                     // 调用显示屏幕亮度
 }
