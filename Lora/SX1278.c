@@ -479,7 +479,6 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
         SX1278_LoRaEntryRx(); // 进入接收模式
       }
 
-
       return (0);
     }
     else
