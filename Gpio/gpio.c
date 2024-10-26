@@ -6,7 +6,8 @@
  */
 
 #include "gpio.h"
-void GPIO_Init_Pin(GPIO_TypeDef* GPIOx, uint16_t pin, GPIOMode_TypeDef mode) {
+void GPIO_Init_Pin(GPIO_TypeDef *GPIOx, uint16_t pin, GPIOMode_TypeDef mode)
+{
     GPIO_InitTypeDef GPIO_InitStructure = {0};
 
     GPIO_InitStructure.GPIO_Pin = pin;
@@ -15,19 +16,26 @@ void GPIO_Init_Pin(GPIO_TypeDef* GPIOx, uint16_t pin, GPIOMode_TypeDef mode) {
     GPIO_Init(GPIOx, &GPIO_InitStructure);
 }
 
-void My_GPIO_Init() {
+void My_GPIO_Init()
+{
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE);
 
     // 充电检测的确认按钮
-    GPIO_Init_Pin(GPIOD, GPIO_Pin_7, GPIO_Mode_IPD);
+    GPIO_Init_Pin(GPIOC, GPIO_Pin_1, GPIO_Mode_IPU);
+    // 屏幕的复位
+    GPIO_Init_Pin(GPIOD, GPIO_Pin_7, GPIO_Mode_Out_PP);
+    // pc0的lora的nss
+    GPIO_Init_Pin(GPIOD, GPIO_Pin_0, GPIO_Mode_Out_PP);
+    // pc1的lora的复位
+    GPIO_Init_Pin(GPIOC, GPIO_Pin_0, GPIO_Mode_Out_PP);
+
     // pd2的确认按钮
     GPIO_Init_Pin(GPIOD, GPIO_Pin_2, GPIO_Mode_IPU);
     // pd6的lora的中断接收mosi
     GPIO_Init_Pin(GPIOD, GPIO_Pin_6, GPIO_Mode_IPD);
     // 和lora通信miso
     GPIO_Init_Pin(GPIOC, GPIO_Pin_7, GPIO_Mode_IN_FLOATING);
-    // pc0的lora的nss // pc1的lora的复位
-    GPIO_Init_Pin(GPIOC, GPIO_Pin_0 | GPIO_Pin_1, GPIO_Mode_Out_PP);
+
     // pA2震动模块的
     GPIO_Init_Pin(GPIOA, GPIO_Pin_2, GPIO_Mode_Out_PP);
     // pA1电池电量采集
@@ -36,8 +44,7 @@ void My_GPIO_Init() {
     GPIO_Init_Pin(GPIOC, GPIO_Pin_3, GPIO_Mode_AF_PP);
     // 复用推挽输出模式，LCD_DC_1   LCD_CS
     GPIO_Init_Pin(GPIOC, GPIO_Pin_2 | GPIO_Pin_4, GPIO_Mode_Out_PP);
-    // LCD_0IN85_RST_1
-    GPIO_Init_Pin(GPIOD, GPIO_Pin_0, GPIO_Mode_Out_PP);
+
     // 编码器的io口d3d4
     GPIO_Init_Pin(GPIOD, GPIO_Pin_3 | GPIO_Pin_4, GPIO_Mode_IPU);
     // LCD_SCK_1;  SPI_SDA_1;
@@ -52,11 +59,11 @@ u8 shake_mode = 1; // 初始震动模式值
 void MOTOR_SET(int state)
 {
 
-if(shake_mode){
- if (state)
-        MOTOR_ON;
-    else
-        MOTOR_OFF;
-}
-   
+    if (shake_mode)
+    {
+        if (state)
+            MOTOR_ON;
+        else
+            MOTOR_OFF;
+    }
 }
