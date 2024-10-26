@@ -58,6 +58,18 @@ typedef struct
     u8 *value;
     void (*update_func)(void);
 } Setting;
+// 定义按键事件
+typedef enum
+{
+  PAGE_SEND, // 发送页面
+  PAGE_HISTROY_CHAT,
+  PAGE_PERPARE_SETTING, // 准备设置页面
+
+  PAGE_SETTING, // 设置页面
+  PAGE_INFO,    // 信息页面
+} Page;
+
+
 
 void chat_page(sFONT *Font);
 void show_history_data();
@@ -65,4 +77,5 @@ void chat_history_page();
 void perpare_setting_page();
 void info_page();
 void setting_page();
+void show_page();
 #endif /* SCREEN_PAGE_H_ */

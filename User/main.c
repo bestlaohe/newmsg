@@ -31,18 +31,6 @@
 
 
 
-// 定义按键事件
-typedef enum
-{
-  PAGE_SEND, // 发送页面
-  PAGE_HISTROY_CHAT,
-  PAGE_PERPARE_SETTING, // 准备设置页面
-  PAGE_SETTING, // 设置页面
-  PAGE_INFO,    // 信息页面
-
-} Page;
-
-Page page = PAGE_SEND;
 
 int main(void)
 {
@@ -70,71 +58,10 @@ int main(void)
 
   while (1)
   {
-  // page = PAGE_SEND;
-    switch (page) // 处理页面
-    {
-    case PAGE_SEND: // 发送界面
-      chat_page(&Font12_En);
-      if (key.event == KEY_EVENT_LONG_CLICK) // 返回
-      {
-        page = PAGE_HISTROY_CHAT;
-      }
-      break;
-
-    case PAGE_HISTROY_CHAT: // 聊天记录界面
-      chat_history_page();
-      if (key.event == KEY_EVENT_LONG_CLICK)
-        page = PAGE_PERPARE_SETTING;
-      break;
-
-    case PAGE_PERPARE_SETTING: // 准备设置界面
-      perpare_setting_page();
-      if (key.event == KEY_EVENT_CLICK)
-      {
-        LCD_0IN85_Clear(BLACK);
-        Paint_DrawChar(40, 40, 0, &Font24_icon, BLACK, BLUE, 0);
-        Delay_Ms(500);
-        LCD_0IN85_Clear(BLACK);
-        page = PAGE_SETTING;
-      }
-
-      if (key.event == KEY_EVENT_LONG_CLICK)
-      {
-        LCD_0IN85_Clear(BLACK);
-        page = PAGE_SEND;
-      }
-      break;
-
-    case PAGE_SETTING: // 设置界面
-      setting_page();
-      if (key.event == KEY_EVENT_LONG_CLICK)
-      {
-        LCD_0IN85_Clear(BLACK);
-        page = PAGE_INFO;
-      }
-      break;
-
-    case PAGE_INFO: // 信息界面
-      info_page();
-      if (key.event == KEY_EVENT_LONG_CLICK)
-      {
-        LCD_0IN85_Clear(BLACK);
-        page = PAGE_SEND;
-      }
-      break;
-
-    default: // 默认情况
-
-      page = PAGE_SEND;
-      break;
-    }
-
-    // 处理完事件后清除事件
-    key.event = KEY_EVENT_NONE;
-    encode.state = ENCODE_EVENT_NONE;
+    show_page();
     SX1278_Receive();
     Encoder_Scan();
-    IWDG_ReloadCounter();
+    IWDG_ReloadCounter();           //喂狗
     // Delay_Ms(200);
   }
 }
