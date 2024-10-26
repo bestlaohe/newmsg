@@ -32,7 +32,7 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 #define SX1278_DelayMs(t) Delay_Ms(t) // 毫秒延时函数的实现
 char lora_receive_buf[90] = {0};
 u8 lora_receive_len = 0;
-u8 lora_receive_flag = 0;//0是初始状态，1是接收到了，2是等待接收
+u8 lora_receive_flag = 0; // 0是初始状态，1是接收到了，2是等待接收
 
 extern volatile int loraComplete;
 // 控制口配置初始化，中断口配置在完成中断初始化中
@@ -213,8 +213,7 @@ void SX1278_Burst_Write(u8 adr, u8 *ptr, u8 length)
     {
 
       //  DEBUG_PRINT(" ptr[i]: %d\r\n", ptr[i]);
-        SX1278_SPI_RW(ptr[i]);
-
+      SX1278_SPI_RW(ptr[i]);
     }
     SX1278_NSS_DISABLE;
   }
@@ -440,9 +439,8 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
       DEBUG_PRINT("addr  %d\r\n", addr);
       SX1278_Write_Reg(LR_RegFifoAddrPtr, addr);      // RxBaseAddr -> FiFoAddrPtr
       packet_size = SX1278_Read_Reg(LR_RegRxNbBytes); // Number for received bytes
-      if (packet_size >90)
-          return 2;
-
+      if (packet_size > 90)
+        return 2;
 
       // 记录当前有效数据的长度
       u8 current_length = *packet_length;
@@ -462,23 +460,22 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
       SX1278_Sleep(); // 进入睡眠模式
 
       // 检查收到的数据是否为 "**"
-//      DEBUG_PRINT(" packet_size: %d\r\n", packet_size);
-//      DEBUG_PRINT("  valid_data[current_length]: %d\r\n", valid_data[current_length]);
-      if (packet_size == 2 && valid_data[current_length] == '*'&&valid_data[current_length+1] == '*')
+      //      DEBUG_PRINT(" packet_size: %d\r\n", packet_size);
+      //      DEBUG_PRINT("  valid_data[current_length]: %d\r\n", valid_data[current_length]);
+      if (packet_size == 2 && valid_data[current_length] == '*' && valid_data[current_length + 1] == '*')
       {
         DEBUG_PRINT("Received response: **\r\n");
-        lora_receive_flag=1;
-        *packet_length=*packet_length-2;
+        lora_receive_flag = 1;
+        *packet_length = *packet_length - 2;
         return 0; // 表示收到对方回应，不回复
       }
 
       // 如果不是 "**"，则发送 "**" 表示收到
-     if (!SX1278_LoRaTxPacket("**", 2))
+      if (!SX1278_LoRaTxPacket("**", 2))
       {
         DEBUG_PRINT("Lora send ok\r\n");
         SX1278_LoRaEntryRx(); // 进入接收模式
       }
-
 
       return (0);
     }
@@ -596,6 +593,7 @@ void SX1278_Init()
 
   while (SX1278_Read_Reg(REG_LR_VERSION) != 0x12)
   {
+    DEBUG_PRINT("wait sx1278 init \r\n");
     Delay_Ms(10);
   }
   DEBUG_PRINT("lora init ok=0x%X \r\n", SX1278_Read_Reg(REG_LR_VERSION)); // 0x89  0100 0101

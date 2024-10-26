@@ -58,7 +58,7 @@ void MOTOR_SET(int state);
 
 
 #define READ_LCD_CS       GPIO_ReadOutputDataBit(GPIOC, GPIO_Pin_4)
-#define READ_LORA_CS       GPIO_ReadOutputDataBit(SX1278_GPIO, GPIO_Pin_0)
+#define READ_LORA_CS       GPIO_ReadOutputDataBit(GPIOD, SX1278_NSS)
 
 
 #endif /* GPIO_GPIO_H_ */

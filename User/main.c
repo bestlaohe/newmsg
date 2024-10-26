@@ -1,9 +1,9 @@
-
 #include "debug.h"
 #include "encode.h" // timeapp->encode->main
 #include "adc.h"    // timeapp->pwm.screen->screen_api->adc->main
 #include "SX1278.h" // gpio->SX1278->page
 #include "page.h"
+
 
 // 待机功耗最低，睡眠功耗其次
 // 16k=16,384
@@ -11,17 +11,25 @@
 // bss是存储那些在源代码中没有显式初始化的全局变量和静态变量。
 // data是显式初始化的全局变量和静态变量
 
+
+
+
 //  ROM：
 //  text 段：存储程序代码。
 //  data 段：存储已初始化的全局变量和静态变量的初始值。
+
+
 
 //  RAM：
 //  text 段：在运行时用于存储代码执行（不直接占用 RAM 的存储空间，但需要 RAM 来执行）。
 //  data 段：在运行时存储已初始化的全局变量和静态变量。
 //  bss 段：在运行时存储未初始化的全局变量和静态变量。
 
-#define PWM_FRE 10000
-#define PWM_Duty 50
+
+#define PWM_FRE         10000
+#define PWM_Duty        50
+
+
 
 // 定义按键事件
 typedef enum
@@ -29,9 +37,9 @@ typedef enum
   PAGE_SEND, // 发送页面
   PAGE_HISTROY_CHAT,
   PAGE_PERPARE_SETTING, // 准备设置页面
-
   PAGE_SETTING, // 设置页面
   PAGE_INFO,    // 信息页面
+
 } Page;
 
 Page page = PAGE_SEND;
@@ -58,11 +66,11 @@ int main(void)
   SX1278_Init();                                                     // lora的初始化*****10268-9620=648
   EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
   startup_animation();                                               // 11732-10512=500
-  IWDG_Feed_Init(IWDG_Prescaler_256, 4000);                          //    该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500，1除以500乘以4000=8s****12467-12356=111字节
+  IWDG_Feed_Init(IWDG_Prescaler_256, 4000);                          // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500，1除以500乘以4000=8s****12467-12356=111字节
 
   while (1)
   {
-   page = PAGE_SEND;
+  // page = PAGE_SEND;
     switch (page) // 处理页面
     {
     case PAGE_SEND: // 发送界面
