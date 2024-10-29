@@ -276,8 +276,8 @@ void TIM1_UP_IRQHandler(void)
       DEBUG_PRINT("EnterSTANDBYMode\r\n");
 
       SleepCounter = 0;
-      system_enter_sleep();
-      PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
+   //   system_enter_sleep();
+     // PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
     }
 
     if (!KEY0)

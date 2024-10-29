@@ -29,17 +29,31 @@ int current_setting = 0;
 #define COLUMN ((LCD_WIDTH - EDGE - EDGE) / Font_WIDTH)                                                   // 行个数18
 #define CHAT_HISTORY_DOWN ((sizeof(lora_receive_buf) / COLUMN) * Font_HEIGH) + OPERATE_DOWN + EDGE + EDGE // 聊天记录下边缘5行90/18=5*12=60
 #define CHAT_UP CHAT_HISTORY_DOWN + 2
+
+#define THEME 1  
+
+
+
+
+
 void chat_page(sFONT *Font)
 {
 
-  show_battery();                                                                                    // 显示电池信息
-  Paint_DrawChar(0, 0, 0, &Font16_Operate, BLACK, BLUE, 0);                                          // 绘制聊天页面的基本组件
-  Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面
-  Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);            // 输入框
+
+ show_battery(97,3 ,MY_THEME_BACK_COLOR,MY_THEME_COMPONT_COLOR);                                                                  // 显示电池信息
+
+  Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0);              // 设置的图标
+
+
+
+
+  Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_GRAY, DOT_PIXEL_1X1, DRAW_FILL_FULL); // 聊天记录界面
+
+  Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_GRAY, DOT_PIXEL_1X1, DRAW_FILL_FULL);              // 输入框
+
 
   // 绘制字符
   Paint_DrawChar(EDGE + Englishposx * Font->Width, CHAT_UP + EDGE + Englishposy * Font->Height, 'a' + Englishcount, Font, BLACK, WHITE, 'a');
-
   Paint_DrawString(EDGE, CHAT_UP + EDGE, lora_send_buf, Font, BLACK, WHITE, 'a');
 
   show_history_data();
@@ -124,7 +138,8 @@ void chat_history_page()
 
   // Paint_DrawRectangle(0, 20, 127, 100, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
   // Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-  show_battery();    
+ 
+  show_battery(97,1, MY_THEME_BACK_COLOR,MY_THEME_COMPONT_COLOR);
   Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面
   Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);               // 输入框
 
@@ -138,7 +153,9 @@ void chat_history_page()
   }
 }
 void perpare_setting_page()
-{  show_battery();    
+{
+  
+  show_battery(97,1 ,MY_THEME_BACK_COLOR,MY_THEME_COMPONT_COLOR);
   Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面
   Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);             // 输入框
   Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);
@@ -285,70 +302,70 @@ void info_page()
   show_info(0, 60, "light", TIM1->CH3CVR, 6);                     // 调用显示屏幕亮度
 }
 
-
 Page page = PAGE_SEND;
-void show_page(){
+void show_page()
+{
 
-   page = PAGE_SEND;
-    switch (page) // 处理页面
+  page = PAGE_SEND;
+  switch (page) // 处理页面
+  {
+  case PAGE_SEND: // 发送界面
+    chat_page(&Font12_En);
+    if (key.event == KEY_EVENT_LONG_CLICK) // 返回
     {
-    case PAGE_SEND: // 发送界面
-      chat_page(&Font12_En);
-      if (key.event == KEY_EVENT_LONG_CLICK) // 返回
-      {
-        page = PAGE_HISTROY_CHAT;
-      }
-      break;
+      page = PAGE_HISTROY_CHAT;
+    }
+    break;
 
-    case PAGE_HISTROY_CHAT: // 聊天记录界面
-      chat_history_page();
-      if (key.event == KEY_EVENT_LONG_CLICK)
-        page = PAGE_PERPARE_SETTING;
-      break;
+  case PAGE_HISTROY_CHAT: // 聊天记录界面
+    chat_history_page();
+    if (key.event == KEY_EVENT_LONG_CLICK)
+      page = PAGE_PERPARE_SETTING;
+    break;
 
-    case PAGE_PERPARE_SETTING: // 准备设置界面
-      perpare_setting_page();
-      if (key.event == KEY_EVENT_CLICK)
-      {
-        LCD_0IN85_Clear(BLACK);
-        Paint_DrawChar(40, 40, 0, &Font24_icon, BLACK, BLUE, 0);
-        Delay_Ms(500);
-        LCD_0IN85_Clear(BLACK);
-        page = PAGE_SETTING;
-      }
-
-      if (key.event == KEY_EVENT_LONG_CLICK)
-      {
-        LCD_0IN85_Clear(BLACK);
-        page = PAGE_SEND;
-      }
-      break;
-
-    case PAGE_SETTING: // 设置界面
-      setting_page();
-      if (key.event == KEY_EVENT_LONG_CLICK)
-      {
-        LCD_0IN85_Clear(BLACK);
-        page = PAGE_INFO;
-      }
-      break;
-
-    case PAGE_INFO: // 信息界面
-      info_page();
-      if (key.event == KEY_EVENT_LONG_CLICK)
-      {
-        LCD_0IN85_Clear(BLACK);
-        page = PAGE_SEND;
-      }
-      break;
-
-    default: // 默认情况
-
-      page = PAGE_SEND;
-      break;
+  case PAGE_PERPARE_SETTING: // 准备设置界面
+    perpare_setting_page();
+    if (key.event == KEY_EVENT_CLICK)
+    {
+      LCD_0IN85_Clear(BLACK);
+      Paint_DrawChar(40, 40, 0, &Font24_icon, BLACK, BLUE, 0);
+      Delay_Ms(500);
+      LCD_0IN85_Clear(BLACK);
+      page = PAGE_SETTING;
     }
 
-    // 处理完事件后清除事件
-    key.event = KEY_EVENT_NONE;
-    encode.state = ENCODE_EVENT_NONE;
+    if (key.event == KEY_EVENT_LONG_CLICK)
+    {
+      LCD_0IN85_Clear(BLACK);
+      page = PAGE_SEND;
+    }
+    break;
+
+  case PAGE_SETTING: // 设置界面
+    setting_page();
+    if (key.event == KEY_EVENT_LONG_CLICK)
+    {
+      LCD_0IN85_Clear(BLACK);
+      page = PAGE_INFO;
+    }
+    break;
+
+  case PAGE_INFO: // 信息界面
+    info_page();
+    if (key.event == KEY_EVENT_LONG_CLICK)
+    {
+      LCD_0IN85_Clear(BLACK);
+      page = PAGE_SEND;
+    }
+    break;
+
+  default: // 默认情况
+
+    page = PAGE_SEND;
+    break;
+  }
+
+  // 处理完事件后清除事件
+  key.event = KEY_EVENT_NONE;
+  encode.state = ENCODE_EVENT_NONE;
 }

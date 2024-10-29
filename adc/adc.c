@@ -174,7 +174,9 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
     NVIC_Init(&NVIC_InitStructure); // 配置NVIC
 }
 
-void show_battery()
+
+
+void show_battery(UWORD Xpoint, UWORD Ypoint,UWORD Color_Background, UWORD Color_Foreground)
 {
 
     static u8 percentage = 0;
@@ -194,12 +196,12 @@ void show_battery()
         Prepercentage = percentage;
 
         u8 cnt = percentage / 25;
-        u16 strX = 75;    // 默认 2 位数的显示位置
-        u16 color = BLUE; // 默认颜色
+        u16 strX = Xpoint-2*Font16_Num.Width;    // 默认 2 位数的显示位置
+           u16 color = BLUE; // 默认颜色
 
         if (percentage >= 100)
         {
-            strX = 64;     // 3 位数的显示位置
+            strX = Xpoint-3*Font16_Num.Width;     // 3 位数的显示位置
             color = GREEN; // 颜色
                            // sprintf(strBuf, "%03d:", percentage); // 显示3位数字
 
@@ -207,7 +209,7 @@ void show_battery()
         }
         else if (percentage < 10)
         {
-            strX = 86;   // 1 位数的显示位置
+            strX = Xpoint-Font16_Num.Width;   // 1 位数的显示位置
             color = RED; // 颜色
                          // sprintf(strBuf, "%01d:", percentage); // 显示1位数字
             intToStr(percentage, strBuf, 1);
@@ -218,16 +220,16 @@ void show_battery()
             // sprintf(strBuf, "%02d:", percentage); // 显示2位数字
         }
         // 数字百分比
-        Paint_DrawString(strX, 0, strBuf, &Font16_Num, BLACK, WHITE, '0');
-        Paint_DrawChar(97, 0, 10, &Font16_Num, BLACK, WHITE, 0);
+        Paint_DrawString(strX, Ypoint, strBuf, &Font16_Num, Color_Background, Color_Foreground, '0');
+        Paint_DrawChar(Xpoint, Ypoint, 10, &Font16_Num, Color_Background, Color_Foreground, 0);//%
 
         if (charge.state == CHARGING)
         {
-            Paint_DrawChar(108, 0, 1, &Font16_Bat, BLACK, color, 0); // 满电log
+            Paint_DrawChar(Xpoint+Font16_Num.Width, Ypoint, 1, &Font16_Bat, Color_Background, color, 0); // 满电log
         }
         else if (charge.state == UNCHARGING)
         {
-            Paint_DrawChar(108, 0, 0, &Font16_Bat, BLACK, color, 0); // 空电log
+            Paint_DrawChar(Xpoint+Font16_Num.Width, Ypoint, 0, &Font16_Bat, Color_Background, color, 0); // 空电log
             for (u8 i = 0; i < cnt; i++)
             {
                 Paint_DrawLine(108 + 4 + i * 3, 4, 108 + 4 + i * 3, 8, color, 1, LINE_STYLE_SOLID);

@@ -551,8 +551,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     dmaXpoint = Xpoint;
     dmaYpoint = Ypoint;
     dmaFont = Font;
-
-    Delay_Ms(1);
+   // Delay_Ms(10);
     LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // ×¼±¸´°¿Ú
 #endif
 

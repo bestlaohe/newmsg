@@ -112,6 +112,8 @@ typedef enum {
 /**
  * image color
 **/
+#define RGB565(r, g, b) (((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3))
+
 
 #define WHITE					0xFFFF
 #define BLACK					0x0000	  
@@ -135,6 +137,12 @@ typedef enum {
 #define LGRAYBLUE               0XA651
 #define LBBLUE                  0X2B12
 
+#define MY_GRAY                RGB565(0x08, 0x08, 0x08)
+
+
+
+
+//0000 1 010 100 0 0111
 
 #define IMAGE_BACKGROUND    WHITE
 #define FONT_FOREGROUND     BLACK
