@@ -41,6 +41,6 @@ int LCD_Drive_Init(void);
 void DEV_Module_Exit(void);
 void LCD_SHOW_API_INIT();
 void SPI_DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsize,uint32_t mode,uint32_t MemoryInc);
-
+int LCD_Drive_DeInit(void);
 
 #endif /* SCREEN_DRIVE_SCREEN_H_ */

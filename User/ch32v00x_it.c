@@ -10,7 +10,7 @@
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
  *******************************************************************************/
 #include <ch32v00x_it.h>
-
+#include "adc.h"
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -22,16 +22,13 @@ void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 volatile int dmaTransferComplete = 0;
 volatile int loraComplete = 0;
 
-
 volatile int circle = 0;
 int SleepCounter = 0;
 
-
 Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
-// 去抖动和长按检测的常数
-#define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
-#define HOLD_TIME 3000   // 长按时间，单位：100us
+Charge charge = {UNCHARGING};
+
 void TIM2_IRQHandler()
 {
 
@@ -58,45 +55,14 @@ void refresh_SleepCounter(int newtime)
 {
   SleepCounter = newtime;
 }
-void system_wokeup()
-{
-
-  refresh_SleepCounter(0); // 刷新休眠时间
-}
-
-// 定时器中断服务函数
-void TIM1_UP_IRQHandler(void)
-{
-  if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
-  {
-
-    SleepCounter++;
-    if (SleepCounter >= 150000) // 15s触发一次
-    {
-      DEBUG_PRINT("EnterSTANDBYMode\r\n");
-      SleepCounter = 0;
-      // PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
-    }
-
-    if (!KEY0)
-    {
-      key.LongKeyCounter++;
-      key.state = KEY_STATE_HOLD;
-    }
-
-    // 清除中断标志
-    TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
-  }
-}
 
 void DMA1_Channel3_IRQHandler(void)
 {
   if (DMA_GetITStatus(DMA1_IT_TC3))
   {
-   //   DEBUG_PRINT("dmaTransferComplete\r\n");
+    //   DEBUG_PRINT("dmaTransferComplete\r\n");
     dmaTransferComplete = 1;
     DMA_ClearITPendingBit(DMA1_IT_TC3); // 清除中断标志
-
   }
 }
 u16 Battery_ADC_Average = 0;
@@ -171,32 +137,27 @@ void EXTI7_0_IRQHandler(void)
   if (EXTI_GetITStatus(EXTI_Line6) != RESET)
   {
 
-
-
- EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
- loraComplete = 1;
- DEBUG_PRINT("lora msg\r\n");
+    EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
+    loraComplete = 1;
+    DEBUG_PRINT("lora msg\r\n");
 
     MOTOR_SET(1);
     Delay_Ms(100);
     MOTOR_SET(0);
     system_wokeup(); // 系统唤醒
-
-   
   }
 
   if (EXTI_GetITStatus(EXTI_Line7) != RESET)
   {
 
-    if (CHARGING)
+    if (CHARGE)
     {
-
+      charge.state = CHARGING;
       DEBUG_PRINT("start chage\r\n");
     }
-
     else
     {
-
+      charge.state = UNCHARGING;
       DEBUG_PRINT("end chage\r\n");
     }
 
@@ -266,16 +227,66 @@ void EXTI_INT_INIT(void)
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
 
-  EXTI_InitStructure.EXTI_Line = EXTI_Line6 ;
+  EXTI_InitStructure.EXTI_Line = EXTI_Line6;
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
-
 
   NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+}
+
+
+void system_wokeup()
+{
+
+  refresh_SleepCounter(0);                                           // 刷新休眠时间
+  My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
+  TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
+  TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
+  LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
+  Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
+  SX1278_Init();                                                     // 可能需要初始化                                              // lora的初始化*****10268-9620=648
+  EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
+}
+
+void system_enter_sleep()
+{
+  My_GPIO_DeInit();
+  TIM1_DeInit();
+  TIM2_DeInit();
+  LCD_Drive_DeInit();
+  Battery_DeInit();
+ 
+}
+
+// 定时器中断服务函数
+void TIM1_UP_IRQHandler(void)
+{
+  if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
+  {
+
+    SleepCounter++;
+    if (SleepCounter >= 150000) // 15s触发一次
+    {
+      DEBUG_PRINT("EnterSTANDBYMode\r\n");
+
+      SleepCounter = 0;
+      system_enter_sleep();
+      PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
+    }
+
+    if (!KEY0)
+    {
+      key.LongKeyCounter++;
+      key.state = KEY_STATE_HOLD;
+    }
+
+    // 清除中断标志
+    TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+  }
 }

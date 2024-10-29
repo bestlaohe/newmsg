@@ -58,6 +58,21 @@ void TIM1_Init(u16 arr, u16 psc, u16 ccp)
     NVIC_Init(&NVIC_InitStructure);
     TIM_ClearFlag(TIM1, TIM_FLAG_Update);
 }
+void TIM1_DeInit(void)
+{
+    // 禁用定时器
+    TIM_Cmd(TIM1, DISABLE);
+    
+    // 禁用定时器中断
+    TIM_ITConfig(TIM1, TIM_IT_Update, DISABLE);
+
+    // 复位定时器
+    RCC_APB2PeriphResetCmd(RCC_APB2Periph_TIM1, ENABLE);
+    RCC_APB2PeriphResetCmd(RCC_APB2Periph_TIM1, DISABLE);
+
+    // 清除定时器更新标志
+    TIM_ClearFlag(TIM1, TIM_FLAG_Update);
+}
 
 // 用于编码器
 void TIM2_Init(u16 arr, u16 psc)
@@ -101,7 +116,22 @@ void TIM2_Init(u16 arr, u16 psc)
 
     TIM_Cmd(TIM2, ENABLE);
 }
+void TIM2_DeInit(void)
+{
+    // 禁用定时器
+    TIM_Cmd(TIM2, DISABLE);
+    
+    // 禁用中断
+    TIM_ITConfig(TIM2, TIM_IT_Update, DISABLE);
 
+    // 复位定时器
+    RCC_APB1PeriphResetCmd(RCC_APB1Periph_TIM2, ENABLE);
+    RCC_APB1PeriphResetCmd(RCC_APB1Periph_TIM2, DISABLE);
+
+    // 清除更新标志
+    TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update);
+}
 /*********************************************************************
  * @fn      IWDG_Feed_Init
  *

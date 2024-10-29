@@ -35,7 +35,7 @@ void SPI_FullDuplex_Init(void)
     SPI_Cmd(SPI1, ENABLE);                   // 使能 SPI1
 }
 
-void SPI_DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsize, uint32_t mode,uint32_t MemoryInc)
+void SPI_DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsize, uint32_t mode, uint32_t MemoryInc)
 {
     DMA_InitTypeDef DMA_InitStructure = {0};
 
@@ -90,36 +90,30 @@ u8 DEV_SPI_WRite(uint8_t _dat)
     {
         DEBUG_PRINT("wait lora cs 1!\r\n");
     }
-    u8 retry=0;
+    u8 retry = 0;
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
     {
-      retry++;
-      if (retry > 200)
-      {
-        DEBUG_PRINT("send spi outtime!\r\n");
-        return 0;
-      }
+        retry++;
+        if (retry > 200)
+        {
+            DEBUG_PRINT("send spi outtime!\r\n");
+            return 0;
+        }
 
     } // 还没发完
-   SPI_I2S_SendData(SPI1,  (uint16_t)_dat);
-
-
-
+    SPI_I2S_SendData(SPI1, (uint16_t)_dat);
 
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
     {
-      retry++;
-      if (retry > 200)
-      {
-        DEBUG_PRINT("rec spi outtime!\r\n");
-        return 0;
-      }
+        retry++;
+        if (retry > 200)
+        {
+            DEBUG_PRINT("rec spi outtime!\r\n");
+            return 0;
+        }
     } // 还没收完
 
-
-  return (uint8_t)SPI_I2S_ReceiveData(SPI1);
-
-
+    return (uint8_t)SPI_I2S_ReceiveData(SPI1);
 }
 
 int LCD_Drive_Init(void)
@@ -133,6 +127,22 @@ int LCD_Drive_Init(void)
     NVIC_EnableIRQ(DMA1_Channel3_IRQn);              // 启用DMA中断
 #endif
 
+    return 0;
+}
+int LCD_Drive_DeInit(void)
+{
+
+    // 禁用 PWM 输出
+    TIM_CtrlPWMOutputs(TIM1, DISABLE);
+    // 禁用 DMA 通道
+#if USE_DMA
+    DMA_Cmd(DMA1_Channel3, DISABLE);                  // 禁用DMA通道
+    NVIC_DisableIRQ(DMA1_Channel3_IRQn);              // 禁用DMA中断
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE); // 禁用SPI的DMA发送请求
+#endif
+    // 关闭 SPI
+    SPI_Cmd(SPI1, DISABLE);                               // 禁用SPI外设
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, DISABLE); // 禁用 SPI1 时钟
     return 0;
 }
 

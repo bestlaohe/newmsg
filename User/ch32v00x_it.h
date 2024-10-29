@@ -15,6 +15,9 @@
 #include "debug.h"
 #include "gpio.h"
 #include "SX1278.h"
+#include "time_app.h"
+#include "drive_screen.h"
+
 extern u16 BattaryBuf[10];
 // 定义按键状态
 typedef enum
@@ -58,6 +61,29 @@ typedef struct
   EncodeState state; // 当前按键状态
 
 } Encode;
+
+
+// 定义按键事件
+typedef enum
+{
+  UNCHARGING,   // 没充电
+  CHARGING, // 充电中
+
+} ChargeState;
+
+// 定义按键结构体
+typedef struct
+{
+  ChargeState state; // 当前按键状态
+
+} Charge;
+
+// 去抖动和长按检测的常数
+#define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
+#define HOLD_TIME 3000   // 长按时间，单位：100us
+
+#define PWM_FRE         10000
+#define PWM_Duty        50
 
 void refresh_SleepCounter(int newtime);
 void EXTI_INT_INIT(void);

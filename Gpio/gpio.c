@@ -54,6 +54,14 @@ void My_GPIO_Init()
     LCD_CS_DISABLE;
     SX1278_NSS_DISABLE;
 }
+void My_GPIO_DeInit()
+{
+    GPIO_DeInit(GPIOA);
+    GPIO_DeInit(GPIOC);
+    GPIO_DeInit(GPIOD);
+}
+
+
 
 u8 shake_mode = 1; // 初始震动模式值
 void MOTOR_SET(int state)

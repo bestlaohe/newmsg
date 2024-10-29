@@ -85,6 +85,21 @@ void Battery_Init(void)
     // Delay_Ms(50);
     // ADC_SoftwareStartConvCmd(ADC1, DISABLE);//休眠模式的时候降低功耗用
 }
+void Battery_DeInit(void)
+{
+    // 停止ADC转换
+    ADC_SoftwareStartConvCmd(ADC1, DISABLE); // 禁用软件启动转换
+
+    // 禁用DMA
+    DMA_Cmd(DMA1_Channel1, DISABLE); // 禁用 DMA 通道
+    DMA_DeInit(DMA1_Channel1); // 可选：如果希望重置DMA配置
+
+    // 禁用ADC
+    ADC_Cmd(ADC1, DISABLE); // 禁用 ADC1
+
+    // 禁用ADC时钟
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, DISABLE); // 禁用 ADC1 时钟
+}
 
 /*********************************************************************
  * @fn      Get_ADC_Val
@@ -150,7 +165,6 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
     DMA_InitStructure.DMA_Priority = DMA_Priority_VeryHigh;                     // 设置优先级：非常高
     DMA_InitStructure.DMA_M2M = DMA_M2M_Disable;                                // 禁用内存到内存模式
     DMA_Init(DMA_CHx, &DMA_InitStructure);                                      // 初始化指定的DMA通道
-
     DMA_ITConfig(DMA_CHx, DMA_IT_TC, ENABLE);                                   // 使能DMA传输完成中断
     NVIC_InitTypeDef NVIC_InitStructure;
     NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel1_IRQn;
@@ -162,56 +176,62 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
 
 void show_battery()
 {
-  
-    static u8 percentage = 0;
-    //static u8 Prepercentage = 101;
-    char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
 
+    static u8 percentage = 0;
+    static u8 Prepercentage = 101;
+    char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
 
     percentage = get_battery_percentage(Battery_ADC_Average);
 
-   // percentage = 100;
+    // percentage = 100;
 
     // 限制百分比范围
     if (percentage > 100)
         percentage = 100;
 
-    // if (Prepercentage != percentage)
-    // {
-   // Prepercentage = percentage;
-
-    u8 cnt = percentage / 25;
-    u16 strX = 75;    // 默认 2 位数的显示位置
-    u16 color = BLUE; // 默认颜色
-
-    if (percentage >= 100)
+    if (abs(Prepercentage - percentage) > 1)
     {
-        strX = 64;     // 3 位数的显示位置
-        color = GREEN; // 颜色
-                       // sprintf(strBuf, "%03d:", percentage); // 显示3位数字
+        Prepercentage = percentage;
 
-        intToStr(percentage, strBuf, 3);
-    }
-    else if (percentage < 10)
-    {
-        strX = 86;   // 1 位数的显示位置
-        color = RED; // 颜色
-                     // sprintf(strBuf, "%01d:", percentage); // 显示1位数字
-        intToStr(percentage, strBuf, 1);
-    }
-    else
-    {
-        intToStr(percentage, strBuf, 2);
-        // sprintf(strBuf, "%02d:", percentage); // 显示2位数字
-    }
+        u8 cnt = percentage / 25;
+        u16 strX = 75;    // 默认 2 位数的显示位置
+        u16 color = BLUE; // 默认颜色
 
-    Paint_DrawString(strX, 0, strBuf, &Font16_Num, BLACK, WHITE, '0');
-    Paint_DrawChar(97, 0, 10, &Font16_Num, BLACK, WHITE, 0);
-    Paint_DrawChar(108, 0, 0, &Font16_Bat, BLACK, color, 0);
+        if (percentage >= 100)
+        {
+            strX = 64;     // 3 位数的显示位置
+            color = GREEN; // 颜色
+                           // sprintf(strBuf, "%03d:", percentage); // 显示3位数字
 
-    for (u8 i = 0; i < cnt; i++)
-    {
-        Paint_DrawLine(108 + 4 + i * 3, 4, 108 + 4 + i * 3, 8, color, 1, LINE_STYLE_SOLID);
+            intToStr(percentage, strBuf, 3);
+        }
+        else if (percentage < 10)
+        {
+            strX = 86;   // 1 位数的显示位置
+            color = RED; // 颜色
+                         // sprintf(strBuf, "%01d:", percentage); // 显示1位数字
+            intToStr(percentage, strBuf, 1);
+        }
+        else
+        {
+            intToStr(percentage, strBuf, 2);
+            // sprintf(strBuf, "%02d:", percentage); // 显示2位数字
+        }
+        // 数字百分比
+        Paint_DrawString(strX, 0, strBuf, &Font16_Num, BLACK, WHITE, '0');
+        Paint_DrawChar(97, 0, 10, &Font16_Num, BLACK, WHITE, 0);
+
+        if (charge.state == CHARGING)
+        {
+            Paint_DrawChar(108, 0, 1, &Font16_Bat, BLACK, color, 0); // 满电log
+        }
+        else if (charge.state == UNCHARGING)
+        {
+            Paint_DrawChar(108, 0, 0, &Font16_Bat, BLACK, color, 0); // 空电log
+            for (u8 i = 0; i < cnt; i++)
+            {
+                Paint_DrawLine(108 + 4 + i * 3, 4, 108 + 4 + i * 3, 8, color, 1, LINE_STYLE_SOLID);
+            }
+        }
     }
-    // }
 }

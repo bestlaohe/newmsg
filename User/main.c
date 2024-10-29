@@ -26,11 +26,6 @@
 //  bss 段：在运行时存储未初始化的全局变量和静态变量。
 
 
-#define PWM_FRE         10000
-#define PWM_Duty        50
-
-
-
 
 int main(void)
 {
@@ -53,7 +48,7 @@ int main(void)
   Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
   SX1278_Init();                                                     // lora的初始化*****10268-9620=648
   EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
-  startup_animation();                                               // 11732-10512=500
+  startup_animation();                                               // 开机动画
   IWDG_Feed_Init(IWDG_Prescaler_256, 4000);                          // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500，1除以500乘以4000=8s****12467-12356=111字节
 
   while (1)
