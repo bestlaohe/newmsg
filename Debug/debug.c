@@ -7,16 +7,16 @@
  *                      Printf , Delay functions.
  *********************************************************************************
  * Copyright (c) 2021 Nanjing Qinheng Microelectronics Co., Ltd.
- * Attention: This software (modified or not) and binary are used for 
+ * Attention: This software (modified or not) and binary are used for
  * microcontroller manufactured by Nanjing Qinheng Microelectronics.
  *******************************************************************************/
 #include <debug.h>
 
-static uint8_t  p_us = 0;
+static uint8_t p_us = 0;
 static uint16_t p_ms = 0;
 
-#define DEBUG_DATA0_ADDRESS  ((volatile uint32_t*)0xE00000F4)
-#define DEBUG_DATA1_ADDRESS  ((volatile uint32_t*)0xE00000F8)
+#define DEBUG_DATA0_ADDRESS ((volatile uint32_t *)0xE00000F4)
+#define DEBUG_DATA1_ADDRESS ((volatile uint32_t *)0xE00000F8)
 
 /*********************************************************************
  * @fn      Delay_Init
@@ -49,9 +49,10 @@ void Delay_Us(uint32_t n)
 
     SysTick->CMP = i;
     SysTick->CNT = 0;
-    SysTick->CTLR |=(1 << 0);
+    SysTick->CTLR |= (1 << 0);
 
-    while((SysTick->SR & (1 << 0)) != (1 << 0));
+    while ((SysTick->SR & (1 << 0)) != (1 << 0))
+        ;
     SysTick->CTLR &= ~(1 << 0);
 }
 
@@ -73,9 +74,10 @@ void Delay_Ms(uint32_t n)
 
     SysTick->CMP = i;
     SysTick->CNT = 0;
-    SysTick->CTLR |=(1 << 0);
+    SysTick->CTLR |= (1 << 0);
 
-    while((SysTick->SR & (1 << 0)) != (1 << 0));
+    while ((SysTick->SR & (1 << 0)) != (1 << 0))
+        ;
     SysTick->CTLR &= ~(1 << 0);
 }
 
@@ -90,7 +92,7 @@ void Delay_Ms(uint32_t n)
  */
 void USART_Printf_Init(uint32_t baudrate)
 {
-    GPIO_InitTypeDef  GPIO_InitStructure;
+    GPIO_InitTypeDef GPIO_InitStructure;
     USART_InitTypeDef USART_InitStructure;
 
 #if (DEBUG == DEBUG_UART1_NoRemap)
@@ -157,10 +159,13 @@ void SDI_Printf_Enable(void)
     Delay_Ms(1);
 }
 
-void my_uart_print(char *str) {
-    while (*str) {
+void my_uart_print(char *str)
+{
+    while (*str)
+    {
         // 等待 USART1 的传输完成标志
-        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
+            ;
         // 发送一个字符
         USART_SendData(USART1, *str++);
     }
@@ -175,8 +180,7 @@ void my_uart_print(char *str) {
  *
  * @return  size - Data length
  */
-__attribute__((used)) 
-int _write(int fd, char *buf, int size)
+__attribute__((used)) int _write(int fd, char *buf, int size)
 {
     int i = 0;
     int writeSize = size;
@@ -190,23 +194,22 @@ int _write(int fd, char *buf, int size)
          *
          */
 
-        while( (*(DEBUG_DATA0_ADDRESS) != 0u))
+        while ((*(DEBUG_DATA0_ADDRESS) != 0u))
         {
-
         }
 
-        if(writeSize>7)
+        if (writeSize > 7)
         {
-            *(DEBUG_DATA1_ADDRESS) = (*(buf+i+3)) | (*(buf+i+4)<<8) | (*(buf+i+5)<<16) | (*(buf+i+6)<<24);
-            *(DEBUG_DATA0_ADDRESS) = (7u) | (*(buf+i)<<8) | (*(buf+i+1)<<16) | (*(buf+i+2)<<24);
+            *(DEBUG_DATA1_ADDRESS) = (*(buf + i + 3)) | (*(buf + i + 4) << 8) | (*(buf + i + 5) << 16) | (*(buf + i + 6) << 24);
+            *(DEBUG_DATA0_ADDRESS) = (7u) | (*(buf + i) << 8) | (*(buf + i + 1) << 16) | (*(buf + i + 2) << 24);
 
             i += 7;
             writeSize -= 7;
         }
         else
         {
-            *(DEBUG_DATA1_ADDRESS) = (*(buf+i+3)) | (*(buf+i+4)<<8) | (*(buf+i+5)<<16) | (*(buf+i+6)<<24);
-            *(DEBUG_DATA0_ADDRESS) = (writeSize) | (*(buf+i)<<8) | (*(buf+i+1)<<16) | (*(buf+i+2)<<24);
+            *(DEBUG_DATA1_ADDRESS) = (*(buf + i + 3)) | (*(buf + i + 4) << 8) | (*(buf + i + 5) << 16) | (*(buf + i + 6) << 24);
+            *(DEBUG_DATA0_ADDRESS) = (writeSize) | (*(buf + i) << 8) | (*(buf + i + 1) << 16) | (*(buf + i + 2) << 24);
 
             writeSize = 0;
         }
@@ -215,11 +218,12 @@ int _write(int fd, char *buf, int size)
 
 #else
 
-    for(i = 0; i < size; i++){
-        while(USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET);
+    for (i = 0; i < size; i++)
+    {
+        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
+            ;
         USART_SendData(USART1, *buf++);
     }
-
 
 #endif
     return writeSize;
@@ -232,53 +236,89 @@ int _write(int fd, char *buf, int size)
  *
  * @return  size: Data length
  */
-__attribute__((used)) 
-void *_sbrk(ptrdiff_t incr)
+__attribute__((used)) void *_sbrk(ptrdiff_t incr)
 {
     extern char _end[];
     extern char _heap_end[];
     static char *curbrk = _end;
 
     if ((curbrk + incr < _end) || (curbrk + incr > _heap_end))
-    return NULL - 1;
+        return NULL - 1;
 
     curbrk += incr;
     return curbrk - incr;
 }
 
-
-
-void intToStr(int num, char *str, int minWidth) {
+void intToStr(int num, char *str, int minWidth)
+{
     int i = 0;
     _Bool isNegative = 0;
 
     // 处理负数
-    if (num < 0) {
+    if (num < 0)
+    {
         isNegative = 1;
         num = -num;
     }
 
     // 处理数字部分
-    do {
+    do
+    {
         str[i++] = (num % 10) + '0';
         num /= 10;
     } while (num > 0);
 
     // 添加负号
-    if (isNegative) {
+    if (isNegative)
+    {
         str[i++] = '-';
     }
 
     // 如果需要，填充前导零
-    while (i < minWidth) {
+    while (i < minWidth)
+    {
         str[i++] = '0';
     }
 
     // 反转字符串
     str[i] = '\0'; // 先添加终止符
-    for (int j = 0; j < i / 2; j++) {
+    for (int j = 0; j < i / 2; j++)
+    {
         char temp = str[j];
         str[j] = str[i - j - 1];
         str[i - j - 1] = temp;
     }
+}
+
+void Check_Reset_Flag()
+{
+  
+    if ((RCC->RSTSCKR & (1 << (25 + PINRST_FLAG))) != RESET)
+    {
+        DEBUG_PRINT("PINRST_FLAG\r\n");
+    }
+    else if ((RCC->RSTSCKR & (1 << (25 + PORRST_FLAG))) != RESET)
+    {
+        DEBUG_PRINT("PORRST_FLAG\r\n");
+    }
+    else if ((RCC->RSTSCKR & (1 << (25 + SFTRST_FLAG))) != RESET)
+    {
+        DEBUG_PRINT("SFTRST_FLAG\r\n");
+    }
+    else if ((RCC->RSTSCKR & (1 << (25 + IWDGRST_FLAG))) != RESET)
+    {
+        DEBUG_PRINT("IWDGRST_FLAG\r\n");
+    }
+    else if ((RCC->RSTSCKR & (1 << (25 + WWDGRST_FLAG))) != RESET)
+    {
+        DEBUG_PRINT("WWDGRST_FLAG\r\n");
+    }
+    else if ((RCC->RSTSCKR & (1 << (25 + LPWRRST_FLAG))) != RESET)
+    {
+        DEBUG_PRINT("LPWRRST_FLAG\r\n");
+    }
+
+    RCC->RSTSCKR |= (1 << 24); /* clear reset flag */
+
+  
 }

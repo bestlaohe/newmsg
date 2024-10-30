@@ -55,6 +55,18 @@
 #define SDI_PRINT   SDI_PR_CLOSE
 #endif
 
+typedef enum
+{
+    NONERST_FLAG = 0,    /* none reset */
+    PINRST_FLAG,         /* NRST reset */
+    PORRST_FLAG,         /* POR/PDR reset */
+    SFTRST_FLAG,         /* software reset */
+    IWDGRST_FLAG,        /* independent watchdog reset */
+    WWDGRST_FLAG,        /* window watchdog reset*/
+    LPWRRST_FLAG         /* low power reset */
+}reset_flag_t;
+
+void Check_Reset_Flag();
 void Delay_Init(void);
 void Delay_Us(uint32_t n);
 void Delay_Ms(uint32_t n);

@@ -21,14 +21,21 @@ extern u8 lora_receive_flag;
 extern char lora_receive_buf[90];
 extern u16 Battery_ADC_Average;
 
-//黑色主题
-// #define MY_THEME_BACK_COLOR BLACK //背景颜色
-// #define MY_THEME_COMPONT_COLOR WHITE //组件颜色
 
-//白色主题
-#define MY_THEME_BACK_COLOR  WHITE //背景颜色
-#define MY_THEME_COMPONT_COLOR BLACK //组件颜色
+#define THEME 1  
 
+#if THEME == 1
+    // 黑色主题
+    #define MY_THEME_BACK_COLOR BLACK // 背景颜色
+    #define MY_THEME_COMPONT_COLOR WHITE // 组件颜色
+
+#else
+
+    // 白色主题
+    #define MY_THEME_BACK_COLOR WHITE // 背景颜色
+    #define MY_THEME_COMPONT_COLOR BLACK // 组件颜色
+    
+#endif
 
 
 #define ON 1
