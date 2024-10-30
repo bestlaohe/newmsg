@@ -551,7 +551,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     dmaXpoint = Xpoint;
     dmaYpoint = Ypoint;
     dmaFont = Font;
-   // Delay_Ms(10);
+    Delay_Ms(1);
     LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备窗口
 #endif
 
@@ -570,6 +570,8 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
             {
                 Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Background);
             }
+
+  
 
             // 每8列更新一次指针
             if (Column % 8 == 7)
@@ -591,6 +593,8 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
         Lcd_Refrsh_DMA(total_pixels % (Y_MAX_PIXEL * X_MAX_PIXEL * 2)); // 补包操作
     }
 #endif
+
+
 }
 
 
@@ -707,6 +711,7 @@ void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
             Xpoint = Xstart;
             Ypoint = Ystart;
         }
+
         Paint_DrawChar(Xpoint, Ypoint, *pString, Font, Color_Background, Color_Foreground, offsetAcsii);
 
         // The next character of the address

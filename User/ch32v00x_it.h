@@ -83,7 +83,7 @@ typedef struct
 #define HOLD_TIME 3000   // 长按时间，单位：100us
 
 #define PWM_FRE         10000
-#define PWM_Duty        50
+#define PWM_Duty        20
 
 void refresh_SleepCounter(int newtime);
 void EXTI_INT_INIT(void);

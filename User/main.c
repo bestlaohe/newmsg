@@ -47,18 +47,20 @@ int main(void)
 
   // 测试代码
   LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
-  show_battery(97, 3, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);                         // 显示电池信息
-  Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0); // 设置的图标
-
-  // 测试代码
-
+  //  show_battery(97, 3, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);                         // 显示电池信息
+  // Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0); // 设置的图标
+  //
+  //  // 测试代码
+  //  while (1)
+  //    {}
   while (1)
   {
 
     show_page();
-    //    SX1278_Receive();
-    //    Encoder_Scan();
+    SX1278_Receive();
+    Encoder_Scan();
     IWDG_ReloadCounter(); // 喂狗
+    // DEBUG_PRINT("HEART\r\n");
     // Delay_Ms(200);
   }
 }

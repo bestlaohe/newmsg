@@ -21,22 +21,21 @@ extern u8 lora_receive_flag;
 extern char lora_receive_buf[90];
 extern u16 Battery_ADC_Average;
 
+#define THEME 0
 
-#define THEME 1  
+#if THEME == 1 // 黑色主题
 
-#if THEME == 1
-    // 黑色主题
-    #define MY_THEME_BACK_COLOR BLACK // 背景颜色
-    #define MY_THEME_COMPONT_COLOR WHITE // 组件颜色
+#define MY_THEME_BACK_COLOR BLACK    // 背景颜色
+#define MY_THEME_COMPONT_COLOR WHITE // 组件颜色
+#define MY_SCREEN_COLOR MY_GRAY      // 幕布颜色
 
-#else
+#else // 白色主题
 
-    // 白色主题
-    #define MY_THEME_BACK_COLOR WHITE // 背景颜色
-    #define MY_THEME_COMPONT_COLOR BLACK // 组件颜色
-    
+#define MY_THEME_BACK_COLOR WHITE     // 背景颜色
+#define MY_THEME_COMPONT_COLOR BLACK  // 组件颜色
+#define MY_SCREEN_COLOR MY_WHITE_GRAY // 幕布颜色
+
 #endif
-
 
 #define ON 1
 #define OFF 0
@@ -54,13 +53,13 @@ extern u16 Battery_ADC_Average;
 // 定义设置参数
 typedef enum
 {
-    SETTING_SCREEN_LIGHT,
-    SETTING_SHAKE_MODE,
-    SETTING_LORA_FREQ,
-    SETTING_LORA_POWER,
-    SETTING_LORA_BANDWIDTH,
-    SETTING_LORA_SPREAD_FACTOR,
-    SETTING_COUNT
+  SETTING_SCREEN_LIGHT,
+  SETTING_SHAKE_MODE,
+  SETTING_LORA_FREQ,
+  SETTING_LORA_POWER,
+  SETTING_LORA_BANDWIDTH,
+  SETTING_LORA_SPREAD_FACTOR,
+  SETTING_COUNT
 } SettingIndex;
 
 extern u8 shake_mode;        // 振动模式，0为off，1为on
@@ -71,9 +70,9 @@ extern u8 Lora_SpreadFactor; // 扩频因子设置在7~12= 7
 
 typedef struct
 {
-    const char *name;
-    u8 *value;
-    void (*update_func)(void);
+  const char *name;
+  u8 *value;
+  void (*update_func)(void);
 } Setting;
 // 定义按键事件
 typedef enum
@@ -85,8 +84,6 @@ typedef enum
   PAGE_SETTING, // 设置页面
   PAGE_INFO,    // 信息页面
 } Page;
-
-
 
 void chat_page(sFONT *Font);
 void show_history_data();

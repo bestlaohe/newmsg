@@ -225,14 +225,14 @@ void show_battery(UWORD Xpoint, UWORD Ypoint,UWORD Color_Background, UWORD Color
 
         if (charge.state == CHARGING)
         {
-            Paint_DrawChar(Xpoint+Font16_Num.Width, Ypoint, 1, &Font16_Bat, Color_Background, color, 0); // Âúµçlog
+            Paint_DrawChar(Xpoint+Font16_Num.Width, Ypoint, 1, &Font16_Bat, Color_Background, color, 0); // ³äµçlog
         }
         else if (charge.state == UNCHARGING)
         {
             Paint_DrawChar(Xpoint+Font16_Num.Width, Ypoint, 0, &Font16_Bat, Color_Background, color, 0); // ¿Õµçlog
             for (u8 i = 0; i < cnt; i++)
             {
-                Paint_DrawLine(108 + 4 + i * 3, 4, 108 + 4 + i * 3, 8, color, 1, LINE_STYLE_SOLID);
+                Paint_DrawLine(108 + 4 + i * 3, 3+Ypoint, 108 + 4 + i * 3, 7+Ypoint, color, 1, LINE_STYLE_SOLID);
             }
         }
     }

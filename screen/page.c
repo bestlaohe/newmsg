@@ -36,10 +36,10 @@ Page page = PAGE_SEND;
 void chat_page(sFONT *Font)
 {
 
-  show_battery(97, 3, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);                                     // 显示电池信息
-  Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0);             // 设置的图标
-  Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_GRAY, DOT_PIXEL_1X1, DRAW_FILL_FULL); // 聊天记录界面
-  Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_GRAY, DOT_PIXEL_1X1, DRAW_FILL_FULL);              // 输入框
+  show_battery(97, 3, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);                                             // 显示电池信息
+  Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0);                     // 设置的图标
+  Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL); // 聊天记录界面
+  Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL);              // 输入框
 
   // 绘制字符
   Paint_DrawChar(EDGE + Englishposx * Font->Width, CHAT_UP + EDGE + Englishposy * Font->Height, 'a' + Englishcount, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');

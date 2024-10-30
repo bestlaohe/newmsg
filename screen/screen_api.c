@@ -8,6 +8,8 @@
 #include "screen_api.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
 void DrawIcon(int x, int y, int size, int final_size)
 {
     Paint_DrawChar(x, y, 0, &Font24_logo, BLACK, WHITE - size * 819, 0);
@@ -518,7 +520,7 @@ u8 Lcd_Refrsh_DMA(int pic_size)
 
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
         ;
-    //  Delay_Ms(1); // 发送完成后要等一下彻底完成
+    // Delay_Ms(1); // 发送完成后要等一下彻底完成
 
     DMA_Cmd(DMA1_Channel3, DISABLE);
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
@@ -534,7 +536,11 @@ u8 Lcd_Refrsh_DMA(int pic_size)
             return 0;
         }
     } // 还没收完
+
     LCD_CS_DISABLE;
+
+    memset(lcd_gram, 0xff,pic_size);
+
     return (uint8_t)SPI_I2S_ReceiveData(SPI1);
 
 #endif

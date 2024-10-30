@@ -139,7 +139,7 @@ typedef enum {
 
 #define MY_GRAY                RGB565(0x08, 0x08, 0x08)
 
-
+#define MY_WHITE_GRAY                RGB565(0x99, 0x99, 0x99)
 
 
 //0000 1 010 100 0 0111
