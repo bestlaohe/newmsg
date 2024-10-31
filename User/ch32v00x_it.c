@@ -238,6 +238,7 @@ void EXTI_INT_INIT(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
+    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 }
 
 
