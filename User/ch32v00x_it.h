@@ -87,4 +87,5 @@ typedef struct
 
 void refresh_SleepCounter(int newtime);
 void EXTI_INT_INIT(void);
+void Sleep_Scan();
 #endif /* __CH32V00x_IT_H */

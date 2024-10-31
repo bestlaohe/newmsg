@@ -24,7 +24,7 @@ volatile int loraComplete = 0;
 
 volatile int circle = 0;
 int SleepCounter = 0;
-
+int needSleep = 0;
 Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
 Charge charge = {UNCHARGING};
@@ -89,6 +89,7 @@ void DMA1_Channel1_IRQHandler(void)
  */
 void EXTI7_0_IRQHandler(void)
 {
+
   if (EXTI_GetITStatus(EXTI_Line2) != RESET)
   {
 
@@ -238,36 +239,46 @@ void EXTI_INT_INIT(void)
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
-    NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
 }
-
-
-
 
 void system_wokeup()
 {
 
   refresh_SleepCounter(0); // 刷新休眠时间
-
-  if (0) // 已经休眠了
+  needSleep = 0;
+  if (1) // 已经休眠了
   {
-    My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
+    //    My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
     TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
-    TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
+                                                                       //    TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
     LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
     Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
-    SX1278_Init();                                                     // 可能需要初始化                                              // lora的初始化*****10268-9620=648
-    EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
+                                                                       //  SX1278_Init();                                                     // 可能需要初始化                                              // lora的初始化*****10268-9620=648
+                                                                       // EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
+    USART_Printf_Init(115200);
+
+    DEBUG_PRINT("system_wokeup\r\n");
   }
 }
 
 void system_enter_sleep()
 {
- My_GPIO_DeInit();
-  TIM1_DeInit();
-  TIM2_DeInit();
+  // My_GPIO_DeInit();
+ 
   LCD_Drive_DeInit();
   Battery_DeInit();
+
+  TIM1_DeInit();
+  //   TIM2_DeInit();
+}
+
+void Sleep_Scan()
+{
+  if (needSleep)
+  {
+    system_enter_sleep();
+    PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
+  }
 }
 
 // 定时器中断服务函数
@@ -275,16 +286,17 @@ void TIM1_UP_IRQHandler(void)
 {
   if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
   {
-
+    // 清除中断标志
+    TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
     SleepCounter++;
     if (SleepCounter >= 50000) // 15s触发一次
     {
+
       DEBUG_PRINT("EnterSTANDBYMode\r\n");
 
       SleepCounter = 0;
-     // system_enter_sleep();
 
-      PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
+      needSleep = 1;
     }
 
     if (!KEY0)
@@ -292,8 +304,5 @@ void TIM1_UP_IRQHandler(void)
       key.LongKeyCounter++;
       key.state = KEY_STATE_HOLD;
     }
-
-    // 清除中断标志
-    TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
   }
 }

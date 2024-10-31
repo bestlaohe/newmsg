@@ -20,18 +20,24 @@
 //  bss 段：在运行时存储未初始化的全局变量和静态变量。
 
 // 似乎休眠没喂狗重启了，加喂狗打印
+
 int main(void)
 {
 
   /*********************基本内容初始化******************************/
-  SystemCoreClockUpdate();   // 48000000系统时钟刷新3324-3212=100k
+  SystemCoreClockUpdate(); // 48000000系统时钟刷新3324-3212=100k
+  NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
   USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死3956-3324=600k
   DEBUG_PRINT("\r\n\r\n\r\n\r\nSystemClk:%d\r\n", SystemCoreClock);
   //  DEBUG_PRINT("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
   Delay_Init(); // 延时初始化需要在延时前，不然会卡死4012-3956=100字节
-  FLASH_Unlock();
-  FLASH_UserOptionByteConfig(OB_IWDG_SW, OB_STDBY_NoRST, OB_RST_NoEN, OB_PowerON_Start_Mode_BOOT);
-  FLASH_Lock(); //**4232-4012=200字节
+
+  //首次才要吧
+//  FLASH_Unlock();
+//  FLASH_UserOptionByteConfig(OB_IWDG_SW, OB_STDBY_NoRST, OB_RST_NoEN, OB_PowerON_Start_Mode_BOOT);
+//  FLASH_Lock(); //**4232-4012=200字节
+
+
   /*********************应用函数初始化******************************/
   Check_Reset_Flag();                                                // 查询复位原因
   My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
@@ -44,23 +50,20 @@ int main(void)
   EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
   // startup_animation();                                             // 开机动画
   IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500，1除以500乘以4000=8s****12467-12356=111字节
-
-  // 测试代码
   LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
-  //  show_battery(97, 3, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);                         // 显示电池信息
-  // Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0); // 设置的图标
-  //
-  //  // 测试代码
-  //  while (1)
-  //    {}
+
+
   while (1)
   {
+
 
     show_page();
     SX1278_Receive();
     Encoder_Scan();
     IWDG_ReloadCounter(); // 喂狗
-    // DEBUG_PRINT("HEART\r\n");
-    // Delay_Ms(200);
+    Delay_Ms(1000);
+
+    DEBUG_PRINT("HEART\r\n");
+    Sleep_Scan();
   }
 }
