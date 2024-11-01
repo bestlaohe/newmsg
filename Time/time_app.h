@@ -15,5 +15,5 @@ void IWDG_Feed_Init(u16 prer, u16 rlr);//ø¥√≈π∑
 void system_wokeup();
 void TIM1_DeInit(void);
 void TIM2_DeInit(void);
-
+void AWU_Init();
 #endif /* TIME_TIME_APP_H_ */

@@ -62,7 +62,7 @@ void TIM1_DeInit(void)
 {
     // 禁用定时器
     TIM_Cmd(TIM1, DISABLE);
-    
+
     // 禁用定时器中断
     TIM_ITConfig(TIM1, TIM_IT_Update, DISABLE);
 
@@ -98,8 +98,7 @@ void TIM2_Init(u16 arr, u16 psc)
     TIM_ICInitStructure.TIM_ICSelection = TIM_ICSelection_DirectTI;  // 选择直接输入（TI）
     TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;            // 设置输入捕获预分频器为 1（不分频）
     TIM_ICInitStructure.TIM_ICFilter = 10;                           // 设置输入捕获滤波器的采样周期为 10（用于滤波抖动）
-    TIM_ICInit(TIM2, &TIM_ICInitStructure);//3，4捕获被我禁用了
-
+    TIM_ICInit(TIM2, &TIM_ICInitStructure);                          // 3，4捕获被我禁用了
 
     // 清除更新中断标志
     TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
@@ -111,7 +110,6 @@ void TIM2_Init(u16 arr, u16 psc)
     NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
     NVIC_Init(&NVIC_InitStructure);
 
-
     TIM_SetCounter(TIM2, 0);
 
     TIM_Cmd(TIM2, ENABLE);
@@ -120,7 +118,7 @@ void TIM2_DeInit(void)
 {
     // 禁用定时器
     TIM_Cmd(TIM2, DISABLE);
-    
+
     // 禁用中断
     TIM_ITConfig(TIM2, TIM_IT_Update, DISABLE);
 
@@ -158,4 +156,19 @@ void IWDG_Feed_Init(u16 prer, u16 rlr)
     IWDG_SetReload(rlr);                          // 设置 IWDG 的重装载值，这个值决定了 IWDG 的超时时间
     IWDG_ReloadCounter();                         // 重新加载 IWDG 计数器，以使计数器从新的重装载值开始
     IWDG_Enable();                                // 启用 IWDG，使其开始工作
+}
+
+//128khz
+// 以EVT例程10240分频为例，10240分频之后大约是12.5Hz。
+// 此外，AWU有一个唤醒窗口寄存器，可配置窗口值，该值是6位的，最大可配置是0x3F，即是63，例程配置的是25。
+// 10240分频之后是12.5Hz，计数一次的时间为1/12.5Hz，窗口值设置是25，则唤醒时间为25/12.5大约是2s左右。
+// 若要加大唤醒时间间隔，可可知最大61440分频，然后窗口值设置为最大63.
+void AWU_Init()
+{
+
+    while (RCC_GetFlagStatus(RCC_FLAG_LSIRDY) == RESET)
+        ;
+    PWR_AWU_SetPrescaler(PWR_AWU_Prescaler_10240);
+    PWR_AWU_SetWindowValue(25);
+    PWR_AutoWakeUpCmd(ENABLE);
 }

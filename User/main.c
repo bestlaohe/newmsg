@@ -32,11 +32,10 @@ int main(void)
   //  DEBUG_PRINT("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
   Delay_Init(); // 延时初始化需要在延时前，不然会卡死4012-3956=100字节
 
-  //首次才要吧
-//  FLASH_Unlock();
-//  FLASH_UserOptionByteConfig(OB_IWDG_SW, OB_STDBY_NoRST, OB_RST_NoEN, OB_PowerON_Start_Mode_BOOT);
-//  FLASH_Lock(); //**4232-4012=200字节
-
+  // 首次才要
+  //  FLASH_Unlock();
+  //  FLASH_UserOptionByteConfig(OB_IWDG_SW, OB_STDBY_NoRST, OB_RST_NoEN, OB_PowerON_Start_Mode_BOOT);
+  //  FLASH_Lock(); //**4232-4012=200字节
 
   /*********************应用函数初始化******************************/
   Check_Reset_Flag();                                                // 查询复位原因
@@ -50,20 +49,26 @@ int main(void)
   EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
   // startup_animation();                                             // 开机动画
   IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500，1除以500乘以4000=8s****12467-12356=111字节
+  AWU_Init();
   LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
-
 
   while (1)
   {
 
-
-    show_page();
-    SX1278_Receive();
-    Encoder_Scan();
-    IWDG_ReloadCounter(); // 喂狗
-    Delay_Ms(1000);
-
-    DEBUG_PRINT("HEART\r\n");
-    Sleep_Scan();
+    if (needSleep)
+    {
+      IWDG_ReloadCounter();                       // 喂狗
+      PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI); // 睡觉
+    }
+    else
+    {
+      show_page();
+      SX1278_Receive();
+      Encoder_Scan();
+      IWDG_ReloadCounter(); // 喂狗
+      Sleep_Scan();         // 检查是否睡觉
+      Delay_Ms(1000);
+      DEBUG_PRINT("HEART\r\n");
+    }
   }
 }

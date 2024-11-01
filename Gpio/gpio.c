@@ -19,7 +19,7 @@ void GPIO_Init_Pin(GPIO_TypeDef *GPIOx, uint16_t pin, GPIOMode_TypeDef mode)
 void My_GPIO_Init()
 {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE);
-
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
     // 充电检测的确认按钮
     GPIO_Init_Pin(GPIOC, GPIO_Pin_1, GPIO_Mode_IPU);
     // 屏幕的复位
@@ -60,8 +60,6 @@ void My_GPIO_DeInit()
     GPIO_DeInit(GPIOC);
     GPIO_DeInit(GPIOD);
 }
-
-
 
 u8 shake_mode = 1; // 初始震动模式值
 void MOTOR_SET(int state)

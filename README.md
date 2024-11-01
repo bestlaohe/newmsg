@@ -80,4 +80,34 @@ LSI 是系统内部约 128kHz 的 RC 振荡器产生的低速时钟信号。它可以在停机和待机模式下
 看门狗靠这个时钟，把他失能就不会看门狗复位了，现在是唤醒问题，唤醒不了
 
 
-        NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);这个可能
+ 4s喂狗，2s唤醒
+
+ 
+喂狗必须在while1里面
+
+        开机
+        看门狗开
+        自动唤醒开
+        喂狗
+        休眠needsleep==1
+        自动唤醒喂狗
+        休眠needsleep==1
+        自动唤醒喂狗
+        休眠needsleep==1
+        自动唤醒喂狗
+        休眠needsleep==1
+        人工唤醒needsleep==0
+        自动唤醒喂狗
+        人工运行喂狗needsleep==0
+        自动唤醒喂狗
+        休眠needsleep==1
+
+        while里面判断是否是自动唤醒的状态，是就喂狗，不是跑代码
+
+        if(needsleep==1){
+                喂狗+睡觉
+        }
+        else{
+                喂狗+工作
+
+        }

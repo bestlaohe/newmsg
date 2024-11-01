@@ -78,6 +78,7 @@ typedef struct
 
 } Charge;
 
+extern int needSleep ;
 // 去抖动和长按检测的常数
 #define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
 #define HOLD_TIME 3000   // 长按时间，单位：100us

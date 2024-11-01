@@ -234,10 +234,23 @@ void EXTI_INT_INIT(void)
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
 
+  EXTI_InitStructure.EXTI_Line = EXTI_Line9;
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
+
+  NVIC_InitStructure.NVIC_IRQChannel = AWU_IRQn;
+  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+
   NVIC_InitStructure.NVIC_IRQChannel = EXTI7_0_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+
   NVIC_Init(&NVIC_InitStructure);
 }
 
@@ -264,7 +277,7 @@ void system_wokeup()
 void system_enter_sleep()
 {
   // My_GPIO_DeInit();
- 
+
   LCD_Drive_DeInit();
   Battery_DeInit();
 
@@ -304,5 +317,22 @@ void TIM1_UP_IRQHandler(void)
       key.LongKeyCounter++;
       key.state = KEY_STATE_HOLD;
     }
+  }
+}
+void AWU_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+
+/*********************************************************************
+ * @fn      EXTI0_IRQHandler
+ *
+ * @brief   This function handles EXTI0 Handler.
+ *
+ * @return  none
+ */
+void AWU_IRQHandler(void)
+{
+  if (EXTI_GetITStatus(EXTI_Line9) != RESET)
+  {
+    printf("AWU Wake_up\r\n");
+    EXTI_ClearITPendingBit(EXTI_Line9); /* Clear Flag */
   }
 }

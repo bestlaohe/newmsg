@@ -44,6 +44,7 @@ void LCD_SHOW_API_INIT()
     //    Delay_Ms(300);
     DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     LCD_0IN85_Clear(BLACK);
+     
     //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
 
