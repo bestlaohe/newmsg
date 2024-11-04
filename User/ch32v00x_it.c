@@ -25,6 +25,7 @@ volatile int loraComplete = 0;
 volatile int circle = 0;
 int SleepCounter = 0;
 int needSleep = 0;
+int needDeinit = 0;
 Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
 Charge charge = {UNCHARGING};
@@ -97,7 +98,7 @@ void EXTI7_0_IRQHandler(void)
     MOTOR_SET(1);
     Delay_Ms(100);
     MOTOR_SET(0);
-    system_wokeup();                    // 系统唤醒
+
     EXTI_ClearITPendingBit(EXTI_Line2); /* Clear Flag */
 
     if (!KEY0)
@@ -133,6 +134,7 @@ void EXTI7_0_IRQHandler(void)
       key.enable = 1;
       //  DEBUG_PRINT("disable key operate\r\n"); // 有消息发来就震动
     }
+        system_wokeup();                    // 系统唤醒
   }
 
   if (EXTI_GetITStatus(EXTI_Line6) != RESET)
@@ -258,8 +260,9 @@ void system_wokeup()
 {
 
   refresh_SleepCounter(0); // 刷新休眠时间
-  needSleep = 0;
-  if (1) // 已经休眠了
+ 
+
+  if (needSleep) // 已经休眠了
   {
     //    My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
     TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
@@ -271,18 +274,30 @@ void system_wokeup()
     USART_Printf_Init(115200);
 
     DEBUG_PRINT("system_wokeup\r\n");
+
+      // 处理完事件后清除事件
+  key.event = KEY_EVENT_NONE;
+  encode.state = ENCODE_EVENT_NONE;
+     needSleep = 0;
   }
 }
 
 void system_enter_sleep()
 {
-  // My_GPIO_DeInit();
 
-  LCD_Drive_DeInit();
-  Battery_DeInit();
+  if (needDeinit)
+  {
+    // My_GPIO_DeInit();
 
-  TIM1_DeInit();
-  //   TIM2_DeInit();
+    LCD_Drive_DeInit();
+    Battery_DeInit();
+
+    TIM1_DeInit();
+    //   TIM2_DeInit();
+    needDeinit = 0;
+
+    DEBUG_PRINT("system_Deinit\r\n");
+  }
 }
 
 void Sleep_Scan()
@@ -310,6 +325,7 @@ void TIM1_UP_IRQHandler(void)
       SleepCounter = 0;
 
       needSleep = 1;
+      needDeinit = 1;
     }
 
     if (!KEY0)

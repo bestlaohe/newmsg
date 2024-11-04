@@ -57,8 +57,8 @@ int main(void)
 
     if (needSleep)
     {
-      IWDG_ReloadCounter();                       // Î¹¹·
-      PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI); // Ë¯¾õ
+      IWDG_ReloadCounter(); // Î¹¹·
+      Sleep_Scan(); // ¼ì²éÊÇ·ñË¯¾õ
     }
     else
     {
