@@ -10,6 +10,8 @@
 #include "debug.h"
 #include "encode.h"
 #include "adc.h"
+#include "seting.h"
+
 // #include "SX1278.h"
 
 extern Key key;
@@ -20,22 +22,6 @@ extern u8 lora_receive_flag;
 
 extern char lora_receive_buf[90];
 extern u16 Battery_ADC_Average;
-
-#define THEME 0
-
-#if THEME == 1 // 黑色主题
-
-#define MY_THEME_BACK_COLOR BLACK    // 背景颜色
-#define MY_THEME_COMPONT_COLOR WHITE // 组件颜色
-#define MY_SCREEN_COLOR MY_GRAY      // 幕布颜色
-
-#else // 白色主题
-
-#define MY_THEME_BACK_COLOR WHITE     // 背景颜色
-#define MY_THEME_COMPONT_COLOR BLACK  // 组件颜色
-#define MY_SCREEN_COLOR MY_WHITE_GRAY // 幕布颜色
-
-#endif
 
 #define ON 1
 #define OFF 0
@@ -86,10 +72,10 @@ typedef enum
 } Page;
 
 void chat_page(sFONT *Font);
-void show_history_data();
-void chat_history_page();
-void perpare_setting_page();
-void info_page();
-void setting_page();
+void show_history_data(sFONT *Font);
+void chat_history_page(sFONT *Font);
+void perpare_setting_page(sFONT *Font);
+void setting_page(sFONT *Font);
 void show_page();
+void info_page();
 #endif /* SCREEN_PAGE_H_ */

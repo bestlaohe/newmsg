@@ -146,11 +146,4 @@ int LCD_Drive_DeInit(void)
     return 0;
 }
 
-//*Slave:SPI1_NSS(PC1)¡¢SPI1_SCK(PC5)¡¢SPI1_MISO(PC7)¡¢SPI1_MOSI(PC6).
-void DEV_Module_Exit(void)
-{
-    LCD_DC_1;
-    LCD_CS_DISABLE;
 
-    TIM_CtrlPWMOutputs(TIM1, DISABLE);
-}

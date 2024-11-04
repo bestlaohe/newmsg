@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-
+#include "seting.h"
 void DrawIcon(int x, int y, int size, int final_size)
 {
     Paint_DrawChar(x, y, 0, &Font24_logo, BLACK, WHITE - size * 819, 0);
@@ -43,8 +43,7 @@ void LCD_SHOW_API_INIT()
     LCD_0IN85_Init(VERTICAL);
     //    Delay_Ms(300);
     DEBUG_PRINT("Set Clear and Display Funtion\r\n");
-    LCD_0IN85_Clear(BLACK);
-     
+    LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
     //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
 
@@ -95,7 +94,7 @@ void LCD_SHOW_API_INIT()
     //    Delay_Ms(3000);
     //
     //    DEBUG_PRINT("quit...\r\n");
-    //    //DEV_Module_Exit();
+
 }
 
 /*****************************************************************************
