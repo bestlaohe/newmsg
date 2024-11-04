@@ -57,7 +57,7 @@ int main(void)
     if (needSleep)
     {
       IWDG_ReloadCounter(); // 喂狗
-      Sleep_Scan(); // 检查是否睡觉
+      Sleep_Scan(); // 检查是否睡觉1
     }
     else
     {
