@@ -425,7 +425,7 @@ void Paint_DrawRectangle(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     if (Filled)
     {
         UWORD Ypoint;
-        for (Ypoint = Ystart; Ypoint < Yend; Ypoint++)
+        for (Ypoint = Ystart; Ypoint <= Yend; Ypoint++)
         {
             Paint_DrawLine(Xstart, Ypoint, Xend, Ypoint, Color, Line_width, LINE_STYLE_SOLID);
         }

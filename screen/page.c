@@ -152,7 +152,6 @@ void chat_history_page(sFONT *Font)
   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);
   if (refreshState)
   {
-
     Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面高亮
     Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL);     // 输入框
     show_history_data(Font);
@@ -332,6 +331,8 @@ void show_page()
     chat_page(&Font12_En);
     if (key.event == KEY_EVENT_LONG_CLICK) // 返回
     {
+      refreshState = 1;
+      DEBUG_PRINT("PAGE_HISTROY_CHAT\r\n");
       page = PAGE_HISTROY_CHAT;
     }
     break;
@@ -339,13 +340,18 @@ void show_page()
   case PAGE_HISTROY_CHAT: // 聊天记录界面  需要滚动查看记录
     chat_history_page(&Font12_En);
     if (key.event == KEY_EVENT_LONG_CLICK)
+    {
+      refreshState = 1;
       page = PAGE_PERPARE_SETTING;
+    }
+
     break;
 
   case PAGE_PERPARE_SETTING: // 准备设置界面
     perpare_setting_page(&Font12_En);
     if (key.event == KEY_EVENT_CLICK)
     {
+      refreshState = 1;
       LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
 
       // 这是一个播放设置的地方
@@ -359,15 +365,17 @@ void show_page()
 
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
+      refreshState = 1;
       LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
       page = PAGE_SEND;
     }
     break;
 
   case PAGE_SETTING: // 设置界面
-    setting_page(&Font12_En);
+                     //  setting_page(&Font12_En);
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
+      refreshState = 1;
       LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
       // page = PAGE_INFO;
       page = PAGE_SEND;

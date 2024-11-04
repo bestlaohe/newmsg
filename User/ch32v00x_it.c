@@ -134,7 +134,7 @@ void EXTI7_0_IRQHandler(void)
       key.enable = 1;
       //  DEBUG_PRINT("disable key operate\r\n"); // 有消息发来就震动
     }
-        system_wokeup();                    // 系统唤醒
+    system_wokeup(); // 系统唤醒
   }
 
   if (EXTI_GetITStatus(EXTI_Line6) != RESET)
@@ -260,7 +260,6 @@ void system_wokeup()
 {
 
   refresh_SleepCounter(0); // 刷新休眠时间
- 
 
   if (needSleep) // 已经休眠了
   {
@@ -275,10 +274,10 @@ void system_wokeup()
 
     DEBUG_PRINT("system_wokeup\r\n");
 
-      // 处理完事件后清除事件
-  key.event = KEY_EVENT_NONE;
-  encode.state = ENCODE_EVENT_NONE;
-     needSleep = 0;
+    // 处理完事件后清除事件
+    key.event = KEY_EVENT_NONE;
+    encode.state = ENCODE_EVENT_NONE;
+    needSleep = 0;
   }
 }
 
@@ -317,7 +316,7 @@ void TIM1_UP_IRQHandler(void)
     // 清除中断标志
     TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
     SleepCounter++;
-    if (SleepCounter >= 50000) // 15s触发一次
+    if (SleepCounter >= 150000) // 15s触发一次
     {
 
       DEBUG_PRINT("EnterSTANDBYMode\r\n");

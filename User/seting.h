@@ -8,7 +8,7 @@
 #ifndef USER_SETING_H_
 #define USER_SETING_H_
 
-#define THEME 0
+#define THEME 1
 
 #if THEME == 1 // ºÚÉ«Ö÷Ìâ
 
