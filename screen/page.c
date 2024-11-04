@@ -22,10 +22,7 @@ Setting settings[SETTING_COUNT] = {
 int current_setting = 0;
 
 Page page = PAGE_SEND;
-
-// 宽高无法读取只能手输入
-#define Font_WIDTH 7                                                                                      // 字体宽度
-#define Font_HEIGH 12                                                                                     // 字体高度
+int refreshState = 1;
 #define EDGE 1                                                                                            // 边缘
 #define OPERATE_DOWN 20                                                                                   // 操作界面下边缘
 #define CHAT_DOWN 127                                                                                     // 输入框下边缘
@@ -33,32 +30,23 @@ Page page = PAGE_SEND;
 #define CHAT_HISTORY_DOWN ((sizeof(lora_receive_buf) / COLUMN) * Font_HEIGH) + OPERATE_DOWN + EDGE + EDGE // 聊天记录下边缘5行90/18=5*12=60
 #define CHAT_UP CHAT_HISTORY_DOWN + 2
 
-void chat_page(sFONT *Font)
+void handle_chat_event(sFONT *Font)
 {
-
-  show_battery(97, 3, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);                                             // 显示电池信息
-  Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0);                     // 设置的图标
-  Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL); // 聊天记录界面
-  Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL);              // 输入框
-
-  // 绘制字符
-  Paint_DrawChar(EDGE + Englishposx * Font->Width, CHAT_UP + EDGE + Englishposy * Font->Height, 'a' + Englishcount, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
-  Paint_DrawString(EDGE, CHAT_UP + EDGE, lora_send_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
-
-  show_history_data();
-
   // 处理滚动状态
   if (encode.state == ENCODE_EVENT_UP)
   {
+    refreshState = 1;
     Englishcount = (Englishcount + 1) % 27; // 循环计数
   }
   else if (encode.state == ENCODE_EVENT_DOWN)
   {
+    refreshState = 1;
     Englishcount = (Englishcount - 1 + 27) % 27; // 循环计数
   }
 
   if (lora_receive_flag == 2)
   {
+    refreshState = 1;
     SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT / Font->Width));
   }
 
@@ -67,6 +55,7 @@ void chat_page(sFONT *Font)
   {
     if (encode.state == ENCODE_EVENT_UP)
     {
+      refreshState = 1;
       DEBUG_PRINT("start lora send\r\n");
       lora_receive_flag = 2;
       if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT / Font->Width)))
@@ -79,12 +68,13 @@ void chat_page(sFONT *Font)
       Englishposx = 0; // 重置行位置
       memset(lora_send_buf, 0, sizeof(lora_send_buf));
 
-      Paint_DrawRectangle(EDGE, CHAT_UP + EDGE, 127 - EDGE, 127 - EDGE, MY_THEME_BACK_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL);
+      Paint_DrawRectangle(EDGE, CHAT_UP + EDGE, 127 - EDGE, 127 - EDGE, MY_THEME_BACK_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL); // 清除输入内容
 
       key.enable = 0; // 禁用键
     }
     else if (encode.state == ENCODE_EVENT_DOWN)
     {
+      refreshState = 1;
       // 输入回退
       if (--Englishposx < 0)
       {
@@ -105,6 +95,7 @@ void chat_page(sFONT *Font)
   // 确认输入
   if (key.event == KEY_EVENT_CLICK)
   {
+    refreshState = 1;
     lora_send_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
     Englishposx++;
     // DEBUG_PRINT("我111的数字=%d \r\n", EDGE + EDGE + Englishposx * Font->Width);
@@ -123,33 +114,65 @@ void chat_page(sFONT *Font)
   }
 }
 
-void chat_history_page()
+void handle_chat_history_event()
 {
-
-  // Paint_DrawRectangle(0, 20, 127, 100, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-  // Paint_DrawRectangle(0, 102, 127, 127, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);
-
-  show_battery(97, 1, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);
-  Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面
-  Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);               // 输入框
-
-  show_history_data();
   if (encode.state == ENCODE_EVENT_UP) // 滚动
   {
+    refreshState = 1;
   }
 
   if (encode.state == ENCODE_EVENT_DOWN) // 滚动
   {
+    refreshState = 1;
   }
 }
 
-void perpare_setting_page()
+void chat_page(sFONT *Font)
 {
 
-  show_battery(97, 1, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);
-  Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, RED, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面
-  Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, BLUE, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);             // 输入框
-  Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);
+  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR); // 显示电池信息
+
+  if (refreshState)
+  {
+    Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0);                     // 设置的图标
+    Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL); // 聊天记录界面
+    Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL);              // 输入框
+    Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);                       // 输入框高亮
+                                                                                                                  // 绘制字符
+    Paint_DrawChar(EDGE + Englishposx * Font->Width, CHAT_UP + EDGE + Englishposy * Font->Height, 'a' + Englishcount, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
+    Paint_DrawString(EDGE, CHAT_UP + EDGE, lora_send_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
+    show_history_data(Font);
+    refreshState = 0;
+  }
+
+  handle_chat_event(Font);
+}
+void chat_history_page(sFONT *Font)
+{
+  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);
+  if (refreshState)
+  {
+
+    Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面高亮
+    Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL);     // 输入框
+    show_history_data(Font);
+    refreshState = 0;
+  }
+
+  handle_chat_history_event();
+}
+
+void perpare_setting_page(sFONT *Font)
+{
+  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR); // 电池组件
+  if (refreshState)
+  {
+
+    Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL); // 聊天记录界面
+    Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);                                                     // 设置页面高亮
+    show_history_data(Font);
+    refreshState = 0;
+  }
 }
 
 /**************************************设置页面**************************************************** */
@@ -201,13 +224,13 @@ void update_current_setting(int value)
   }
 }
 
-void draw_setting(int index, int highlight)
+void draw_setting(int index, int highlight, sFONT *Font)
 {
   char strBuf[4]; // 用于存储最多3位数字和一个终止符
   UWORD bg_color = highlight ? GREEN : MY_THEME_COMPONT_COLOR;
 
-  Paint_DrawString(0, index * 20, settings[index].name, &Font16_En, MY_THEME_BACK_COLOR, bg_color, 'a');
-  Paint_DrawChar(Font16_En.Width * strlen(settings[index].name), index * 20, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
+  Paint_DrawString(0, index * 20, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
+  Paint_DrawChar(Font->Width * strlen(settings[index].name), index * 20, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
 
   // 根据当前设置类型绘制值
   if (index == SETTING_SHAKE_MODE)
@@ -220,8 +243,8 @@ void draw_setting(int index, int highlight)
     {
       strcpy(strBuf, "off");
     }
-    Paint_DrawChar(Font16_En.Width * (strlen(settings[index].name) + 3), index * 20, 12, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_BACK_COLOR, 0);
-    Paint_DrawString(Font16_En.Width * (strlen(settings[index].name) + 1), index * 20, strBuf, &Font16_En, MY_THEME_BACK_COLOR, bg_color, 'a');
+    Paint_DrawChar(Font->Width * (strlen(settings[index].name) + 3), index * 20, 12, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_BACK_COLOR, 0);
+    Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * 20, strBuf, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
 
     return;
   }
@@ -230,53 +253,55 @@ void draw_setting(int index, int highlight)
     intToStr(*settings[index].value, strBuf, 3);
   }
 
-  Paint_DrawString(Font16_En.Width * (strlen(settings[index].name) + 1), index * 20, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0');
+  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * 20, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0');
 }
 
-void display_settings()
+void display_settings(sFONT *Font)
 {
-  for (int i = 0; i < SETTING_COUNT; i++)
+  if (refreshState)
   {
-    draw_setting(i, i == current_setting);
+    for (int i = 0; i < SETTING_COUNT; i++)
+    {
+      draw_setting(i, i == current_setting, Font);
+    }
+    refreshState = 0;
   }
 }
 
-void handle_setting_encoder_event()
+void handle_setting_event()
 {
   if (encode.state == ENCODE_EVENT_UP)
   { // 编码器向上滚动
     update_current_setting(*settings[current_setting].value + 1);
+    refreshState = 1;
   }
   else if (encode.state == ENCODE_EVENT_DOWN)
   { // 编码器向下滚动
     update_current_setting(*settings[current_setting].value - 1);
+    refreshState = 1;
   }
-}
-
-void handle_setting_key_event()
-{
   if (key.event == KEY_EVENT_CLICK)
   { // 确认键点击
     current_setting = (current_setting + 1) % SETTING_COUNT;
+    refreshState = 1;
   }
 }
 
-void setting_page()
+void setting_page(sFONT *Font)
 {
-  display_settings();
-  handle_setting_encoder_event();
-  handle_setting_key_event();
+  display_settings(Font);
+  handle_setting_event();
 }
 
 /**************************************设置页面**************************************************** */
 
-void show_history_data()
+void show_history_data(sFONT *Font)
 {
 
   memset(lora_receive_buf + lora_receive_len, 0, sizeof(lora_receive_buf) - lora_receive_len);
   //   DEBUG_PRINT("lora_receive_len=%d\r\n", lora_receive_len);
 
-  Paint_DrawString(1, 22, lora_receive_buf, &Font12_En, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
+  Paint_DrawString(1, 22, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
 }
 
 void show_info(int posx, int posy, const char *label, int value, int offset)
@@ -300,7 +325,7 @@ void info_page()
 void show_page()
 {
 
-  page = PAGE_SEND;
+  // page = PAGE_SEND;
   switch (page) // 处理页面
   {
   case PAGE_SEND: // 发送界面
@@ -312,13 +337,13 @@ void show_page()
     break;
 
   case PAGE_HISTROY_CHAT: // 聊天记录界面  需要滚动查看记录
-    chat_history_page();
+    chat_history_page(&Font12_En);
     if (key.event == KEY_EVENT_LONG_CLICK)
       page = PAGE_PERPARE_SETTING;
     break;
 
   case PAGE_PERPARE_SETTING: // 准备设置界面
-    perpare_setting_page();
+    perpare_setting_page(&Font12_En);
     if (key.event == KEY_EVENT_CLICK)
     {
       LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
@@ -340,22 +365,23 @@ void show_page()
     break;
 
   case PAGE_SETTING: // 设置界面
-    setting_page();
+    setting_page(&Font12_En);
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
       LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
-      page = PAGE_INFO;
-    }
-    break;
-
-  case PAGE_INFO: // 信息界面
-    info_page();
-    if (key.event == KEY_EVENT_LONG_CLICK)
-    {
-      LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
+      // page = PAGE_INFO;
       page = PAGE_SEND;
     }
     break;
+
+    // case PAGE_INFO: // 信息界面
+    //   info_page();
+    //   if (key.event == KEY_EVENT_LONG_CLICK)
+    //   {
+    //     LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
+    //     page = PAGE_SEND;
+    //   }
+    //   break;
 
   default: // 默认情况
     page = PAGE_SEND;
@@ -371,3 +397,6 @@ void show_page()
 // 每个page的页面内容显示
 // 每个页面的操作
 // show_page显示总的page流程
+
+// 界面显示
+// 逻辑处理
