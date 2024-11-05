@@ -28,10 +28,10 @@ void startup_animation()
         DrawIcon(LCD_WIDTH - final_size - offset, offset, size, final_size);
         DrawIcon(offset, LCD_HEIGHT - final_size - offset, size, final_size);
     }
-    LCD_0IN85_Clear(0,0,128,128,BLACK);
+    LCD_0IN85_Clear(0,0,127,127,BLACK);
     Paint_DrawChar(40, 40, 0, &Font24_logo, BLACK, WHITE, 0);
     Delay_Ms(500);
-    LCD_0IN85_Clear(0,0,128,128,BLACK);
+    LCD_0IN85_Clear(0,0,127,127,BLACK);
 }
 
 LCD_0IN85_ATTRIBUTES LCD;
@@ -43,7 +43,7 @@ void LCD_SHOW_API_INIT()
     LCD_0IN85_Init(VERTICAL);
     //    Delay_Ms(300);
     DEBUG_PRINT("Set Clear and Display Funtion\r\n");
-    LCD_0IN85_Clear(0,0,128,128,MY_THEME_BACK_COLOR);
+    LCD_0IN85_Clear(0,0,127,127,MY_THEME_BACK_COLOR);
     //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
 
@@ -307,7 +307,7 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
     }
     int dma_circular = 0;
     u8 retry = 0;
-    LCD_0IN85_SetWindows(Xstart, Ystart, Xend, Yend);
+    LCD_0IN85_SetWindows(Xstart, Ystart, Xend+1, Yend+1);
     int index = 0; // 用于跟踪lcd_gram数组的索引
 
     // 用于减少临时变量占用的内存
@@ -332,7 +332,7 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
     DMA_Cmd(DMA1_Channel3, ENABLE);
 
     // 计算总传输次数
-    int total_dma_transfers = ((Yend-Ystart) * (Xend-Xstart) / (X_MAX_PIXEL * Y_MAX_PIXEL)) + 1;
+    int total_dma_transfers = ((Yend-Ystart+1) * (Xend-Xstart+1) / (X_MAX_PIXEL * Y_MAX_PIXEL)) + 1;
 
     while (dma_circular <= total_dma_transfers)
     {

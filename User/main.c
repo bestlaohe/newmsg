@@ -50,7 +50,9 @@ int main(void)
   // startup_animation();                                             // 开机动画
   IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500，1除以500乘以4000=8s****12467-12356=111字节
   AWU_Init();                               // 唤醒时间为25/12.5大约是2s左右。
-
+ Paint_DrawString_CN(0, 80, "设置", &Font24CN,MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);
+   while (1)
+  {}
   while (1)
   {
 

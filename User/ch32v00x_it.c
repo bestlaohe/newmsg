@@ -316,7 +316,7 @@ void TIM1_UP_IRQHandler(void)
     // 清除中断标志
     TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
     SleepCounter++;
-    if (SleepCounter >= 150000) // 15s触发一次
+    if (SleepCounter >= 600000) // 15s触发一次
     {
 
       DEBUG_PRINT("EnterSTANDBYMode\r\n");
