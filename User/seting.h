@@ -30,4 +30,18 @@
 #define BATTERY_X 97  // 电池x坐标
 #define BATTERY_Y 3   // 电池y坐标
 
+
+// struct Flags {
+//     unsigned int refreshState : 1;
+//     unsigned int flag2 : 1;
+//     unsigned int flag3 : 1;
+//     unsigned int flag4 : 1;
+//     unsigned int flag5 : 1;
+//     unsigned int flag6 : 1;
+//     unsigned int flag7 : 1;
+//     unsigned int flag8 : 1;
+// };
+// struct Flags myFlags = {0};
+
+
 #endif /* USER_SETING_H_ */

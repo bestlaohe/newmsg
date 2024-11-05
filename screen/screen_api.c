@@ -28,10 +28,10 @@ void startup_animation()
         DrawIcon(LCD_WIDTH - final_size - offset, offset, size, final_size);
         DrawIcon(offset, LCD_HEIGHT - final_size - offset, size, final_size);
     }
-    LCD_0IN85_Clear(BLACK);
+    LCD_0IN85_Clear(0,0,128,128,BLACK);
     Paint_DrawChar(40, 40, 0, &Font24_logo, BLACK, WHITE, 0);
     Delay_Ms(500);
-    LCD_0IN85_Clear(BLACK);
+    LCD_0IN85_Clear(0,0,128,128,BLACK);
 }
 
 LCD_0IN85_ATTRIBUTES LCD;
@@ -43,7 +43,7 @@ void LCD_SHOW_API_INIT()
     LCD_0IN85_Init(VERTICAL);
     //    Delay_Ms(300);
     DEBUG_PRINT("Set Clear and Display Funtion\r\n");
-    LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
+    LCD_0IN85_Clear(0,0,128,128,MY_THEME_BACK_COLOR);
     //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
 
@@ -297,65 +297,8 @@ function :  Clear screen
 parameter:
 ******************************************************************************/
 
-u8 LCD_0IN85_Clear(UWORD Color)
+u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color)
 {
-
-    // 简单的清屏，需要测试
-
-    // #if 1
-    //     static UWORD save_color;
-    //     u8 retry=0;
-    //     while (!READ_LORA_CS)
-    //     {
-    //         DEBUG_PRINT("wait lora cs 1!\r\n");
-    //     }
-    //     LCD_0IN85_SetWindows(0, 0, LCD_WIDTH, LCD_HEIGHT);
-    //
-    //     save_color =Color;// (Color >> 8) + (Color & 0xff);
-    //
-    //     static uint16_t color_buffer[2];  // 缓冲区，用于存储两个颜色数据
-    //
-    //     // 将颜色数据存储到缓冲区
-    //     color_buffer[0] = Color >> 8;
-    //     color_buffer[1] = Color & 0xff;
-    //
-    //     LCD_DC_1;
-    //     LCD_CS_ENABLE;
-    //
-    //     // 初始化DMA传输
-    //     SPI_DMA_Tx_Init(DMA1_Channel3, (u32)&SPI1->DATAR, (u32)color_buffer, LCD_WIDTH * LCD_WIDTH * 2, DMA_Mode_Circular, DMA_MemoryInc_Enable);
-    //
-    //     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE);
-    //     DMA_Cmd(DMA1_Channel3, ENABLE);
-    //
-    //     while (!dmaTransferComplete)
-    //     {
-    //        // DEBUG_PRINT("wait normoldma ok %d\r\n", dmaTransferComplete); // 等待通道3传输完成标志
-    //     }
-    //     dmaTransferComplete = 0;
-    //     DMA_ClearFlag(DMA1_FLAG_TC3); // 清除通道3传输完成标志
-    //
-    //     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
-    //         ;
-    //     Delay_Ms(100);
-    //     DMA_Cmd(DMA1_Channel3, DISABLE);
-    //     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
-    //     DMA_ClearITPendingBit(DMA1_IT_TC3);
-    //
-    //  LCD_CS_DISABLE;
-    //      while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
-    //      {
-    //        retry++;
-    //        if (retry > 200)
-    //        {
-    //          DEBUG_PRINT("rec spi outtime!\r\n");
-    //          return 0;
-    //        }
-    //      } // 还没收完
-
-    //   return (uint8_t)SPI_I2S_ReceiveData(SPI1);
-
-    // #endif
 
 #if USE_DMA
     while (!READ_LORA_CS)
@@ -364,7 +307,7 @@ u8 LCD_0IN85_Clear(UWORD Color)
     }
     int dma_circular = 0;
     u8 retry = 0;
-    LCD_0IN85_SetWindows(0, 0, LCD_WIDTH, LCD_HEIGHT);
+    LCD_0IN85_SetWindows(Xstart, Ystart, Xend, Yend);
     int index = 0; // 用于跟踪lcd_gram数组的索引
 
     // 用于减少临时变量占用的内存
@@ -389,7 +332,7 @@ u8 LCD_0IN85_Clear(UWORD Color)
     DMA_Cmd(DMA1_Channel3, ENABLE);
 
     // 计算总传输次数
-    int total_dma_transfers = (LCD_HEIGHT * LCD_WIDTH / (X_MAX_PIXEL * Y_MAX_PIXEL)) + 1;
+    int total_dma_transfers = ((Yend-Ystart) * (Xend-Xstart) / (X_MAX_PIXEL * Y_MAX_PIXEL)) + 1;
 
     while (dma_circular <= total_dma_transfers)
     {

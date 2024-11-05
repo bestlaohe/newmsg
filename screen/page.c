@@ -68,7 +68,7 @@ void handle_chat_event(sFONT *Font)
       Englishposx = 0; // 重置行位置
       memset(lora_send_buf, 0, sizeof(lora_send_buf));
 
-      Paint_DrawRectangle(EDGE, CHAT_UP + EDGE, 127 - EDGE, 127 - EDGE, MY_THEME_BACK_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL); // 清除输入内容
+      LCD_0IN85_Clear(EDGE, CHAT_UP + EDGE, 127 - EDGE, 127 - EDGE, MY_THEME_BACK_COLOR); // 清除输入内容
 
       key.enable = 0; // 禁用键
     }
@@ -134,11 +134,12 @@ void chat_page(sFONT *Font)
 
   if (refreshState)
   {
-    Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0);                     // 设置的图标
-    Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL); // 聊天记录界面
-    Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL);              // 输入框
-    Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);                       // 输入框高亮
-                                                                                                                  // 绘制字符
+    Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0); // 设置的图标
+    LCD_0IN85_Clear(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR);                // 聊天记录界面
+    LCD_0IN85_Clear(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR);                             // 输入框
+    Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);   // 输入框高亮
+
+    // 绘制字符
     Paint_DrawChar(EDGE + Englishposx * Font->Width, CHAT_UP + EDGE + Englishposy * Font->Height, 'a' + Englishcount, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
     Paint_DrawString(EDGE, CHAT_UP + EDGE, lora_send_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
     show_history_data(Font);
@@ -152,8 +153,9 @@ void chat_history_page(sFONT *Font)
   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);
   if (refreshState)
   {
+
     Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面高亮
-    Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL);     // 输入框
+    LCD_0IN85_Clear(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR);                                        // 输入框
     show_history_data(Font);
     refreshState = 0;
   }
@@ -166,9 +168,8 @@ void perpare_setting_page(sFONT *Font)
   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR); // 电池组件
   if (refreshState)
   {
-
-    Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_FULL); // 聊天记录界面
-    Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);                                                     // 设置页面高亮
+    LCD_0IN85_Clear(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR); // 聊天记录界面
+    Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);                  // 设置页面高亮
     show_history_data(Font);
     refreshState = 0;
   }
@@ -352,21 +353,21 @@ void show_page()
     if (key.event == KEY_EVENT_CLICK)
     {
       refreshState = 1;
-      LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
+      LCD_0IN85_Clear(0, 0, 128, 128, MY_THEME_BACK_COLOR);
 
       // 这是一个播放设置的地方
       Paint_DrawChar(40, 40, 0, &Font24_icon, MY_THEME_BACK_COLOR, BLUE, 0);
       Delay_Ms(500);
       // 考虑删掉
 
-      LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
+      LCD_0IN85_Clear(0, 0, 128, 128, MY_THEME_BACK_COLOR);
       page = PAGE_SETTING;
     }
 
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
       refreshState = 1;
-      LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
+      LCD_0IN85_Clear(0, 0, 128, 128, MY_THEME_BACK_COLOR);
       page = PAGE_SEND;
     }
     break;
@@ -376,7 +377,7 @@ void show_page()
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
       refreshState = 1;
-      LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
+      LCD_0IN85_Clear(0, 0, 128, 128, MY_THEME_BACK_COLOR);
       // page = PAGE_INFO;
       page = PAGE_SEND;
     }
@@ -386,7 +387,7 @@ void show_page()
     //   info_page();
     //   if (key.event == KEY_EVENT_LONG_CLICK)
     //   {
-    //     LCD_0IN85_Clear(MY_THEME_BACK_COLOR);
+    //     LCD_0IN85_Clear(0,0,128,128,MY_THEME_BACK_COLOR);
     //     page = PAGE_SEND;
     //   }
     //   break;

@@ -52,7 +52,7 @@ function:
 ********************************************************************************/
 void LCD_SHOW_API_INIT();
 void LCD_0IN85_Init(UBYTE Scan_dir);
-u8 LCD_0IN85_Clear(UWORD Color);
+u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color);
 void LCD_0IN85_Display(UWORD *Image);
 void LCD_0IN85_DisplayWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD *Image);
 void LCD_0IN85_DisplayPoint(UWORD X, UWORD Y, UWORD Color);
