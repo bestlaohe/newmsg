@@ -114,17 +114,60 @@ void handle_chat_event(sFONT *Font)
   }
 }
 
+int current_line = 0; // 当前显示的起始行
+int total_lines = 0;  // 总的聊天记录行数
+
 void handle_chat_history_event()
 {
-  if (encode.state == ENCODE_EVENT_UP) // 滚动
-  {
-    refreshState = 1;
-  }
+    if (encode.state == ENCODE_EVENT_UP) // 向上滚动
+    {
+        if (current_line > 0)
+        {
+            current_line--;
+            refreshState = 1;
+        }
+    }
 
-  if (encode.state == ENCODE_EVENT_DOWN) // 滚动
-  {
-    refreshState = 1;
-  }
+    if (encode.state == ENCODE_EVENT_DOWN) // 向下滚动
+    {
+        if (current_line < total_lines - 1)
+        {
+            current_line++;
+            refreshState = 1;
+        }
+    }
+
+    if (key.state == KEY_STATE_HOLD) // 删除聊天记录
+    {
+        if (encode.state == ENCODE_EVENT_DOWN)
+        {
+            refreshState = 1;
+            memset(lora_receive_buf, 0, sizeof(lora_receive_len)); // 清空聊天记录
+            total_lines = 0;
+            current_line = 0;
+            key.enable = 0; // 禁用键
+        }
+    }
+}
+void show_history_data(sFONT *Font)
+{
+    int max_lines_to_display = 5; // 假设屏幕一次能显示5行
+    int start_line = current_line;
+    int end_line = current_line + max_lines_to_display;
+
+    if (end_line > total_lines)
+    {
+        end_line = total_lines;
+    }
+
+    // 清空显示区域
+     LCD_0IN85_Clear(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR); 
+
+    // 显示当前范围内的聊天记录
+    for (int i = start_line; i < end_line; i++)
+    {
+        Paint_DrawString(1, 22 + (i - start_line) * Font->Height, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
+    }
 }
 
 void chat_page(sFONT *Font)
@@ -224,13 +267,15 @@ void update_current_setting(int value)
   }
 }
 
+#define CHARHEIGHT  20
+
 void draw_setting(int index, int highlight, sFONT *Font)
 {
   char strBuf[4]; // 用于存储最多3位数字和一个终止符
   UWORD bg_color = highlight ? GREEN : MY_THEME_COMPONT_COLOR;
 
-  Paint_DrawString(0, index * 20, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
-  Paint_DrawChar(Font->Width * strlen(settings[index].name), index * 20, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
+  Paint_DrawString(0, index * CHARHEIGHT, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
+  Paint_DrawChar(Font->Width * strlen(settings[index].name), index * CHARHEIGHT, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
 
   // 根据当前设置类型绘制值
   if (index == SETTING_SHAKE_MODE)
@@ -243,8 +288,8 @@ void draw_setting(int index, int highlight, sFONT *Font)
     {
       strcpy(strBuf, "off");
     }
-    Paint_DrawChar(Font->Width * (strlen(settings[index].name) + 3), index * 20, 12, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_BACK_COLOR, 0);
-    Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * 20, strBuf, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
+    Paint_DrawChar(Font->Width * (strlen(settings[index].name) + 3), index * CHARHEIGHT, 12, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_BACK_COLOR, 0);
+    Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHARHEIGHT, strBuf, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
 
     return;
   }
@@ -253,7 +298,7 @@ void draw_setting(int index, int highlight, sFONT *Font)
     intToStr(*settings[index].value, strBuf, 3);
   }
 
-  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * 20, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0');
+  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHARHEIGHT, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0');
 }
 
 void display_settings(sFONT *Font)
@@ -289,20 +334,13 @@ void handle_setting_event()
 
 void setting_page(sFONT *Font)
 {
+
+  Paint_DrawString_CN(0, 80, "设置", &Font24CN, WHITE, RED);
   display_settings(Font);
   handle_setting_event();
 }
 
 /**************************************设置页面**************************************************** */
-
-void show_history_data(sFONT *Font)
-{
-
-  memset(lora_receive_buf + lora_receive_len, 0, sizeof(lora_receive_buf) - lora_receive_len);
-  //   DEBUG_PRINT("lora_receive_len=%d\r\n", lora_receive_len);
-
-  Paint_DrawString(1, 22, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
-}
 
 void show_info(int posx, int posy, const char *label, int value, int offset)
 {
@@ -373,7 +411,7 @@ void show_page()
     break;
 
   case PAGE_SETTING: // 设置界面
-                     //  setting_page(&Font12_En);
+                    setting_page(&Font12_En);
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
       refreshState = 1;
