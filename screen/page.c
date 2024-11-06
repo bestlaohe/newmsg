@@ -119,55 +119,54 @@ int total_lines = 0;  // 总的聊天记录行数
 
 void handle_chat_history_event()
 {
-    if (encode.state == ENCODE_EVENT_UP) // 向上滚动
+  if (encode.state == ENCODE_EVENT_UP) // 向上滚动
+  {
+    if (current_line > 0)
     {
-        if (current_line > 0)
-        {
-            current_line--;
-            refreshState = 1;
-        }
+      current_line--;
+      refreshState = 1;
     }
+  }
 
-    if (encode.state == ENCODE_EVENT_DOWN) // 向下滚动
+  if (encode.state == ENCODE_EVENT_DOWN) // 向下滚动
+  {
+    if (current_line < total_lines - 1)
     {
-        if (current_line < total_lines - 1)
-        {
-            current_line++;
-            refreshState = 1;
-        }
+      current_line++;
+      refreshState = 1;
     }
+  }
 
-    if (key.state == KEY_STATE_HOLD) // 删除聊天记录
+  if (key.state == KEY_STATE_HOLD) // 删除聊天记录
+  {
+    if (encode.state == ENCODE_EVENT_DOWN)
     {
-        if (encode.state == ENCODE_EVENT_DOWN)
-        {
-            refreshState = 1;
-            memset(lora_receive_buf, 0, sizeof(lora_receive_len)); // 清空聊天记录
-            total_lines = 0;
-            current_line = 0;
-            key.enable = 0; // 禁用键
-        }
+      refreshState = 1;
+      memset(lora_receive_buf, 0, sizeof(lora_receive_len)); // 清空聊天记录
+      total_lines = 0;
+      current_line = 0;
+      key.enable = 0; // 禁用键
     }
+  }
 }
 void show_history_data(sFONT *Font)
 {
-    int max_lines_to_display = 5; // 假设屏幕一次能显示5行
-    int start_line = current_line;
-    int end_line = current_line + max_lines_to_display;
+  int max_lines_to_display = 5; // 假设屏幕一次能显示5行
+  int start_line = current_line;
+  int end_line = current_line + max_lines_to_display;//5
 
-    if (end_line > total_lines)
-    {
-        end_line = total_lines;
-    }
+  if (end_line > total_lines)
+  {
+    end_line = total_lines;
+  }
 
-    // 清空显示区域
-  //   LCD_0IN85_Clear(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR); 
-
-    // 显示当前范围内的聊天记录
-    for (int i = start_line; i < end_line; i++)
-    {
-        Paint_DrawString(1, 22 + (i - start_line) * Font->Height, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
-    }
+  // 清空显示区域
+  LCD_0IN85_Clear(EDGE, OPERATE_DOWN+ EDGE, 127 - EDGE, CHAT_HISTORY_DOWN-EDGE, MY_SCREEN_COLOR); // 清除输入内容
+  // 显示当前范围内的聊天记录
+  for (int i = start_line; i < end_line; i++)
+  {
+    Paint_DrawString(1, 22 + (i - start_line) * Font->Height, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
+  }
 }
 
 void chat_page(sFONT *Font)
@@ -266,15 +265,15 @@ void update_current_setting(int value)
   }
 }
 
-#define CHARHEIGHT  18
-#define Y_OFFSET  10
+#define CHARHEIGHT 18
+#define Y_OFFSET 10
 void draw_setting(int index, int highlight, sFONT *Font)
 {
   char strBuf[4]; // 用于存储最多3位数字和一个终止符
   UWORD bg_color = highlight ? GREEN : MY_THEME_COMPONT_COLOR;
 
-  Paint_DrawString(0, index * CHARHEIGHT+Y_OFFSET, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
-  Paint_DrawChar(Font->Width * strlen(settings[index].name), index * CHARHEIGHT+Y_OFFSET, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
+  Paint_DrawString(0, index * CHARHEIGHT + Y_OFFSET, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
+  Paint_DrawChar(Font->Width * strlen(settings[index].name), index * CHARHEIGHT + Y_OFFSET, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
 
   // 根据当前设置类型绘制值
   if (index == SETTING_SHAKE_MODE)
@@ -287,8 +286,8 @@ void draw_setting(int index, int highlight, sFONT *Font)
     {
       strcpy(strBuf, "off");
     }
-    Paint_DrawChar(Font->Width * (strlen(settings[index].name) + 3), index * CHARHEIGHT+Y_OFFSET, 12, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_BACK_COLOR, 0);
-    Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHARHEIGHT+Y_OFFSET, strBuf, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
+    Paint_DrawChar(Font->Width * (strlen(settings[index].name) + 3), index * CHARHEIGHT + Y_OFFSET, 12, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_BACK_COLOR, 0);
+    Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHARHEIGHT + Y_OFFSET, strBuf, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
 
     return;
   }
@@ -297,7 +296,7 @@ void draw_setting(int index, int highlight, sFONT *Font)
     intToStr(*settings[index].value, strBuf, 3);
   }
 
-  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHARHEIGHT+Y_OFFSET, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0');
+  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHARHEIGHT + Y_OFFSET, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0');
 }
 
 void display_settings(sFONT *Font)
@@ -330,12 +329,18 @@ void handle_setting_event()
     refreshState = 1;
   }
 }
-
+ 
 void setting_page(sFONT *Font)
 {
 
- Paint_DrawString_CN(0, 80, "设置", &Font24CN,MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);
-//  display_settings(Font);
+ // Paint_DrawString(0, 80, "01", &Font16_Setting, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0');
+
+  //Paint_DrawCircle(30, 82, 11, WHITE, DOT_PIXEL_1X1, DRAW_FILL_FULL);
+
+  Paint_DrawString(30, 82, "0", &Font16_cycle, RED, WHITE, '0');
+  Paint_DrawString(30, 80, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0');
+
+  // display_settings(Font);
   handle_setting_event();
 }
 
@@ -362,7 +367,7 @@ void info_page()
 void show_page()
 {
 
- page = PAGE_SETTING;
+  page = PAGE_SETTING;
   switch (page) // 处理页面
   {
   case PAGE_SEND: // 发送界面
@@ -410,7 +415,7 @@ void show_page()
     break;
 
   case PAGE_SETTING: // 设置界面
-                    setting_page(&Font16_En);
+    setting_page(&Font16_En);
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
       refreshState = 1;
