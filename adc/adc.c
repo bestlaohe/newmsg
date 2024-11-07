@@ -176,7 +176,7 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
 
 
 
-void show_battery(UWORD Xpoint, UWORD Ypoint,UWORD Color_Background, UWORD Color_Foreground)
+void show_battery(UWORD Xpoint, UWORD Ypoint,UWORD Color_Background, UWORD Color_Foreground,int *needshow)
 {
 
     static u8 percentage = 0;
@@ -191,8 +191,9 @@ void show_battery(UWORD Xpoint, UWORD Ypoint,UWORD Color_Background, UWORD Color
     if (percentage > 100)
         percentage = 100;
 
-    if (abs(Prepercentage - percentage) > 1)
+    if (abs(Prepercentage - percentage) > 1|| *needshow)
     {
+        *needshow=0;
         Prepercentage = percentage;
 
         u8 cnt = percentage / 25;

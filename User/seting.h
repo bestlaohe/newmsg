@@ -8,18 +8,13 @@
 #ifndef USER_SETING_H_
 #define USER_SETING_H_
 
-#define THEME 1
+#define THEME 0
 
 #if THEME == 1 // 黑色主题
 
 #define MY_THEME_BACK_COLOR BLACK    // 背景颜色
 #define MY_THEME_COMPONT_COLOR WHITE // 组件颜色
 #define MY_SCREEN_COLOR MY_GRAY      // 幕布颜色
-
-// #define MY_THEME_BACK_COLOR BLUE    // 背景颜色
-// #define MY_THEME_COMPONT_COLOR WHITE // 组件颜色
-// #define MY_SCREEN_COLOR RED      // 幕布颜色
-
 
 
 #else // 白色主题

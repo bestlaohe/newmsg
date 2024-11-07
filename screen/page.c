@@ -23,6 +23,8 @@ int current_setting = 0;
 
 Page page = PAGE_SEND;
 int refreshState = 1;
+int isFirstSettingShow = 1;
+int isFirstBattaryShow = 1;
 #define EDGE 1                                                                                            // 边缘
 #define OPERATE_DOWN 20                                                                                   // 操作界面下边缘
 #define CHAT_DOWN 127                                                                                     // 输入框下边缘
@@ -172,7 +174,9 @@ void show_history_data(sFONT *Font)
 void chat_page(sFONT *Font)
 {
 
-  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR); // 显示电池信息
+
+
+  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR,&isFirstBattaryShow); // 显示电池信息
 
   if (refreshState)
   {
@@ -193,7 +197,7 @@ void chat_page(sFONT *Font)
 }
 void chat_history_page(sFONT *Font)
 {
-  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);
+  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR,&isFirstBattaryShow);
   if (refreshState)
   {
     Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面高亮
@@ -208,7 +212,7 @@ void chat_history_page(sFONT *Font)
 
 void perpare_setting_page(sFONT *Font)
 {
-  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR); // 电池组件
+  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR,&isFirstBattaryShow); // 电池组件
   if (refreshState)
   {
     LCD_0IN85_Clear(0, OPERATE_DOWN, 128, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR); // 聊天记录界面
@@ -269,6 +273,8 @@ void update_current_setting(int value)
 
 #define CHARHEIGHT 18
 #define Y_OFFSET 22
+
+
 void draw_setting(int index, int highlight, sFONT *Font)
 {
 
@@ -280,18 +286,21 @@ void draw_setting(int index, int highlight, sFONT *Font)
 
   // 根据当前设置类型绘制值
   if (index == SETTING_SHAKE_MODE)
-  { // 空白
-    Paint_DrawChar(Font->Width * (strlen(settings[index].name) + 3), index * CHARHEIGHT + Y_OFFSET, 12, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_BACK_COLOR, 0);
+  {
 
-    if (*settings[index].value == ON)
+    if (highlight || isFirstSettingShow)
     {
-      Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHARHEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0');
-      Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1) + 15, index * CHARHEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, GREEN, WHITE, '0');
-    }
-    else
-    {
-      Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHARHEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0');
-      Paint_DrawString((Font->Width * (strlen(settings[index].name) + 1)) + 2, index * CHARHEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, RED, WHITE, '0');
+      isFirstSettingShow = 0;
+      if (*settings[index].value == ON)
+      {
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHARHEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0');
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1) + 15, index * CHARHEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, GREEN, WHITE, '0');
+      }
+      else
+      {
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHARHEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0');
+        Paint_DrawString((Font->Width * (strlen(settings[index].name) + 1)) + 2, index * CHARHEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, RED, WHITE, '0');
+      }
     }
 
     return;
@@ -404,13 +413,16 @@ void show_page()
       // // 考虑删掉
 
       // LCD_0IN85_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
+      isFirstSettingShow = 1;
       page = PAGE_SETTING;
     }
 
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
-      refreshState = 1;
+       refreshState = 1;
       LCD_0IN85_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
+  
+      isFirstBattaryShow=1;
       page = PAGE_SEND;
     }
     break;
@@ -422,6 +434,7 @@ void show_page()
       refreshState = 1;
       LCD_0IN85_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
       // page = PAGE_INFO;
+      isFirstBattaryShow=1;
       page = PAGE_SEND;
     }
     break;
