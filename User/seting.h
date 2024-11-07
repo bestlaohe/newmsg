@@ -16,6 +16,12 @@
 #define MY_THEME_COMPONT_COLOR WHITE // 组件颜色
 #define MY_SCREEN_COLOR MY_GRAY      // 幕布颜色
 
+// #define MY_THEME_BACK_COLOR BLUE    // 背景颜色
+// #define MY_THEME_COMPONT_COLOR WHITE // 组件颜色
+// #define MY_SCREEN_COLOR RED      // 幕布颜色
+
+
+
 #else // 白色主题
 
 #define MY_THEME_BACK_COLOR WHITE     // 背景颜色

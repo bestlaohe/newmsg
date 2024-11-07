@@ -296,7 +296,7 @@ void LCD_0IN85_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend)
 function :  Clear screen
 parameter:
 ******************************************************************************/
-
+//0到127
 u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color)
 {
 
@@ -307,7 +307,7 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
     }
     int dma_circular = 0;
     u8 retry = 0;
-    LCD_0IN85_SetWindows(Xstart, Ystart, Xend+1, Yend+1);
+    LCD_0IN85_SetWindows(Xstart, Ystart, Xend+0, Yend+0);
     int index = 0; // 用于跟踪lcd_gram数组的索引
 
     // 用于减少临时变量占用的内存
@@ -332,7 +332,7 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
     DMA_Cmd(DMA1_Channel3, ENABLE);
 
     // 计算总传输次数
-    int total_dma_transfers = ((Yend-Ystart+1) * (Xend-Xstart+1) / (X_MAX_PIXEL * Y_MAX_PIXEL)) + 1;
+    int total_dma_transfers = ((Yend-Ystart+0) * (Xend-Xstart+0) / (X_MAX_PIXEL * Y_MAX_PIXEL)) + 1;
 
     while (dma_circular <= total_dma_transfers)
     {

@@ -470,6 +470,7 @@ void Paint_DrawCircle(UWORD X_Center, UWORD Y_Center, UWORD Radius,
     int16_t sCountY;
     if (Draw_Fill == DRAW_FILL_FULL)
     {
+        
         while (XCurrent <= YCurrent)
         { // Realistic circles
             for (sCountY = XCurrent; sCountY <= YCurrent; sCountY++)
