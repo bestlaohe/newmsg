@@ -342,7 +342,7 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
             dma_circular++;
 
             // 打印当前传输次数，帮助调试
-            DEBUG_PRINT("Current DMA transfers: %d/%d\r\n", dma_circular, total_dma_transfers);
+           // DEBUG_PRINT("Current DMA transfers: %d/%d\r\n", dma_circular, total_dma_transfers);
         }
     }
 
@@ -353,7 +353,7 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
     {
         // 可以考虑在此处添加超时逻辑，以防死循环
-        DEBUG_PRINT("Waiting for SPI transmit buffer to be empty...\r\n"); // 打印等待信息
+      //  DEBUG_PRINT("Waiting for SPI transmit buffer to be empty...\r\n"); // 打印等待信息
     }
 
     // 禁用DMA和SPI
@@ -362,7 +362,7 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
     DMA_ClearITPendingBit(DMA1_IT_TC3);
 
     LCD_CS_DISABLE;
-    DEBUG_PRINT("LCD_0IN85_Clear OK\r\n"); // 等待SPI发送缓冲区为空
+   // DEBUG_PRINT("LCD_0IN85_Clear OK\r\n"); // 等待SPI发送缓冲区为空
 
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
     {

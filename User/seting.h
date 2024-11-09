@@ -8,7 +8,7 @@
 #ifndef USER_SETING_H_
 #define USER_SETING_H_
 
-#define THEME 0
+#define THEME 1
 
 #if THEME == 1 // 黑色主题
 
@@ -30,6 +30,14 @@
 #define Font_HEIGH 12 // 字体高度
 #define BATTERY_X 97  // 电池x坐标
 #define BATTERY_Y 3   // 电池y坐标
+
+#define PWM_FRE         10000
+#define PWM_Duty        50
+
+// 去抖动和长按检测的常数
+#define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
+#define HOLD_TIME 3000   // 长按时间，单位：100us
+
 
 
 // struct Flags {

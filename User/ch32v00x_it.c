@@ -11,6 +11,7 @@
  *******************************************************************************/
 #include <ch32v00x_it.h>
 #include "adc.h"
+#include "seting.h"
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -18,6 +19,7 @@ void DMA1_Channel3_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast
 void DMA1_Channel1_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast"))); // 作为倒计时10ms一次触发中断
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
+void AWU_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 volatile int dmaTransferComplete = 0;
 volatile int loraComplete = 0;
@@ -55,6 +57,7 @@ void TIM2_IRQHandler()
 void refresh_SleepCounter(int newtime)
 {
   SleepCounter = newtime;
+    DEBUG_PRINT("refresh_SleepCounter\r\n");
 }
 
 void DMA1_Channel3_IRQHandler(void)
@@ -224,19 +227,19 @@ void EXTI_INT_INIT(void)
   GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource2);
   GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource7);
 
-  EXTI_InitStructure.EXTI_Line = EXTI_Line2 | EXTI_Line7;
+  EXTI_InitStructure.EXTI_Line = EXTI_Line2 | EXTI_Line1;//key和charge
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
 
-  EXTI_InitStructure.EXTI_Line = EXTI_Line6;
+  EXTI_InitStructure.EXTI_Line = EXTI_Line6;//lora
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
 
-  EXTI_InitStructure.EXTI_Line = EXTI_Line9;
+  EXTI_InitStructure.EXTI_Line = EXTI_Line9;//AWU
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
@@ -308,7 +311,7 @@ void Sleep_Scan()
   }
 }
 
-// 定时器中断服务函数
+// 定时器中断服务函数10ms
 void TIM1_UP_IRQHandler(void)
 {
   if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
@@ -316,7 +319,7 @@ void TIM1_UP_IRQHandler(void)
     // 清除中断标志
     TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
     SleepCounter++;
-    if (SleepCounter >= 600000) // 15s触发一次
+    if (SleepCounter >= 200000) // 15s触发一次
     {
 
       DEBUG_PRINT("EnterSTANDBYMode\r\n");
@@ -334,7 +337,6 @@ void TIM1_UP_IRQHandler(void)
     }
   }
 }
-void AWU_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 /*********************************************************************
  * @fn      EXTI0_IRQHandler

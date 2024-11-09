@@ -39,7 +39,7 @@ void Encoder_Scan()
     precircle = circle;
     precnt = TIM2->CNT;
 
-    system_wokeup();
+     refresh_SleepCounter(0); // Ë¢ÐÂÐÝÃßÊ±¼ä
     MOTOR_SET(1);
     Delay_Ms(50);
     MOTOR_SET(0);

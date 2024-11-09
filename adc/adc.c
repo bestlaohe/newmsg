@@ -33,6 +33,8 @@ uint8_t get_battery_percentage(uint16_t adc_value)
             uint16_t delta = adc_value - adc_points[i];
             uint8_t percentage_range = percent_points[i + 1] - percent_points[i];
             uint8_t percentage = percent_points[i] + (delta * percentage_range) / range;
+            if(  percentage>100 )
+                percentage =100;
             return percentage;
         }
     }
@@ -204,21 +206,20 @@ void show_battery(UWORD Xpoint, UWORD Ypoint,UWORD Color_Background, UWORD Color
         {
             strX = Xpoint-3*Font16_Num.Width;     // 3 位数的显示位置
             color = GREEN; // 颜色
-                           // sprintf(strBuf, "%03d:", percentage); // 显示3位数字
-
+                          
             intToStr(percentage, strBuf, 3);
         }
         else if (percentage < 10)
         {
             strX = Xpoint-Font16_Num.Width;   // 1 位数的显示位置
             color = RED; // 颜色
-                         // sprintf(strBuf, "%01d:", percentage); // 显示1位数字
+                      
             intToStr(percentage, strBuf, 1);
         }
         else
         {
             intToStr(percentage, strBuf, 2);
-            // sprintf(strBuf, "%02d:", percentage); // 显示2位数字
+            
         }
         // 数字百分比
         Paint_DrawString(strX, Ypoint, strBuf, &Font16_Num, Color_Background, Color_Foreground, '0');
@@ -238,3 +239,4 @@ void show_battery(UWORD Xpoint, UWORD Ypoint,UWORD Color_Background, UWORD Color
         }
     }
 }
+

@@ -20,7 +20,7 @@ void My_GPIO_Init()
 {
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_GPIOD, ENABLE);
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_PWR, ENABLE);
-    // 充电检测的确认按钮
+    // 充电检测
     GPIO_Init_Pin(GPIOC, GPIO_Pin_1, GPIO_Mode_IPU);
     // 屏幕的复位
     GPIO_Init_Pin(GPIOD, GPIO_Pin_7, GPIO_Mode_Out_PP);

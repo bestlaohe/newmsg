@@ -20,7 +20,7 @@ extern Encode encode;
 extern u8 lora_receive_len;
 extern u8 lora_receive_flag;
 
-extern char lora_receive_buf[90];
+extern char lora_receive_buf[200];
 extern u16 Battery_ADC_Average;
 
 #define ON 1
@@ -64,8 +64,8 @@ typedef struct
 typedef enum
 {
   PAGE_SEND, // 发送页面
-  PAGE_HISTROY_CHAT,
   PAGE_PERPARE_SETTING, // 准备设置页面
+  PAGE_HISTROY_CHAT,
 
   PAGE_SETTING, // 设置页面
   PAGE_INFO,    // 信息页面

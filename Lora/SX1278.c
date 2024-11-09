@@ -30,11 +30,11 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 
 /****************以下是移植需要实现的对应接口部分***********************************/
 #define SX1278_DelayMs(t) Delay_Ms(t) // 毫秒延时函数的实现
-char lora_receive_buf[90] = {0};
+char lora_receive_buf[200] = {0};
 u8 lora_receive_len = 0;
 u8 lora_receive_flag = 0; // 0是初始状态，1是接收到了，2是等待接收
 
-extern volatile int loraComplete;
+extern volatile int loraComplete;//lora中断操作完成的标志
 // 控制口配置初始化，中断口配置在完成中断初始化中
 void SX1278_Receive()
 {

@@ -66,8 +66,8 @@ int main(void)
       Encoder_Scan();
       IWDG_ReloadCounter(); // Î¹¹·
       Sleep_Scan();         // ¼ì²éÊÇ·ñË¯¾õ
-   //   Delay_Ms(1000);
-   //   DEBUG_PRINT("HEART\r\n");
+                            //   Delay_Ms(1000);
+                            //   DEBUG_PRINT("HEART\r\n");
     }
   }
 }
