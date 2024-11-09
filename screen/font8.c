@@ -1387,11 +1387,7 @@ sFONT Font8_En = {
   8, /* Height */
 };
 
-sFONT Fontline = {
-  Font8_English,//随便给一个就好
-  1, /* Width */
-  8, /* Height */
-};
+
 
 
 sFONT Font8_Num = {

@@ -1763,4 +1763,9 @@ sFONT Font12_En = {
 	12, /* Height */
 };
 
+sFONT Fontline = {
+  Font12_English,//随便给一个就好，不会使用其内部内容
+  1, /* Width */
+  8, /* Height */
+};
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

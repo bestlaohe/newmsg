@@ -6,7 +6,10 @@
  */
 
 #include "adc.h"
-u16 BattaryBuf[10];
+#include "seting.h"
+
+
+u16 BattaryBuf[ADC_CONUT];
 // 关键点的 ADC 值和对应的电池百分比
 #define NUM_POINTS 5
 const uint16_t adc_points[NUM_POINTS] = {502, 547, 594, 639, 683}; // 示例关键点
@@ -33,8 +36,8 @@ uint8_t get_battery_percentage(uint16_t adc_value)
             uint16_t delta = adc_value - adc_points[i];
             uint8_t percentage_range = percent_points[i + 1] - percent_points[i];
             uint8_t percentage = percent_points[i] + (delta * percentage_range) / range;
-            if(  percentage>100 )
-                percentage =100;
+            if (percentage > 100)
+                percentage = 100;
             return percentage;
         }
     }
@@ -79,7 +82,7 @@ void Battery_Init(void)
     while (ADC_GetCalibrationStatus(ADC1))
         ; // 等待校准完成
 
-    DMA_Tx_Init(DMA1_Channel1, (u32)&ADC1->RDATAR, (u32)BattaryBuf, 10); // 电量会一直存在这个buf里面
+    DMA_Tx_Init(DMA1_Channel1, (u32)&ADC1->RDATAR, (u32)BattaryBuf, ADC_CONUT); // 电量会一直存在这个buf里面
     DMA_Cmd(DMA1_Channel1, ENABLE);
 
     ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_241Cycles);
@@ -94,7 +97,7 @@ void Battery_DeInit(void)
 
     // 禁用DMA
     DMA_Cmd(DMA1_Channel1, DISABLE); // 禁用 DMA 通道
-    DMA_DeInit(DMA1_Channel1); // 可选：如果希望重置DMA配置
+    DMA_DeInit(DMA1_Channel1);       // 可选：如果希望重置DMA配置
 
     // 禁用ADC
     ADC_Cmd(ADC1, DISABLE); // 禁用 ADC1
@@ -176,9 +179,7 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
     NVIC_Init(&NVIC_InitStructure); // 配置NVIC
 }
 
-
-
-void show_battery(UWORD Xpoint, UWORD Ypoint,UWORD Color_Background, UWORD Color_Foreground,int *needshow)
+void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Color_Foreground, int *needshow)
 {
 
     static u8 percentage = 0;
@@ -193,50 +194,55 @@ void show_battery(UWORD Xpoint, UWORD Ypoint,UWORD Color_Background, UWORD Color
     if (percentage > 100)
         percentage = 100;
 
-    if (abs(Prepercentage - percentage) > 1|| *needshow)
+    if (abs(Prepercentage - percentage) > 1 || *needshow)
     {
-        *needshow=0;
+        *needshow = 0;
         Prepercentage = percentage;
 
         u8 cnt = percentage / 25;
-        u16 strX = Xpoint-2*Font16_Num.Width;    // 默认 2 位数的显示位置
-           u16 color = BLUE; // 默认颜色
+        u16 strX = Xpoint - 2 * Font16_Num.Width; // 默认 2 位数的显示位置
+        u16 color = BLUE;                         // 默认颜色
 
         if (percentage >= 100)
         {
-            strX = Xpoint-3*Font16_Num.Width;     // 3 位数的显示位置
-            color = GREEN; // 颜色
-                          
+            strX = Xpoint - 3 * Font16_Num.Width; // 3 位数的显示位置
+            color = GREEN;                        // 颜色
+
             intToStr(percentage, strBuf, 3);
         }
         else if (percentage < 10)
         {
-            strX = Xpoint-Font16_Num.Width;   // 1 位数的显示位置
-            color = RED; // 颜色
-                      
+
+            Paint_DrawString(Xpoint - Font16_Num.Width * 3, Ypoint, "<<", &Font16_Num, Color_Background, Color_Background, '0');
+            strX = Xpoint - Font16_Num.Width; // 1 位数的显示位置
+            color = RED;                      // 颜色
+
             intToStr(percentage, strBuf, 1);
         }
         else
         {
+            Paint_DrawString(Xpoint - Font16_Num.Width * 3, Ypoint, "<", &Font16_Num, Color_Background, Color_Background, '0');
+
             intToStr(percentage, strBuf, 2);
-            
         }
+
         // 数字百分比
         Paint_DrawString(strX, Ypoint, strBuf, &Font16_Num, Color_Background, Color_Foreground, '0');
-        Paint_DrawChar(Xpoint, Ypoint, 10, &Font16_Num, Color_Background, Color_Foreground, 0);//%
+        Paint_DrawChar(Xpoint, Ypoint, 10, &Font16_Num, Color_Background, Color_Foreground, 0); //%
 
         if (charge.state == CHARGING)
         {
-            Paint_DrawChar(Xpoint+Font16_Num.Width, Ypoint, 1, &Font16_Bat, Color_Background, color, 0); // 充电log
+            Paint_DrawChar(Xpoint + Font16_Num.Width, Ypoint, 1, &Font16_Bat, Color_Background, color, 0); // 充电log
+      
         }
         else if (charge.state == UNCHARGING)
         {
-            Paint_DrawChar(Xpoint+Font16_Num.Width, Ypoint, 0, &Font16_Bat, Color_Background, color, 0); // 空电log
+            Paint_DrawChar(Xpoint + Font16_Num.Width, Ypoint, 0, &Font16_Bat, Color_Background, color, 0); // 空电log
             for (u8 i = 0; i < cnt; i++)
             {
-                Paint_DrawLine(108 + 4 + i * 3, 3+Ypoint, 108 + 4 + i * 3, 7+Ypoint, color, 1, LINE_STYLE_SOLID);
+                Paint_DrawLine(108 + 4 + i * 3, 3 + Ypoint, 108 + 4 + i * 3, 7 + Ypoint, color, 1, LINE_STYLE_SOLID);
             }
+   
         }
     }
 }
-

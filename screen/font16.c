@@ -2476,8 +2476,8 @@ sFONT Font16_Num = {
 
 const uint8_t Font16_battery[] =
 	{
-		/* %MATRIXCODE_HEAD_FONT%*/
-		/* Í¼Ïñ C:\Users\12630\Desktop\µç³ØÃ»µç (1).jpg   20x11  */
+		/* %??log%*/
+		/*??log.jpg   20x11  */
 		0x00,
 		0x00,
 		0x00,
@@ -2512,8 +2512,8 @@ const uint8_t Font16_battery[] =
 		0xFF,
 		0x00,
 
-		/* %MATRIXCODE_HEAD_FONT%*/
-		/* Í¼Ïñ C:\Users\12630\Desktop\Í¼Æ¬\µç³Ø³äµç.jpg   20x11  */
+		/* %??%*/
+		/* ??.jpg   20x11  */
 		0x00,
 		0x00,
 		0x00,

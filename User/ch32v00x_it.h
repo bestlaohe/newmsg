@@ -17,8 +17,8 @@
 #include "SX1278.h"
 #include "time_app.h"
 #include "drive_screen.h"
-
-extern u16 BattaryBuf[10];
+#include "seting.h"
+extern u16 BattaryBuf[ADC_CONUT];
 // ¶¨Òå°´¼ü×´Ì¬
 typedef enum
 {
