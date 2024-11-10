@@ -15,8 +15,8 @@
 #include "encode.h"
 #include "SX1278.h"
 
-uint16_t precnt = 0;
-int precircle = 0;
+u8 precnt = 0;
+u8 precircle = 0;
 void Encoder_Scan()
 {
 

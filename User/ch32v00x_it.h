@@ -78,8 +78,8 @@ typedef struct
 
 } Charge;
 
-extern int needSleep ;
-extern int needDeinit ;
+extern u8 needSleep ;
+extern u8 needDeinit ;
 
 
 

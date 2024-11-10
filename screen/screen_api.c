@@ -506,13 +506,14 @@ void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
 #if USE_DMA
 
     ///< 使用DMA的话，从对点刷屏到对显存数组写入数据，DMA传输数据的时候再统一进行传输
-    int index = ((y - dmaYpoint) * (dmaFont->Width) + (x - dmaXpoint)) * 2;
+    int index = ((y - dmaYpoint) * (dmaFont->Width) + (x - dmaXpoint)) * 2;//新的坐标过来转换成012345
     // DEBUG_PRINT("index开始偏移前:%d\r\n", index );
 
-    index = index - X_MAX_PIXEL * Y_MAX_PIXEL * 2 * dmaXoffset / X_MAX_PIXEL;
+    index = index - X_MAX_PIXEL * Y_MAX_PIXEL * 2 * dmaXoffset / X_MAX_PIXEL;// 偏移
     lcd_gram[index] = (Color >> 8) & 0xff; // 高字节
     lcd_gram[index + 1] = Color & 0xFF;    // 低字节
                                            //  DEBUG_PRINT("开始偏移:%d\r\n", index + 1);
+   
     if ((index + 1) == (Y_MAX_PIXEL * X_MAX_PIXEL * 2 - 1))
     {
 

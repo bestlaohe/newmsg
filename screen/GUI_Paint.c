@@ -79,7 +79,7 @@
 #include <math.h>
 
 volatile PAINT Paint;
-u8 dmaXpoint, dmaYpoint = 0;
+u8 dmaXpoint, dmaYpoint = 0;//≥ı ºŒª÷√
 sFONT *dmaFont;
 // void (*DISPLAY)(UWORD, UWORD, UWORD);
 // void (*CLEAR)(UWORD);
@@ -237,7 +237,7 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
     }
 
     // UDOUBLE Addr = X / 8 + Y * Paint.WidthByte;
-    LCD_0IN85_DrawPaint(X, Y, Color); // LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
+    LCD_0IN85_DrawPaint(X, Y, Color);
 }
 
 

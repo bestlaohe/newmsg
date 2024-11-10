@@ -21,13 +21,13 @@ void TIM1_UP_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast"))); 
 void TIM2_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void AWU_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
-volatile int dmaTransferComplete = 0;
-volatile int loraComplete = 0;
+volatile u8 dmaTransferComplete = 0;
+volatile u8 loraComplete = 0;
 
 volatile int circle = 0;
 int SleepCounter = 0;
-int needSleep = 0;
-int needDeinit = 0;
+u8 needSleep = 0;
+u8 needDeinit = 0;
 Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
 Charge charge = {UNCHARGING};

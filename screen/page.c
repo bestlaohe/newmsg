@@ -16,15 +16,15 @@
 #define CHAR_HEIGHT 18                                                                 // 单个字符高度
 #define Y_OFFSET 22                                                                    // 设置页面初始的y轴偏移
 int8_t Englishcount = 0;                                                               // 字符的位号
-int Englishposx = 0;                                                                   // x的个数
-int Englishposy = 0;                                                                   // y的个数
+u8 Englishposx = 0;                                                                   // x的个数
+u8 Englishposy = 0;                                                                   // y的个数
 u8 lora_send_buf[54];                                                                  // 只有3行可以输入一行18
-int current_setting = 0;                                                               // 当前设置的行
-int refreshState = 1;                                                                  // 内容刷新标志位
-int isFirstSettingShow = 1;                                                            // 设置刷新标志
-int isFirstBattaryShow = 1;                                                            // 电池刷新标志
-int current_line = 0;                                                                  // 当前显示的起始行
-int total_lines = 0;                                                                   // 总的聊天记录行数
+u8 current_setting = 0;                                                               // 当前设置的行
+u8 refreshState = 1;                                                                  // 内容刷新标志位
+u8 isFirstSettingShow = 1;                                                            // 设置刷新标志
+u8 isFirstBattaryShow = 1;                                                            // 电池刷新标志
+u8 current_line = 0;                                                                  // 当前显示的起始行
+u8 total_lines = 0;                                                                   // 总的聊天记录行数
 
 Setting settings[SETTING_COUNT] = {
     {"light", (u8 *)&TIM1->CH3CVR, NULL},
