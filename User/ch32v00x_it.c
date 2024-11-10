@@ -57,7 +57,7 @@ void TIM2_IRQHandler()
 void refresh_SleepCounter(int newtime)
 {
   SleepCounter = newtime;
-    DEBUG_PRINT("refresh_SleepCounter\r\n");
+  DEBUG_PRINT("refresh_SleepCounter\r\n");
 }
 
 void DMA1_Channel3_IRQHandler(void)
@@ -70,21 +70,32 @@ void DMA1_Channel3_IRQHandler(void)
   }
 }
 u16 Battery_ADC_Average = 0;
+    u16 pre_Battery_ADC_Average = 0;
 void DMA1_Channel1_IRQHandler(void)
 {
 
   if (DMA_GetITStatus(DMA1_IT_TC1))
   {
-    Battery_ADC_Average=0;
+
+    Battery_ADC_Average = 0;
     // 计算电池平均值
     for (u8 i = 0; i < ADC_CONUT; i++)
     {
       Battery_ADC_Average += BattaryBuf[i];
       //     DEBUG_PRINT("BattaryBuf[i]=%d\r\n",BattaryBuf[i]);
     }
-    Battery_ADC_Average /= ADC_CONUT;          // 求平均值
-    DEBUG_PRINT("Battery_ADC_Average=%d\r\n",Battery_ADC_Average);
-    
+    Battery_ADC_Average /= ADC_CONUT; // 求平均值
+
+    if (abs(pre_Battery_ADC_Average - Battery_ADC_Average) < 10)
+    {
+      Battery_ADC_Average = pre_Battery_ADC_Average;
+    }
+    else
+    {
+      pre_Battery_ADC_Average = Battery_ADC_Average;
+    }
+   //  DEBUG_PRINT("Battery_ADC_Average=%d\r\n",Battery_ADC_Average);
+
     DMA_ClearITPendingBit(DMA1_IT_TC1); // 清除中断标志
   }
 }
@@ -159,7 +170,7 @@ void EXTI7_0_IRQHandler(void)
 
   if (EXTI_GetITStatus(EXTI_Line1) != RESET)
   {
-  MOTOR_SET(1);
+    MOTOR_SET(1);
     Delay_Ms(100);
     MOTOR_SET(0);
     if (CHARGE)
@@ -173,7 +184,6 @@ void EXTI7_0_IRQHandler(void)
       DEBUG_PRINT("end chage\r\n");
     }
 
-  
     system_wokeup();                    // 系统唤醒
     EXTI_ClearITPendingBit(EXTI_Line1); /* Clear Flag */
   }
@@ -231,20 +241,19 @@ void EXTI_INT_INIT(void)
   GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource6);
   GPIO_EXTILineConfig(GPIO_PortSourceGPIOD, GPIO_PinSource2);
 
-
-  EXTI_InitStructure.EXTI_Line = EXTI_Line2|EXTI_Line1;//key和charge
+  EXTI_InitStructure.EXTI_Line = EXTI_Line2 | EXTI_Line1; // key和charge
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure);
 
- EXTI_InitStructure.EXTI_Line = EXTI_Line6;//lora
- EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
- EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
- EXTI_InitStructure.EXTI_LineCmd = ENABLE;
- EXTI_Init(&EXTI_InitStructure);
+  EXTI_InitStructure.EXTI_Line = EXTI_Line6; // lora
+  EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
+  EXTI_InitStructure.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStructure);
 
-  EXTI_InitStructure.EXTI_Line = EXTI_Line9;//AWU
+  EXTI_InitStructure.EXTI_Line = EXTI_Line9; // AWU
   EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Falling;
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;

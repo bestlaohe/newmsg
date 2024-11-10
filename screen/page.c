@@ -412,7 +412,7 @@ void info_page()
 void show_page()
 {
 
-   // page = PAGE_SEND;
+  //  page = PAGE_SEND;
   switch (page) // 处理页面
   {
   case PAGE_SEND: // 发送界面

@@ -187,7 +187,7 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
     char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
 
     percentage = get_battery_percentage(Battery_ADC_Average);
-
+   // DEBUG_PRINT("percentage=%d\r\n",percentage);
     // percentage = 100;
 
     // 限制百分比范围

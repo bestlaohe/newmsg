@@ -34,7 +34,7 @@
 #define PWM_FRE         10000
 #define PWM_Duty        50
 
-#define ADC_CONUT        5//最大允许64，因为u16/1024=64
+#define ADC_CONUT        15//最大允许64，因为u16/1024=64
 
 // 去抖动和长按检测的常数
 #define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
