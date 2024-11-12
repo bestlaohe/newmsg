@@ -22,16 +22,6 @@
 
 
 
- // 开启或关闭调试信息输出
- #define DEBUG_ENABLED 1
-
- #if DEBUG_ENABLED == 2
-     #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)
- #elif DEBUG_ENABLED == 1
-     #define DEBUG_PRINT(fmt, ...) my_uart_print(fmt)
- #else
-     #define DEBUG_PRINT(fmt, ...)
- #endif
 
 
 

@@ -78,8 +78,8 @@ typedef struct
 
 } Charge;
 
-extern volatile int needSleep ;
-extern volatile int needDeinit ;
+extern volatile u8 needSleep;
+extern volatile u8 needDeinit;//改成u8就无法正常休眠
 
 
 

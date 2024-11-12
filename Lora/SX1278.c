@@ -34,7 +34,7 @@ char lora_receive_buf[200] = {0};
 u8 lora_receive_len = 0;
 u8 lora_receive_flag = 0; // 0是初始状态，1是接收到了，2是等待接收
 
-extern volatile int loraComplete; // lora中断操作完成的标志
+extern volatile u8 loraComplete; // lora中断操作完成的标志
 // 控制口配置初始化，中断口配置在完成中断初始化中
 void SX1278_Receive()
 {

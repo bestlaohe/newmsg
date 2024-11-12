@@ -23,11 +23,12 @@ void AWU_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 
 volatile u8 dmaTransferComplete = 0;
 volatile u8 loraComplete = 0;
+volatile u8 needSleep = 0;
+volatile u8 needDeinit = 0;
 
 volatile int circle = 0;
 int SleepCounter = 0;
-volatile int needSleep = 0;
-volatile int needDeinit = 0;
+
 Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
 Charge charge = {UNCHARGING};
@@ -303,6 +304,7 @@ void system_enter_sleep()
   
   if (needDeinit)
   {
+      DEBUG_PRINT("system_Deinit\r\n");
     // My_GPIO_DeInit();
 
     LCD_Drive_DeInit();
@@ -310,9 +312,10 @@ void system_enter_sleep()
 
     TIM1_DeInit();
     //   TIM2_DeInit();
+
+  // USART_DeInit(USART1);
     needDeinit = 0;
 
-    DEBUG_PRINT("system_Deinit\r\n");
   }
 }
 
@@ -320,8 +323,6 @@ void Sleep_Scan()
 {
   if (needSleep)
   {
-
- 
     system_enter_sleep();
     PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
   }
@@ -334,8 +335,11 @@ void TIM1_UP_IRQHandler(void)
   {
     // 清除中断标志
     TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
+
+#if SLEEP == 1
     SleepCounter++;
-    if (SleepCounter >= 50000) // 15s触发一次
+#endif
+    if (SleepCounter >= 30000) // 15s触发一次
     {
       SleepCounter = 0;
       needSleep = 1;
@@ -363,7 +367,7 @@ void AWU_IRQHandler(void)
 {
   if (EXTI_GetITStatus(EXTI_Line9) != RESET)
   {
-    printf("AWU Wake_up\r\n");
+    DEBUG_PRINT("AWU Wake_up\r\n");
     EXTI_ClearITPendingBit(EXTI_Line9); /* Clear Flag */
   }
 }

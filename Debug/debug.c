@@ -161,14 +161,18 @@ void SDI_Printf_Enable(void)
 
 void my_uart_print(char *str)
 {
-    while (*str)
-    {
-        // 等待 USART1 的传输完成标志
-        while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
-            ;
-        // 发送一个字符
-        USART_SendData(USART1, *str++);
-    }
+
+          while (*str)
+          {
+              // 等待 USART1 的传输完成标志
+              while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
+                  ;
+              // 发送一个字符
+              USART_SendData(USART1, *str++);
+          }
+
+
+
 }
 /*********************************************************************
  * @fn      _write

@@ -40,6 +40,20 @@
 #define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
 #define HOLD_TIME 3000   // 长按时间，单位：100us
 
+#define SLEEP 0   //是否要休眠
+
+ // 开启或关闭调试信息输出
+ #define DEBUG_ENABLED 1
+
+ #if DEBUG_ENABLED == 2
+     #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)
+ #elif DEBUG_ENABLED == 1
+     #define DEBUG_PRINT(fmt, ...) my_uart_print(fmt)
+ #else
+     #define DEBUG_PRINT(fmt, ...)
+ #endif
+
+
 
 
 // struct Flags {

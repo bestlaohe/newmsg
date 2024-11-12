@@ -53,27 +53,25 @@ int main(void)
 
   while (1)
   {
-   
 
     if (needSleep)
     {
-         
+
       IWDG_ReloadCounter(); // Î¹¹·
       Sleep_Scan();         // ¼ì²éÊÇ·ñË¯¾õ1
-
     }
     else
     {
-         
+
       show_page();
       SX1278_Receive();
       Encoder_Scan();
       IWDG_ReloadCounter(); // Î¹¹·
- 
-      Sleep_Scan();         // ¼ì²éÊÇ·ñË¯¾õ
 
-//                             Delay_Ms(1000);
-//                             DEBUG_PRINT("show_page\r\n");
+      Sleep_Scan(); // ¼ì²éÊÇ·ñË¯¾õ
+
+      //                             Delay_Ms(1000);
+      //                            DEBUG_PRINT("show_page\r\n");
     }
   }
 }

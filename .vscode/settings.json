@@ -10,6 +10,7 @@
     "string.h": "c",
     "*.ipp": "c",
     "ch32v00x_it.h": "c",
-    "*.inc": "c"
+    "*.inc": "c",
+    "ch32v00x_rcc.h": "c"
   }
 }
