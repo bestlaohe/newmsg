@@ -666,7 +666,7 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     }
     if (dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2) // 补包操作
     {
-        // DEBUG_PRINT("EnterSTANDBYMode\r\n");
+      
         Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2); // 把余数显示掉
     }
 

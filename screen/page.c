@@ -462,7 +462,7 @@ void show_page()
     break;
 
   case PAGE_SETTING: // …Ë÷√ΩÁ√Ê
-    setting_page(&Font16_En);
+   // setting_page(&Font16_En);
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
       refreshState = 1;

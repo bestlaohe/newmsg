@@ -26,8 +26,8 @@ volatile u8 loraComplete = 0;
 
 volatile int circle = 0;
 int SleepCounter = 0;
-u8 needSleep = 0;
-u8 needDeinit = 0;
+volatile int needSleep = 0;
+volatile int needDeinit = 0;
 Encode encode = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
 Charge charge = {UNCHARGING};
@@ -70,7 +70,7 @@ void DMA1_Channel3_IRQHandler(void)
   }
 }
 u16 Battery_ADC_Average = 0;
-    u16 pre_Battery_ADC_Average = 0;
+u16 pre_Battery_ADC_Average = 0;
 void DMA1_Channel1_IRQHandler(void)
 {
 
@@ -94,7 +94,7 @@ void DMA1_Channel1_IRQHandler(void)
     {
       pre_Battery_ADC_Average = Battery_ADC_Average;
     }
-   //  DEBUG_PRINT("Battery_ADC_Average=%d\r\n",Battery_ADC_Average);
+    //  DEBUG_PRINT("Battery_ADC_Average=%d\r\n",Battery_ADC_Average);
 
     DMA_ClearITPendingBit(DMA1_IT_TC1); // 清除中断标志
   }
@@ -300,7 +300,7 @@ void system_wokeup()
 
 void system_enter_sleep()
 {
-
+  
   if (needDeinit)
   {
     // My_GPIO_DeInit();
@@ -320,6 +320,8 @@ void Sleep_Scan()
 {
   if (needSleep)
   {
+
+ 
     system_enter_sleep();
     PWR_EnterSTANDBYMode(PWR_STANDBYEntry_WFI);
   }
@@ -333,15 +335,13 @@ void TIM1_UP_IRQHandler(void)
     // 清除中断标志
     TIM_ClearITPendingBit(TIM1, TIM_IT_Update);
     SleepCounter++;
-    if (SleepCounter >= 200000) // 15s触发一次
+    if (SleepCounter >= 50000) // 15s触发一次
     {
-
-      DEBUG_PRINT("EnterSTANDBYMode\r\n");
-
       SleepCounter = 0;
-
       needSleep = 1;
       needDeinit = 1;
+      DEBUG_PRINT("EnterSTANDBYMode\r\n");
+    
     }
 
     if (!KEY0)

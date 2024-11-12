@@ -34,7 +34,7 @@ char lora_receive_buf[200] = {0};
 u8 lora_receive_len = 0;
 u8 lora_receive_flag = 0; // 0是初始状态，1是接收到了，2是等待接收
 
-extern volatile int loraComplete;//lora中断操作完成的标志
+extern volatile int loraComplete; // lora中断操作完成的标志
 // 控制口配置初始化，中断口配置在完成中断初始化中
 void SX1278_Receive()
 {
@@ -482,9 +482,15 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
     else
     {
       if ((irq_flag & 0x08) == 0x08)
+      {
+
         DEBUG_PRINT("send ok irq_flag\r\n");
+      }
       else
+      {
+
         DEBUG_PRINT("no msg=0x%X\r\n", irq_flag);
+      }
     }
   }
 
