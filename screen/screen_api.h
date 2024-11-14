@@ -41,7 +41,6 @@ extern LCD_0IN85_ATTRIBUTES LCD;
 
 extern u8 dmaXpoint,dmaYpoint;
 extern sFONT* dmaFont;
-extern volatile int dma_circular;
 extern volatile u8 dmaTransferComplete ;
 
 

@@ -311,7 +311,7 @@ void system_enter_sleep()
     Battery_DeInit();
 
     TIM1_DeInit();
-    //   TIM2_DeInit();
+    //   TIM2_DeInit();//±àÂëÆ÷ÓÃ
 
   // USART_DeInit(USART1);
     needDeinit = 0;
