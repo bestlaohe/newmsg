@@ -212,14 +212,53 @@ void NMI_Handler(void)
  *
  * @return  none
  */
+// 这里我们不是正常的中断,而是hardfault,所以折了的mcause对应的是Load address misaligned
+// Interrupt	Exception Code	Description
+// 1	0	User software interrupt
+// 1	1	Supervisor software interrupt
+// 1	2	Hypervisor software interrupt
+// 1	3	Machine software interrupt
+// 1	4	User timer interrupt
+// 1	5	Supervisor timer interrupt
+// 1	6	Hypervisor timer interrupt
+// 1	7	Machine timer interrupt
+// 1	8	User external interrupt
+// 1	9	Supervisor external interrupt
+// 1	10	Hypervisor external interrupt
+// 1	11	Machine external interrupt
+// 1	≥12	Reserved
+// 0	0	Instruction address misaligned
+// 0	1	Instruction access fault
+// 0	2	Illegal instruction
+// 0	3	Breakpoint
+// 0	4	Load address misaligned
+// 0	5	Load access fault
+// 0	6	Store/AMO address misaligned
+// 0	7	Store/AMO access fault
+// 0	8	Environment call from U-mode
+// 0	9	Environment call from S-mode
+// 0	10	Environment call from H-mode
+// 0	11	Environment call from M-mode
+// 0	≥12	Reserved
+
+// 变量地址mtval
 void HardFault_Handler(void)
 {
   // 处理 HardFault 异常的代码
   // 例如，记录故障信息、尝试恢复系统或重启系统
   DEBUG_PRINT("start HardFault_Handler\r\n");
+
+  uint32_t v_mepc, v_mcause, v_mtval;
+
+  v_mepc = __get_MEPC();
+  v_mcause = __get_MCAUSE();
+  v_mtval = __get_MTVAL();
+
+  printf("mepc:%08x\n", v_mepc);
+  printf("mcause:%08x\n", v_mcause);
+  printf("mtval:%08x\n", v_mtval);
   while (1)
-  {
-  }
+    ;
 }
 
 /*********************************************************************
@@ -301,10 +340,10 @@ void system_wokeup()
 
 void system_enter_sleep()
 {
-  
+
   if (needDeinit)
   {
-      DEBUG_PRINT("system_Deinit\r\n");
+    DEBUG_PRINT("system_Deinit\r\n");
     // My_GPIO_DeInit();
 
     LCD_Drive_DeInit();
@@ -313,9 +352,8 @@ void system_enter_sleep()
     TIM1_DeInit();
     //   TIM2_DeInit();//编码器用
 
-  // USART_DeInit(USART1);
+    // USART_DeInit(USART1);
     needDeinit = 0;
-
   }
 }
 
@@ -345,7 +383,6 @@ void TIM1_UP_IRQHandler(void)
       needSleep = 1;
       needDeinit = 1;
       DEBUG_PRINT("EnterSTANDBYMode\r\n");
-    
     }
 
     if (!KEY0)
