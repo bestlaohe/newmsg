@@ -12,6 +12,9 @@
 #include <ch32v00x_it.h>
 #include "adc.h"
 #include "seting.h"
+
+
+
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -242,21 +245,22 @@ void NMI_Handler(void)
 // 0	≥12	Reserved
 
 // 变量地址mtval
+
+
+
 void HardFault_Handler(void)
 {
   // 处理 HardFault 异常的代码
   // 例如，记录故障信息、尝试恢复系统或重启系统
   DEBUG_PRINT("start HardFault_Handler\r\n");
 
-  uint32_t v_mepc, v_mcause, v_mtval;
+//  uint32_t v_mepc, v_mcause;
+//
+//  v_mepc = __get_MEPC();
+//  v_mcause = __get_MCAUSE();
 
-  v_mepc = __get_MEPC();
-  v_mcause = __get_MCAUSE();
-  v_mtval = __get_MTVAL();
+//  printf("mepc   = %08x\nmtval  = %08x\n", v_mepc, v_mcause); // 异常产生硬件错误中断，打印PC指针
 
-  printf("mepc:%08x\n", v_mepc);
-  printf("mcause:%08x\n", v_mcause);
-  printf("mtval:%08x\n", v_mtval);
   while (1)
     ;
 }
