@@ -8,7 +8,7 @@
 #ifndef ENCODE_ENCODE_H_
 #define ENCODE_ENCODE_H_
 #include "time_app.h"
-extern Encode encode;
+extern Encode encode_struct;
 extern volatile int circle;
 
 void Encoder_Init(u16 arr, u16 psc);

@@ -12,7 +12,7 @@
 #include <ch32v00x_it.h>
 #include "adc.h"
 #include "seting.h"
-//#include <core_riscv.h>
+// #include <core_riscv.h>
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void EXTI7_0_IRQHandler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -30,7 +30,7 @@ volatile u8 needDeinit = 0;
 volatile int circle = 0;
 int SleepCounter = 0;
 
-Encode encode = {ENCODE_EVENT_NONE};
+Encode encode_struct = {ENCODE_EVENT_NONE};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
 Charge charge = {UNCHARGING};
 
@@ -162,7 +162,7 @@ void EXTI7_0_IRQHandler(void)
 
     EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
     loraComplete = 1;
-    DEBUG_PRINT("lora msg\r\n");
+    DEBUG_PRINT("lora operate\r\n"); // 不管发送还是接收都会触发
 
     MOTOR_SET(1);
     Delay_Ms(100);
@@ -249,14 +249,14 @@ void HardFault_Handler(void)
   // 例如，记录故障信息、尝试恢复系统或重启系统
   DEBUG_PRINT("start HardFault_Handler\r\n");
 
-//  uint32_t v_mepc, v_mcause;
-//
-//  v_mepc = __get_MEPC();
-//  v_mcause = __get_MCAUSE();
-//
-//
-//  printf("mepc:%08x\n", v_mepc);
-//  printf("mcause:%08x\n", v_mcause);
+  //  uint32_t v_mepc, v_mcause;
+  //
+  //  v_mepc = __get_MEPC();
+  //  v_mcause = __get_MCAUSE();
+  //
+  //
+  //  printf("mepc:%08x\n", v_mepc);
+  //  printf("mcause:%08x\n", v_mcause);
 
   while (1)
     ;
@@ -334,7 +334,7 @@ void system_wokeup()
 
     // 处理完事件后清除事件
     key.event = KEY_EVENT_NONE;
-    encode.state = ENCODE_EVENT_NONE;
+    encode_struct.state = ENCODE_EVENT_NONE;
     needSleep = 0;
   }
 }
@@ -405,7 +405,10 @@ void AWU_IRQHandler(void)
 {
   if (EXTI_GetITStatus(EXTI_Line9) != RESET)
   {
+
+#if SLEEP == 1
     DEBUG_PRINT("AWU Wake_up\r\n");
+#endif
     EXTI_ClearITPendingBit(EXTI_Line9); /* Clear Flag */
   }
 }

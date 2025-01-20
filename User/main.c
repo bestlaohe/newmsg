@@ -49,8 +49,10 @@ int main(void)
   EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
   // startup_animation();                                             // 开机动画
   IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500，1除以500乘以4000=8s****12467-12356=111字节
-  AWU_Init();                               // 唤醒时间为25/12.5大约是2s左右。
 
+#if SLEEP == 1
+  AWU_Init(); // 唤醒时间为25/12.5大约是2s左右。
+#endif
   while (1)
   {
 
@@ -62,14 +64,16 @@ int main(void)
     }
     else
     {
+      //      u8 data[] = "rr";
+      //      SX1278_LoRaTxPacket(data, 2);
 
       show_page();
       SX1278_Receive();
-      Encoder_Scan();
+     Encoder_Scan();
       IWDG_ReloadCounter(); // 喂狗
       Sleep_Scan();         // 检查是否睡觉
 
-      //                             Delay_Ms(1000);
+//      Delay_Ms(1000);
       //                            DEBUG_PRINT("show_page\r\n");
     }
   }

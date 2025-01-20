@@ -16,7 +16,7 @@
 
 extern Key key;
 
-extern Encode encode;
+extern Encode encode_struct;
 extern u8 lora_receive_len;
 extern u8 lora_receive_flag;
 

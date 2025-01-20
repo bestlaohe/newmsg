@@ -39,11 +39,11 @@ Page page = PAGE_SEND;
 void handle_chat_event(sFONT *Font)
 {
   // 处理滚动状态
-  if (encode.state == ENCODE_EVENT_UP)
+  if (encode_struct.state == ENCODE_EVENT_UP)
   {
     Englishcount = (Englishcount + 1) % 27; // 循环计数
   }
-  else if (encode.state == ENCODE_EVENT_DOWN)
+  else if (encode_struct.state == ENCODE_EVENT_DOWN)
   {
     Englishcount = (Englishcount - 1 + 27) % 27; // 循环计数
   }
@@ -56,14 +56,14 @@ void handle_chat_event(sFONT *Font)
   // 发送数据
   if (key.state == KEY_STATE_HOLD)
   {
-    if (encode.state == ENCODE_EVENT_UP)
+    if (encode_struct.state == ENCODE_EVENT_UP)
     {
       refreshState = 1;
       DEBUG_PRINT("start lora send\r\n");
       lora_receive_flag = 2;
       if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT / Font->Width)))
       {
-        DEBUG_PRINT("lora send ok\r\n");
+        DEBUG_PRINT("rsp lora send ok\r\n");
         SX1278_LoRaEntryRx(); // 进入接收模式
       }
       // 清空一切
@@ -75,7 +75,7 @@ void handle_chat_event(sFONT *Font)
 
       key.enable = 0; // 禁用键
     }
-    else if (encode.state == ENCODE_EVENT_DOWN)
+    else if (encode_struct.state == ENCODE_EVENT_DOWN)
     {
       refreshState = 1;
       // 输入回退
@@ -119,7 +119,7 @@ void handle_chat_event(sFONT *Font)
 
 void handle_chat_history_event()
 {
-  if (encode.state == ENCODE_EVENT_UP) // 向上滚动
+  if (encode_struct.state == ENCODE_EVENT_UP) // 向上滚动
   {
     if (current_line > 0)
     {
@@ -128,7 +128,7 @@ void handle_chat_history_event()
     }
   }
 
-  if (encode.state == ENCODE_EVENT_DOWN) // 向下滚动
+  if (encode_struct.state == ENCODE_EVENT_DOWN) // 向下滚动
   {
     if (current_line < total_lines - MAX_LINE_TO_SHOW - 1)
     {
@@ -139,7 +139,7 @@ void handle_chat_history_event()
 
   if (key.state == KEY_STATE_HOLD) // 删除聊天记录
   {
-    if (encode.state == ENCODE_EVENT_DOWN)
+    if (encode_struct.state == ENCODE_EVENT_DOWN)
     {
       refreshState = 1;
       memset(lora_receive_buf, 0, sizeof(lora_receive_len));                                             // 清空聊天记录
@@ -195,8 +195,10 @@ void show_history_data(sFONT *Font)
       while (*ptr && line_length < COLUMN)
       {
         line[i++] = *ptr++;
+        DEBUG_PRINT("line=%s \r\n",line[i++]);
         line_length++;
       }
+
       Paint_DrawString(1, 22 + (displayed_lines++) * Font->Height, line, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a' - 1);
     }
     else
@@ -363,12 +365,12 @@ void display_settings(sFONT *Font)
 
 void handle_setting_event()
 {
-  if (encode.state == ENCODE_EVENT_UP)
+  if (encode_struct.state == ENCODE_EVENT_UP)
   { // 编码器向上滚动
     update_current_setting(*settings[current_setting].value + 1);
     refreshState = 1;
   }
-  else if (encode.state == ENCODE_EVENT_DOWN)
+  else if (encode_struct.state == ENCODE_EVENT_DOWN)
   { // 编码器向下滚动
     update_current_setting(*settings[current_setting].value - 1);
     refreshState = 1;
@@ -412,7 +414,7 @@ void info_page()
 void show_page()
 {
 
-  //  page = PAGE_SEND;
+//   page = PAGE_SEND;
   switch (page) // 处理页面
   {
   case PAGE_SEND: // 发送界面
@@ -489,7 +491,7 @@ void show_page()
 
   // 处理完事件后清除事件
   key.event = KEY_EVENT_NONE;
-  encode.state = ENCODE_EVENT_NONE;
+  encode_struct.state = ENCODE_EVENT_NONE;
 }
 
 // 重写部分结构-
