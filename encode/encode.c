@@ -15,31 +15,43 @@
 #include "encode.h"
 #include "SX1278.h"
 
-u8 precnt = 0;
-u8 precircle = 0;
 void Encoder_Scan()
 {
 
+  static u8 precnt = 0;
+  static int precircle = 0;
+  if (precnt == 0 && precircle == 0)
+  {
+
+    precnt = TIM2->CNT;
+    precircle = circle;
+  }
   if (precircle != circle || (precnt != TIM2->CNT)) // 有变化就动   140字节
   {
     if (precircle * 12 + precnt > circle * 12 + TIM2->CNT)
     {
       encode_struct.state = ENCODE_EVENT_DOWN;
-      // DEBUG_PRINT("向上");
+      DEBUG_PRINT("Encoder up\r\n");
     }
     encode_struct.state = ENCODE_EVENT_UP;
     if (precircle * 12 + precnt < circle * 12 + TIM2->CNT)
     {
       encode_struct.state = ENCODE_EVENT_DOWN;
-      // DEBUG_PRINT("向下");
+      DEBUG_PRINT("Encoder down\r\n");
     }
 
     // DEBUG_PRINT("precircle*12+precnt= %d circle*12+TIM2->CNT %d step\r\n", precircle * 12 + precnt, circle * 12 + TIM2->CNT);
     // DEBUG_PRINT("Encoder position= %d circle %d step\r\n", TIM2->CNT, circle);
+    // DEBUG_PRINT("precircle= %d precnt= %d \r\n", precircle, precnt);
     precircle = circle;
     precnt = TIM2->CNT;
-
-     refresh_SleepCounter(0); // 刷新休眠时间
+    if (encode_struct.enable == 0)
+    {
+      encode_struct.enable = 1;
+      encode_struct.state = ENCODE_EVENT_NONE;
+       DEBUG_PRINT("disable encode_struct operate\r\n");
+    }
+    refresh_SleepCounter(0); // 刷新休眠时间
     MOTOR_SET(1);
     Delay_Ms(50);
     MOTOR_SET(0);

@@ -59,7 +59,7 @@ void TIM2_IRQHandler()
 void refresh_SleepCounter(int newtime)
 {
   SleepCounter = newtime;
-  DEBUG_PRINT("refresh_SleepCounter\r\n");
+  // DEBUG_PRINT("refresh_SleepCounter\r\n");
 }
 
 void DMA1_Channel3_IRQHandler(void)
@@ -140,20 +140,27 @@ void EXTI7_0_IRQHandler(void)
         key.event = KEY_EVENT_LONG_CLICK;
         DEBUG_PRINT("KEY_EVENT_LONG_CLICK ontime\r\n");
         key.LongKeyCounter = 0;
+        if (key.enable == 0)
+        {
+          key.event = KEY_EVENT_NONE;
+          key.state = KEY_STATE_IDLE;
+          key.LongKeyCounter = 0;
+          key.enable = 1;
+          DEBUG_PRINT("disable key operate\r\n");
+        }
       }
-
+      if (key.enable == 0)
+      {
+        key.event = KEY_EVENT_NONE;
+        key.state = KEY_STATE_IDLE;
+        key.LongKeyCounter = 0;
+        key.enable = 1;
+        DEBUG_PRINT("disable key operate\r\n");
+      }
       key.state = KEY_STATE_RELEASE;
     }
     key.LongKeyCounter = 0;
 
-    if (key.enable == 0)
-    {
-      key.event = KEY_EVENT_NONE;
-      key.state = KEY_STATE_IDLE;
-      key.LongKeyCounter = 0;
-      key.enable = 1;
-      //  DEBUG_PRINT("disable key operate\r\n"); // 有消息发来就震动
-    }
     system_wokeup(); // 系统唤醒
   }
 
@@ -162,7 +169,7 @@ void EXTI7_0_IRQHandler(void)
 
     EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
     loraComplete = 1;
-    DEBUG_PRINT("lora operate\r\n"); // 不管发送还是接收都会触发
+    // DEBUG_PRINT("lora operate\r\n"); // 不管发送还是接收都会触发
 
     MOTOR_SET(1);
     Delay_Ms(100);
@@ -377,7 +384,6 @@ void TIM1_UP_IRQHandler(void)
 
 #if SLEEP == 1
     SleepCounter++;
-#endif
     if (SleepCounter >= 30000) // 15s触发一次
     {
       SleepCounter = 0;
@@ -385,11 +391,13 @@ void TIM1_UP_IRQHandler(void)
       needDeinit = 1;
       DEBUG_PRINT("EnterSTANDBYMode\r\n");
     }
+#endif
 
     if (!KEY0)
     {
       key.LongKeyCounter++;
-      key.state = KEY_STATE_HOLD;
+      if (key.LongKeyCounter >= 50) // 消抖
+        key.state = KEY_STATE_HOLD;
     }
   }
 }

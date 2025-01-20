@@ -69,11 +69,12 @@ int main(void)
 
       show_page();
       SX1278_Receive();
-     Encoder_Scan();
+      Encoder_Scan();
       IWDG_ReloadCounter(); // Î¹¹·
       Sleep_Scan();         // ¼ì²éÊÇ·ñË¯¾õ
 
-//      Delay_Ms(1000);
+//      DEBUG_PRINT("key.LongKeyCounter=%d\r\n",key.LongKeyCounter);
+      //      Delay_Ms(1000);
       //                            DEBUG_PRINT("show_page\r\n");
     }
   }

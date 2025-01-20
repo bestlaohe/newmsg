@@ -59,7 +59,7 @@ typedef enum
 typedef struct
 {
   EncodeState state; // 当前按键状态
-
+ u8 enable;               // 使能
 } Encode;
 
 

@@ -16,15 +16,15 @@
 #define CHAR_HEIGHT 18                                                                 // 单个字符高度
 #define Y_OFFSET 22                                                                    // 设置页面初始的y轴偏移
 int8_t Englishcount = 0;                                                               // 字符的位号
-u8 Englishposx = 0;                                                                   // x的个数
-u8 Englishposy = 0;                                                                   // y的个数
+u8 Englishposx = 0;                                                                    // x的个数
+u8 Englishposy = 0;                                                                    // y的个数
 u8 lora_send_buf[54];                                                                  // 只有3行可以输入一行18
-u8 current_setting = 0;                                                               // 当前设置的行
-u8 refreshState = 1;                                                                  // 内容刷新标志位
-u8 isFirstSettingShow = 1;                                                            // 设置刷新标志
-u8 isFirstBattaryShow = 1;                                                            // 电池刷新标志
-u8 current_line = 0;                                                                  // 当前显示的起始行
-u8 total_lines = 0;                                                                   // 总的聊天记录行数
+u8 current_setting = 0;                                                                // 当前设置的行
+u8 refreshState = 1;                                                                   // 内容刷新标志位
+u8 isFirstSettingShow = 1;                                                             // 设置刷新标志
+u8 isFirstBattaryShow = 1;                                                             // 电池刷新标志
+u8 current_line = 0;                                                                   // 当前显示的起始行
+u8 total_lines = 0;                                                                    // 总的聊天记录行数
 
 Setting settings[SETTING_COUNT] = {
     {"light", (u8 *)&TIM1->CH3CVR, NULL},
@@ -38,21 +38,35 @@ Page page = PAGE_SEND;
 
 void handle_chat_event(sFONT *Font)
 {
-  // 处理滚动状态
-  if (encode_struct.state == ENCODE_EVENT_UP)
+  static u8 waittime = 0;
+  if (lora_receive_flag == 2)
   {
-    Englishcount = (Englishcount + 1) % 27; // 循环计数
+    waittime++;
   }
-  else if (encode_struct.state == ENCODE_EVENT_DOWN)
+  if (lora_receive_flag == 2 && waittime > 200) // 无限等待接收回应
   {
-    Englishcount = (Englishcount - 1 + 27) % 27; // 循环计数
+    waittime = 0;
+    if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT / Font->Width)))
+    {
+      DEBUG_PRINT("lora send ok\r\n");
+      lora_receive_flag = 1;
+    }
+    else
+    {
+      DEBUG_PRINT("lora send fail\r\n");
+    }
+    SX1278_LoRaEntryRx(); // 进入接收模式
   }
-
-  if (lora_receive_flag == 2) // 无限等待接收回应
+  if (lora_receive_flag == 1) // 接收到回应了
   {
-    SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT / Font->Width));
+    lora_receive_flag = 0;
+    DEBUG_PRINT("lora get rsp ok\r\n");
+    Englishposy = 0;  // 重置行位置
+    Englishposx = 0;  // 重置行位置
+    Englishcount = 0; // 清空一切
+    memset(lora_send_buf, '\0', sizeof(lora_send_buf));
+    LCD_0IN85_Clear(EDGE, CHAT_UP + EDGE, 127 - EDGE, 127 - EDGE, MY_SCREEN_COLOR); // 清除输入内容
   }
-
   // 发送数据
   if (key.state == KEY_STATE_HOLD)
   {
@@ -61,19 +75,10 @@ void handle_chat_event(sFONT *Font)
       refreshState = 1;
       DEBUG_PRINT("start lora send\r\n");
       lora_receive_flag = 2;
-      if (!SX1278_LoRaTxPacket(lora_send_buf, Englishposx + Englishposy * (LCD_HEIGHT / Font->Width)))
-      {
-        DEBUG_PRINT("rsp lora send ok\r\n");
-        SX1278_LoRaEntryRx(); // 进入接收模式
-      }
-      // 清空一切
-      Englishposy = 0; // 重置行位置
-      Englishposx = 0; // 重置行位置
-      memset(lora_send_buf, 0, sizeof(lora_send_buf));
-
-      LCD_0IN85_Clear(EDGE, CHAT_UP + EDGE, 127 - EDGE, 127 - EDGE, MY_THEME_BACK_COLOR); // 清除输入内容
-
-      key.enable = 0; // 禁用键
+      waittime=255;
+      encode_struct.enable = 0; // 禁用键
+      key.enable = 0;           // 禁用键
+      return;
     }
     else if (encode_struct.state == ENCODE_EVENT_DOWN)
     {
@@ -114,6 +119,16 @@ void handle_chat_event(sFONT *Font)
       }
     }
     Englishcount = 0; // 重置计数
+  }
+
+  // 处理滚动状态
+  if (encode_struct.state == ENCODE_EVENT_UP)
+  {
+    Englishcount = (Englishcount + 1) % 27; // 循环计数
+  }
+  else if (encode_struct.state == ENCODE_EVENT_DOWN)
+  {
+    Englishcount = (Englishcount - 1 + 27) % 27; // 循环计数
   }
 }
 
@@ -195,11 +210,11 @@ void show_history_data(sFONT *Font)
       while (*ptr && line_length < COLUMN)
       {
         line[i++] = *ptr++;
-        DEBUG_PRINT("line=%s \r\n",line[i++]);
+        // DEBUG_PRINT("line=%s \r\n", line[i++]);
         line_length++;
       }
 
-      Paint_DrawString(1, 22 + (displayed_lines++) * Font->Height, line, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a' - 1);
+      Paint_DrawString(1, 22 + (displayed_lines++) * Font->Height, line, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
     }
     else
     {
@@ -242,8 +257,8 @@ void chat_history_page(sFONT *Font)
   if (refreshState)
   {
     Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面高亮
-  //  LCD_0IN85_Clear(0, CHAT_UP, 128, CHAT_DOWN, MY_SCREEN_COLOR);                                        // 输入框
-    Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);   // 输入框高亮
+                                                                                                         //  LCD_0IN85_Clear(0, CHAT_UP, 128, CHAT_DOWN, MY_SCREEN_COLOR);                                        // 输入框
+    Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);    // 输入框高亮
     show_history_data(Font);
     refreshState = 0;
   }
@@ -384,7 +399,7 @@ void handle_setting_event()
 
 void setting_page(sFONT *Font)
 {
-//设置二字
+  // 设置二字
   Paint_DrawString(48, 0, "01", &Font16_setting, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0');
 
   display_settings(Font);
@@ -414,7 +429,7 @@ void info_page()
 void show_page()
 {
 
-//   page = PAGE_SEND;
+  //  page = PAGE_SEND;
   switch (page) // 处理页面
   {
   case PAGE_SEND: // 发送界面
@@ -464,7 +479,7 @@ void show_page()
     break;
 
   case PAGE_SETTING: // 设置界面
-   // setting_page(&Font16_En);
+                     // setting_page(&Font16_En);
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
       refreshState = 1;

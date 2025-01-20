@@ -699,6 +699,8 @@ void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
 
     while (*pString != '\0')
     {
+
+        //   DEBUG_PRINT("needshow%c\r\n",*pString);
         // if X direction filled , reposition to(Xstart,Ypoint),Ypoint is Y direction plus the Height of the character
         if ((Xpoint + Font->Width) > Paint.Width-1)
         {
