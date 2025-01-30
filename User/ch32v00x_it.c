@@ -30,7 +30,7 @@ volatile u8 needDeinit = 0;
 volatile int circle = 0;
 int SleepCounter = 0;
 
-Encode encode_struct = {ENCODE_EVENT_NONE};
+Encode encode_struct = {ENCODE_EVENT_NONE, 0};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
 Charge charge = {UNCHARGING};
 
@@ -169,7 +169,7 @@ void EXTI7_0_IRQHandler(void)
 
     EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
     loraComplete = 1;
-    // DEBUG_PRINT("lora operate\r\n"); // 不管发送还是接收都会触发
+    DEBUG_PRINT("lora operate\r\n"); // 不管发送还是接收都会触发
 
     MOTOR_SET(1);
     Delay_Ms(100);

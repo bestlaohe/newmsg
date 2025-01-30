@@ -43,7 +43,7 @@
 #define SLEEP 0   //是否要休眠
 
  // 开启或关闭调试信息输出
- #define DEBUG_ENABLED 1
+ #define DEBUG_ENABLED 2
 
  #if DEBUG_ENABLED == 2
      #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)

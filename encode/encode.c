@@ -45,9 +45,9 @@ void Encoder_Scan()
     // DEBUG_PRINT("precircle= %d precnt= %d \r\n", precircle, precnt);
     precircle = circle;
     precnt = TIM2->CNT;
-    if (encode_struct.enable == 0)
+    if (encode_struct.enable == 1)
     {
-      encode_struct.enable = 1;
+      encode_struct.enable = 0;
       encode_struct.state = ENCODE_EVENT_NONE;
        DEBUG_PRINT("disable encode_struct operate\r\n");
     }
