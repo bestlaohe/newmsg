@@ -10,26 +10,19 @@
 #include <stdio.h>
 #include <string.h>
 #include "seting.h"
-void DrawIcon(int x, int y, int size, int final_size)
-{
-    Paint_DrawChar(x, y, 0, &Font24_logo, BLACK, WHITE - size * 819, 0);
-}
-
-void startup_animation()
-{
-    int final_size = 48; // 最终图标大小
-    int step = 2;        // 每次放大步长
-    for (int size = 0; size <= 80; size += step)
-    {
-        // 计算图标左上角位置，使其中心保持在屏幕中央
-        int offset = size / 2;
-        DrawIcon(LCD_WIDTH - final_size - offset, LCD_HEIGHT - final_size - offset, size, final_size);
-        DrawIcon(offset, offset, size, final_size);
-        DrawIcon(LCD_WIDTH - final_size - offset, offset, size, final_size);
-        DrawIcon(offset, LCD_HEIGHT - final_size - offset, size, final_size);
+void startup_animation() {
+    for (int s = 0, o; s <= 80; s += 2) {
+        o = s/2;
+        for (int i = 0; i < 2; i++)
+            for (int j = 0; j < 2; j++)
+                Paint_DrawChar(
+                    i*(LCD_WIDTH-48-o) + (1-i)*o,
+                    j*(LCD_HEIGHT-48-o) + (1-j)*o,
+                    0, &Font24_logo, BLACK, WHITE-s*819, 0
+                );
     }
     LCD_0IN85_Clear(0,0,127,127,BLACK);
-    Paint_DrawChar(40, 40, 0, &Font24_logo, BLACK, WHITE, 0);
+    Paint_DrawChar(40,40,0, &Font24_logo, BLACK, WHITE, 0);
     Delay_Ms(500);
     LCD_0IN85_Clear(0,0,127,127,BLACK);
 }
@@ -42,7 +35,7 @@ void LCD_SHOW_API_INIT()
 
     LCD_0IN85_Init(VERTICAL);
     //    Delay_Ms(300);
-    DEBUG_PRINT("Set Clear and Display Funtion\r\n");
+    // DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     LCD_0IN85_Clear(0,0,127,127,MY_THEME_BACK_COLOR);
     //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
@@ -475,7 +468,7 @@ u8 Lcd_Refrsh_DMA(int pic_size)
         retry++;
         if (retry > 200)
         {
-            DEBUG_PRINT("rec spi outtime!\r\n");
+            // DEBUG_PRINT("rec spi outtime!\r\n");
             return 0;
         }
     } // 还没收完

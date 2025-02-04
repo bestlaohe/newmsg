@@ -31,7 +31,7 @@ void My_GPIO_Init()
 
     // pd2的确认按钮
     GPIO_Init_Pin(GPIOD, GPIO_Pin_2, GPIO_Mode_IPU);
-    // pd6的lora的中断接收mosi
+    // pd6的lora的中断
     GPIO_Init_Pin(GPIOD, GPIO_Pin_6, GPIO_Mode_IPD);
     // 和lora通信miso
     GPIO_Init_Pin(GPIOC, GPIO_Pin_7, GPIO_Mode_IN_FLOATING);

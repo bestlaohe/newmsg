@@ -352,7 +352,7 @@ void system_enter_sleep()
   if (needDeinit)
   {
     DEBUG_PRINT("system_Deinit\r\n");
-    // My_GPIO_DeInit();
+    // My_GPIO_DeInit();//唤醒不了打开的话
 
     LCD_Drive_DeInit();
     Battery_DeInit();
@@ -374,7 +374,7 @@ void Sleep_Scan()
   }
 }
 
-// 定时器中断服务函数10ms
+// 定时器中断服务函数10ms  100us
 void TIM1_UP_IRQHandler(void)
 {
   if (TIM_GetITStatus(TIM1, TIM_IT_Update) != RESET)
@@ -384,7 +384,7 @@ void TIM1_UP_IRQHandler(void)
 
 #if SLEEP == 1
     SleepCounter++;
-    if (SleepCounter >= 30000) // 15s触发一次
+    if (SleepCounter >= 100000) // 大约10s触发一次
     {
       SleepCounter = 0;
       needSleep = 1;
@@ -396,7 +396,7 @@ void TIM1_UP_IRQHandler(void)
     if (!KEY0)
     {
       key.LongKeyCounter++;
-      if (key.LongKeyCounter >= 50) // 消抖
+      if (key.LongKeyCounter >= DEBOUNCE_TIME) // 消抖
         key.state = KEY_STATE_HOLD;
     }
   }
@@ -415,7 +415,7 @@ void AWU_IRQHandler(void)
   {
 
 #if SLEEP == 1
-    DEBUG_PRINT("AWU Wake_up\r\n");
+    DEBUG_PRINT("AWU Wake_up=%d\r\n",SleepCounter);
 #endif
     EXTI_ClearITPendingBit(EXTI_Line9); /* Clear Flag */
   }

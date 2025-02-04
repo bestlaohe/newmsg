@@ -28,7 +28,7 @@ int main(void)
   SystemCoreClockUpdate(); // 48000000系统时钟刷新3324-3212=100k
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
   USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死3956-3324=600k
-  DEBUG_PRINT("\r\n\r\n\r\n\r\nSystemClk:%d\r\n", SystemCoreClock);
+  DEBUG_PRINT("\r\nSystemClk:%d\r\n", SystemCoreClock);
   //  DEBUG_PRINT("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
   Delay_Init(); // 延时初始化需要在延时前，不然会卡死4012-3956=100字节
 
@@ -47,7 +47,7 @@ int main(void)
   Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
   SX1278_Init();                                                     // lora的初始化*****10268-9620=648
   EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
-  // startup_animation();                                             // 开机动画
+//   startup_animation();                                             // 开机动画
   IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500，1除以500乘以4000=8s****12467-12356=111字节
 
 #if SLEEP == 1
@@ -66,16 +66,16 @@ int main(void)
     {
       //      u8 data[] = "rr";
       //      SX1278_LoRaTxPacket(data, 2);
-
+        // DEBUG_PRINT("\r\nshow_page");
       show_page();
       SX1278_Receive();
       Encoder_Scan();
       IWDG_ReloadCounter(); // 喂狗
       Sleep_Scan();         // 检查是否睡觉
 
-//      DEBUG_PRINT("key.LongKeyCounter=%d\r\n",key.LongKeyCounter);
+
       //      Delay_Ms(1000);
-      //                            DEBUG_PRINT("show_page\r\n");
+
     }
   }
 }

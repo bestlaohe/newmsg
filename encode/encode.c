@@ -49,7 +49,7 @@ void Encoder_Scan()
     {
       encode_struct.enable = 0;
       encode_struct.state = ENCODE_EVENT_NONE;
-       DEBUG_PRINT("disable encode_struct operate\r\n");
+      DEBUG_PRINT("disable encode_struct operate\r\n");
     }
     refresh_SleepCounter(0); // Ë¢ÐÂÐÝÃßÊ±¼ä
     MOTOR_SET(1);

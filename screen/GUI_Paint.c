@@ -400,6 +400,8 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
 #endif
 }
 
+
+
 /******************************************************************************
 function:	Draw a rectangle
 parameter:

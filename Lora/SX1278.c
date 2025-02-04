@@ -45,17 +45,7 @@ void SX1278_Receive()
   //  DEBUG_PRINT("SX1278_LoRaReadRSSI= %d \r\n", SX1278_LoRaReadRSSI());
   //  DEBUG_PRINT("SX1278_ReadRSSI= %d \r\n", SX1278_ReadRSSI());
 
-  // u8 lora_send_buf[255] = "abcd"; //{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-
   u8 res; // 操作的返回
-
-  //     if (!SX1278_LoRaTxPacket(lora_send_buf, 4))
-  //      {
-  //        DEBUG_PRINT("lora发送成功 \r\n");
-  //      }else{
-  //          DEBUG_PRINT("lora发送失败 \r\n");
-  //
-  //      }
 
   res = SX1278_LoRaRxPacket(lora_receive_buf, &lora_receive_len, 5000);
 
@@ -81,10 +71,14 @@ void SX1278_Receive()
   else if (res == 2)
   {
     DEBUG_PRINT("lora CRC eeror!\r\n");
-  } else if (res == 3){
-      DEBUG_PRINT("Received response: **\r\n");
-  } else if (res == 4){
-      DEBUG_PRINT("illegal msg\r\n");
+  }
+  else if (res == 3)
+  {
+    DEBUG_PRINT("Received response: **\r\n");
+  }
+  else if (res == 4)
+  {
+    DEBUG_PRINT("illegal msg\r\n");
   }
 }
 
@@ -397,8 +391,8 @@ u8 SX1278_LoRaEntryRx(void)
 
   //  while (SX1278_Read_Reg(LR_RegOpMode)!=0x88)//1000 1000 tx完成
   while (t--)
-  { 
-    
+  {
+
     // DEBUG_PRINT("Rx Mode=0x%X \r\n", SX1278_Read_Reg(LR_RegOpMode));//0x8d 1000 1010
     if ((SX1278_Read_Reg(LR_RegModemStat) & 0x04) == 0x04) // Rx-on going RegModemStat
       break;
@@ -429,7 +423,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
   u8 addr, irq_flag, mode;
   u8 packet_size;
   u8 temp_data[200];
-  irq_flag = SX1278_Read_Reg(LR_RegIrqFlags);
+  
   mode = SX1278_Read_Reg(LR_RegOpMode);
 
   if ((mode & 0x05) != 0x05)
@@ -441,6 +435,9 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
   if (loraComplete) // 有中断进来
   {
     loraComplete = 0;
+    irq_flag = SX1278_Read_Reg(LR_RegIrqFlags);
+//      DEBUG_PRINT("0-irq_flag=0x%X\r\n", irq_flag);
+//    DEBUG_PRINT("1-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
 
     if ((irq_flag & RFLR_IRQFLAGS_RXDONE) == RFLR_IRQFLAGS_RXDONE)
     {
@@ -456,7 +453,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
       SX1278_Write_Reg(LR_RegFifoAddrPtr, addr);      // RxBaseAddr -> FiFoAddrPtr
       packet_size = SX1278_Read_Reg(LR_RegRxNbBytes); // Number for received bytes
 
-      if (packet_size > 90 || packet_size < 1)
+      if (packet_size >  sizeof(lora_receive_buf) || packet_size < 1)
       {
         DEBUG_PRINT("packet_size too long   %d\r\n", packet_size);
         return 2;
@@ -484,7 +481,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
       //      DEBUG_PRINT("  valid_data[current_length]: %d\r\n", valid_data[current_length]);
       if (packet_size == 2 && temp_data[packet_size - 1] == '*' && temp_data[packet_size - 2] == '*')
       {
-  
+
         lora_receive_flag = 1;
         return 3; // 表示收到对方回应，不回复
       }
@@ -503,18 +500,16 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
         {
 
           if (!SX1278_LoRaTxPacket("*", 1))
-          {       
-           
-DEBUG_PRINT("mode=0x%X \r\n", SX1278_Read_Reg(LR_RegOpMode));//0x88 1000 1000
+          {
+
+            DEBUG_PRINT("mode=0x%X \r\n", SX1278_Read_Reg(LR_RegOpMode)); // 0x88 1000 1000
             DEBUG_PRINT("Lora send ok\r\n");
             SX1278_LoRaEntryRx(); // 进入接收模式
           }
           else
           {
-       
 
-
-DEBUG_PRINT("mode=0x%X \r\n", SX1278_Read_Reg(LR_RegOpMode));//0x8b 1000 1010
+            DEBUG_PRINT("mode=0x%X \r\n", SX1278_Read_Reg(LR_RegOpMode)); // 0x8b 1000 1010
 
             DEBUG_PRINT("Lora send fail\r\n");
             SX1278_LoRaEntryRx(); // 进入接收模式
@@ -529,17 +524,20 @@ DEBUG_PRINT("mode=0x%X \r\n", SX1278_Read_Reg(LR_RegOpMode));//0x8b 1000 1010
 
       return 0;
     }
-    // else
-    // {
-    //   if ((irq_flag & RFLR_IRQFLAGS_TXDONE) == RFLR_IRQFLAGS_TXDONE)
-    //   {
-    //     DEBUG_PRINT("send ok irq_flag\r\n");
-    //   }
-    //   else
-    //   {
-    //     DEBUG_PRINT("irq_flag=0x%X\r\n", irq_flag);
-    //   }
-    // }
+    else
+    {
+      if ((irq_flag & RFLR_IRQFLAGS_TXDONE) == RFLR_IRQFLAGS_TXDONE)
+      {
+        DEBUG_PRINT("send ok irq_flag\r\n");
+      }
+      else
+      {
+         DEBUG_PRINT("2-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
+//
+//
+//           DEBUG_PRINT("3-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
+      }
+    }
   }
 
   // SX1278_Sleep(); // 进入睡眠模式
@@ -587,7 +585,7 @@ u8 SX1278_LoRaEntryTx(u8 packet_length)
 ***************************************************************************/
 u8 SX1278_LoRaTxPacket(u8 *valid_data, u8 packet_length)
 {
-//  u8 timeout = 255;
+  //  u8 timeout = 255;
   u8 temp_data[54];
   u8 temp_packet_length = packet_length;
   // 将原始数据复制到临时缓冲区
@@ -603,11 +601,11 @@ u8 SX1278_LoRaTxPacket(u8 *valid_data, u8 packet_length)
     // DEBUG_PRINT("%d=%c ", t, temp_data[t]);
   }
   DEBUG_PRINT("\r\n");
-  SX1278_LoRaEntryTx(temp_packet_length);//进入待机模式
+  SX1278_LoRaEntryTx(temp_packet_length); // 进入待机模式
   SX1278_Burst_Write(0x00, temp_data, temp_packet_length);
   SX1278_Write_Reg(LR_RegOpMode, 0x8b); // Tx Mode 1000 1011  lora模式，tx模式
 
-  while (SX1278_Read_Reg(LR_RegOpMode)!=0x88)//1000 1000 tx完成
+  while (SX1278_Read_Reg(LR_RegOpMode) != 0x88) // 1000 1000 tx完成
   {
 
     if (READ_SX1278_NIRQ()) // Packet send over
