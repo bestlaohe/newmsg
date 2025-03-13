@@ -182,7 +182,7 @@ void EXTI7_0_IRQHandler(void)
     MOTOR_SET(1);
     Delay_Ms(100);
     MOTOR_SET(0);
-    if (CHARGE)
+    if (!CHARGE)
     {
       charge.state = CHARGING;
       DEBUG_PRINT("start chage\r\n");
