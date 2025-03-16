@@ -49,18 +49,22 @@ extern volatile u8 dmaTransferComplete ;
 function:
             Macro definition variable name
 ********************************************************************************/
+u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color);
+u8 LCD_Refrsh_DMA(int pic_size);
 void LCD_SHOW_API_INIT();
 void LCD_0IN85_Init(UBYTE Scan_dir);
-u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color);
 void LCD_0IN85_Display(UWORD *Image);
 void LCD_0IN85_DisplayWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD *Image);
 void LCD_0IN85_DisplayPoint(UWORD X, UWORD Y, UWORD Color);
 void LCD_0IN85_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend);
 void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color);
 void LCD_0IN85_SetBackLight(UWORD Value);
-u8 Lcd_Refrsh_DMA(int pic_size);
 void startup_animation();
 void LCD_0IN85_SendCommand(UBYTE Reg);
+void LCD_0IN85_EnterSleepMode(void);
+void LCD_0IN85_ExitSleepMode(void);
+int LCD_Drive_DeInit(void);
+int LCD_Drive_Init(void);
 #endif /* SCREEN_SCREEN_API_H_ */
 
 

@@ -353,14 +353,15 @@ void system_enter_sleep()
   {
     DEBUG_PRINT("system_Deinit\r\n");
     // My_GPIO_DeInit();//唤醒不了打开的话
-
+     SX1278_Sleep(); 
+    //  SX1278_Standby(); 
     LCD_Drive_DeInit();
     Battery_DeInit();
 
     TIM1_DeInit();
-    //   TIM2_DeInit();//编码器用
+      TIM2_DeInit();//编码器用
 
-    // USART_DeInit(USART1);
+    USART_DeInit(USART1);
     needDeinit = 0;
   }
 }
@@ -384,7 +385,7 @@ void TIM1_UP_IRQHandler(void)
 
 #if SLEEP == 1
     SleepCounter++;
-    if (SleepCounter >= 100000) // 大约10s触发一次
+    if (SleepCounter >= SLEEP_TIME) 
     {
       SleepCounter = 0;
       needSleep = 1;

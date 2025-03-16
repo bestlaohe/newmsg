@@ -395,8 +395,8 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     // DEBUG_PRINT("Dotted_Len = %d\r\n", Dotted_Len);
 
 #if USE_DMA
-    Lcd_Refrsh_DMA(Dotted_Len * 2);
-    //  Lcd_Refrsh_DMA(34);
+    LCD_Refrsh_DMA(Dotted_Len * 2);
+    //  LCD_Refrsh_DMA(34);
 #endif
 }
 
@@ -589,11 +589,11 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     int total_pixels = dmaFont->Width * dmaFont->Height * 2;
     if (total_pixels < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
     {
-        Lcd_Refrsh_DMA(total_pixels); // 刷新小图
+        LCD_Refrsh_DMA(total_pixels); // 刷新小图
     }
     if (total_pixels % (Y_MAX_PIXEL * X_MAX_PIXEL * 2) && total_pixels > Y_MAX_PIXEL * X_MAX_PIXEL * 2)
     {
-        Lcd_Refrsh_DMA(total_pixels % (Y_MAX_PIXEL * X_MAX_PIXEL * 2)); // 补包操作
+        LCD_Refrsh_DMA(total_pixels % (Y_MAX_PIXEL * X_MAX_PIXEL * 2)); // 补包操作
     }
 #endif
 
@@ -664,12 +664,12 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     if (dmaFont->Width * dmaFont->Height * 2 < Y_MAX_PIXEL * X_MAX_PIXEL * 2)
     {
         // DEBUG_PRINT("显示小图\r\n");
-        Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2);
+        LCD_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2);
     }
     if (dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2) // 补包操作
     {
       
-        Lcd_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2); // 把余数显示掉
+        LCD_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2); // 把余数显示掉
     }
 
 #endif

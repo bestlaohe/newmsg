@@ -148,50 +148,101 @@ static void LCD_0IN85_SendData_16Bit(UWORD Data)
     LCD_CS_DISABLE;
 }
 #endif
+int LCD_Drive_Init(void)
+{
+    SPI_FullDuplex_Init();
+    TIM_CtrlPWMOutputs(TIM1, ENABLE);
 
+#if USE_DMA
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE); // 启用SPI的DMA发送请求
+    DMA_Cmd(DMA1_Channel3, ENABLE);                  // 启用DMA通道
+    NVIC_EnableIRQ(DMA1_Channel3_IRQn);              // 启用DMA中断
+#endif
+    LCD_0IN85_ExitSleepMode();
+    return 0;
+}
+int LCD_Drive_DeInit(void)
+{
+    LCD_0IN85_EnterSleepMode();
+    // 禁用 PWM 输出
+    TIM_CtrlPWMOutputs(TIM1, DISABLE);
+    // 禁用 DMA 通道
+#if USE_DMA
+    DMA_Cmd(DMA1_Channel3, DISABLE);                  // 禁用DMA通道
+    NVIC_DisableIRQ(DMA1_Channel3_IRQn);              // 禁用DMA中断
+    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE); // 禁用SPI的DMA发送请求
+#endif
+    // 关闭 SPI
+    SPI_Cmd(SPI1, DISABLE);                               // 禁用SPI外设
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, DISABLE); // 禁用 SPI1 时钟
+
+    return 0;
+}
 /******************************************************************************
 function :  Initialize the lcd register
 parameter:
 ******************************************************************************/
-// 常量数组存储命令和数据
+// 常量数组存储初始化命令和数据
 static const uint8_t init_cmds[] = {
-    0xB0, 0xC0,
-    0xB2, 0x2F,
-    0xB3, 0x03,
-    0xB6, 0x19,
-    0xB7, 0x01,
-    0xAC, 0xCB,
-    0xAB, 0x0E,
-    0xB4, 0x04,
-    0xA8, 0x19,
-    0x3A, 0x05,
-    0xB8, 0x08,
-    0xE8, 0x24,
-    0xE9, 0x48,
-    0xEA, 0x22,
-    0xC6, 0x30,
-    0xC7, 0x18,
-    0xF0, 0x1F, 0x28, 0x04, 0x3E, 0x2A, 0x2E, 0x20, 0x00, 0x0C, 0x06, 0x00, 0x1C, 0x1F, 0x0F,
-    0xF1, 0x00, 0x2D, 0x2F, 0x3C, 0x6F, 0x1C, 0x0B, 0x00, 0x00, 0x00, 0x07, 0x0D, 0x11, 0x0F,
-    0x21,
-    0x11,
-    0x29};
+    0xB0, 0xC0,  // 设置电源控制寄存器，配置电源相关参数
+    0xB2, 0x2F,  // 设置帧率控制寄存器，调整帧率或刷新率
+    0xB3, 0x03,  // 设置显示模式或时序控制寄存器，调整显示模式
+    0xB6, 0x19,  // 设置显示方向或扫描模式，调整显示方向
+    0xB7, 0x01,  // 设置显示控制寄存器，开启或关闭某些显示功能
+    0xAC, 0xCB,  // 设置电源控制或电压调节寄存器，调整电源或电压参数
+    0xAB, 0x0E,  // 设置显示亮度或对比度控制寄存器，调整亮度或对比度
+    0xB4, 0x04,  // 设置显示控制寄存器，调整显示控制参数
+    0xA8, 0x19,  // 设置显示模式或时序控制寄存器，调整显示模式
+    0x3A, 0x05,  // 设置像素格式，例如 RGB 565 或 RGB 666
+    0xB8, 0x08,  // 设置显示控制寄存器，调整显示控制参数
+    0xE8, 0x24,  // 设置电源控制或电压调节寄存器，调整电源或电压参数
+    0xE9, 0x48,  // 设置电源控制或电压调节寄存器，调整电源或电压参数
+    0xEA, 0x22,  // 设置电源控制或电压调节寄存器，调整电源或电压参数
+    0xC6, 0x30,  // 设置显示控制寄存器，调整显示控制参数
+    0xC7, 0x18,  // 设置显示控制寄存器，调整显示控制参数
+    0xF0, 0x1F, 0x28, 0x04, 0x3E, 0x2A, 0x2E, 0x20, 0x00, 0x0C, 0x06, 0x00, 0x1C, 0x1F, 0x0F,  // 设置 Gamma 校正寄存器，调整 Gamma 曲线
+    0xF1, 0x00, 0x2D, 0x2F, 0x3C, 0x6F, 0x1C, 0x0B, 0x00, 0x00, 0x00, 0x07, 0x0D, 0x11, 0x0F,  // 设置 Gamma 校正寄存器，调整 Gamma 曲线
+    0x21,        // 开启显示反转功能（Display Inversion ON）
+    0x11,        // 退出睡眠模式（Sleep Out），使 LCD 进入正常工作状态
+    0x29         // 开启显示（Display ON），使屏幕开始显示图像
+};
 
+// 初始化 LCD 寄存器的函数
 static void LCD_0IN85_InitReg(void)
 {
+    // 遍历初始化命令数组
     for (int8_t i = 0; i < sizeof(init_cmds); ++i)
     {
+        // 判断当前索引是否为偶数（即命令）
         if (i % 2 == 0)
         {
+            // 发送命令
             LCD_0IN85_SendCommand(init_cmds[i]);
         }
         else
         {
+            // 发送数据
             LCD_0IN85_SendData_8Bit(init_cmds[i]);
         }
     }
 }
+ void LCD_0IN85_EnterSleepMode(void)
+{
+    // 发送睡眠模式命令 (0x10)
+    LCD_0IN85_SendCommand(0x10);
 
+    // 根据数据手册，可能需要等待一段时间（例如 5ms）以确保命令生效
+    // 具体等待时间请参考 LCD 控制器的数据手册
+    Delay_Ms(5);  // 使用 HAL 库的延时函数，延时 5 毫秒
+}
+  void LCD_0IN85_ExitSleepMode(void)
+ {
+     // 发送退出睡眠模式命令 (0x11)
+     LCD_0IN85_SendCommand(0x11);
+
+     // 根据数据手册，可能需要等待一段时间（例如 120ms）以确保显示稳定
+     Delay_Ms(120);  // 使用 HAL 库的延时函数，延时 120 毫秒
+ }
 /********************************************************************************
 function:   Set the resolution and scanning method of the screen
 parameter:
@@ -425,7 +476,7 @@ void LCD_0IN85_DisplayWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend
     }
 }
 
-u8 Lcd_Refrsh_DMA(int pic_size)
+u8 LCD_Refrsh_DMA(int pic_size)
 {
 
 #if USE_DMA
@@ -510,7 +561,7 @@ void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
     if ((index + 1) == (Y_MAX_PIXEL * X_MAX_PIXEL * 2 - 1))
     {
 
-        Lcd_Refrsh_DMA(Y_MAX_PIXEL * X_MAX_PIXEL * 2);
+        LCD_Refrsh_DMA(Y_MAX_PIXEL * X_MAX_PIXEL * 2);
         dmaXoffset = X_MAX_PIXEL + dmaXoffset;
         dmaYoffset = Y_MAX_PIXEL + dmaYoffset;
         DEBUG_PRINT("dma ok\r\n");

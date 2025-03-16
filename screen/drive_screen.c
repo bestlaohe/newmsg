@@ -116,34 +116,6 @@ u8 DEV_SPI_WRite(uint8_t _dat)
     return (uint8_t)SPI_I2S_ReceiveData(SPI1);
 }
 
-int LCD_Drive_Init(void)
-{
-    SPI_FullDuplex_Init();
-    TIM_CtrlPWMOutputs(TIM1, ENABLE);
 
-#if USE_DMA
-    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, ENABLE); // 启用SPI的DMA发送请求
-    DMA_Cmd(DMA1_Channel3, ENABLE);                  // 启用DMA通道
-    NVIC_EnableIRQ(DMA1_Channel3_IRQn);              // 启用DMA中断
-#endif
-
-    return 0;
-}
-int LCD_Drive_DeInit(void)
-{
-
-    // 禁用 PWM 输出
-    TIM_CtrlPWMOutputs(TIM1, DISABLE);
-    // 禁用 DMA 通道
-#if USE_DMA
-    DMA_Cmd(DMA1_Channel3, DISABLE);                  // 禁用DMA通道
-    NVIC_DisableIRQ(DMA1_Channel3_IRQn);              // 禁用DMA中断
-    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE); // 禁用SPI的DMA发送请求
-#endif
-    // 关闭 SPI
-    SPI_Cmd(SPI1, DISABLE);                               // 禁用SPI外设
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_SPI1, DISABLE); // 禁用 SPI1 时钟
-    return 0;
-}
 
 
