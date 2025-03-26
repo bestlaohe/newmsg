@@ -40,11 +40,11 @@
 #define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
 #define HOLD_TIME 3000   // 长按时间，单位：100us
 
- #define SHAKE_TIME 50
+ #define SHAKE_TIME 30
  #define SLEEP_TIME 30000*10// 大约10s触发一次
 
  // 开启或关闭调试信息输出
- #define DEBUG_ENABLED 0
+ #define DEBUG_ENABLED 2
 
  #if DEBUG_ENABLED == 2
      #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)

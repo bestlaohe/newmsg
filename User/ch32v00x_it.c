@@ -368,9 +368,9 @@ void system_enter_sleep()
     // My_GPIO_DeInit();//唤醒不了打开的话
 
 #if LORA_ENABLED
-#if DEBUG_ENABLED == 2
+
     SX1278_Sleep(); 
-#endif
+
     //  SX1278_Standby(); 
 #endif
 
