@@ -53,7 +53,7 @@ void Encoder_Scan()
     }
     refresh_SleepCounter(0); // Ë¢ÐÂÐÝÃßÊ±¼ä
     MOTOR_SET(1);
-    Delay_Ms(50);
+    Delay_Ms(SHAKE_TIME);
     MOTOR_SET(0);
   }
 }

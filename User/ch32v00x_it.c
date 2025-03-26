@@ -84,7 +84,7 @@ void DMA1_Channel1_IRQHandler(void)
     for (u8 i = 0; i < ADC_CONUT; i++)
     {
       Battery_ADC_Average += BattaryBuf[i];
-      //     DEBUG_PRINT("BattaryBuf[i]=%d\r\n",BattaryBuf[i]);
+//        DEBUG_PRINT("BattaryBuf[i]=%d\r\n",BattaryBuf[i]);
     }
     Battery_ADC_Average /= ADC_CONUT; // 求平均值
 
@@ -116,7 +116,7 @@ void EXTI7_0_IRQHandler(void)
 
     // DEBUG_PRINT("have key msg\r\n"); // 按键
     MOTOR_SET(1);
-    Delay_Ms(100);
+    Delay_Ms(SHAKE_TIME);
     MOTOR_SET(0);
 
     EXTI_ClearITPendingBit(EXTI_Line2); /* Clear Flag */
@@ -172,7 +172,7 @@ void EXTI7_0_IRQHandler(void)
     DEBUG_PRINT("lora operate\r\n"); // 不管发送还是接收都会触发
 
     MOTOR_SET(1);
-    Delay_Ms(100);
+    Delay_Ms(SHAKE_TIME);
     MOTOR_SET(0);
     system_wokeup(); // 系统唤醒
   }
@@ -180,7 +180,7 @@ void EXTI7_0_IRQHandler(void)
   if (EXTI_GetITStatus(EXTI_Line1) != RESET)
   {
     MOTOR_SET(1);
-    Delay_Ms(100);
+    Delay_Ms(SHAKE_TIME);
     MOTOR_SET(0);
     if (!CHARGE)
     {
@@ -353,7 +353,10 @@ void system_enter_sleep()
   {
     DEBUG_PRINT("system_Deinit\r\n");
     // My_GPIO_DeInit();//唤醒不了打开的话
+
+    #if DEBUG_ENABLED == 2
      SX1278_Sleep(); 
+     #endif
     //  SX1278_Standby(); 
     LCD_Drive_DeInit();
     Battery_DeInit();

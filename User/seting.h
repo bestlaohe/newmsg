@@ -40,7 +40,8 @@
 #define DEBOUNCE_TIME 50 // 去抖动时间，单位：ms
 #define HOLD_TIME 3000   // 长按时间，单位：100us
 
- #define SLEEP_TIME 5000*10// 大约10s触发一次
+ #define SHAKE_TIME 50
+ #define SLEEP_TIME 30000*10// 大约10s触发一次
 
  // 开启或关闭调试信息输出
  #define DEBUG_ENABLED 0
@@ -51,7 +52,7 @@
 
  #elif DEBUG_ENABLED == 1
      #define DEBUG_PRINT(fmt, ...) my_uart_print(fmt)
-     #define SLEEP 1   //是否要休眠
+     #define SLEEP 0   //是否要休眠
    
  #else
      #define DEBUG_PRINT(fmt, ...)

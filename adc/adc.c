@@ -12,8 +12,18 @@
 u16 BattaryBuf[ADC_CONUT];
 // 关键点的 ADC 值和对应的电池百分比
 #define NUM_POINTS 5
-const uint16_t adc_points[NUM_POINTS] = {502, 547, 594, 639, 683}; // 示例关键点
+const uint16_t adc_points[NUM_POINTS] ={421, 477, 558, 609, 651}; // 示例关键点
 const uint8_t percent_points[NUM_POINTS] = {0, 25, 50, 75, 100};   // 对应的百分比
+
+
+//percentage=41 578
+// percentage=32 562
+// 4.2V ≈ 100%
+// 3.6V ≈ 50%
+// 3.0V ≈ 10%
+// 2.7V ≈ 0%
+
+
 
 // 查找表的大小
 #define ADC_MAX 1023
@@ -187,14 +197,14 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
     char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
 
     percentage = get_battery_percentage(Battery_ADC_Average);
-   // DEBUG_PRINT("percentage=%d\r\n",percentage);
+//   DEBUG_PRINT("percentage=%d %d\r\n",percentage,Battery_ADC_Average);
     // percentage = 100;
 
     // 限制百分比范围
     if (percentage > 100)
         percentage = 100;
 
-    if (abs(Prepercentage - percentage) > 1 || *needshow)
+    if(abs(Prepercentage - percentage) > 1 || *needshow)
     {
         *needshow = 0;
         Prepercentage = percentage;

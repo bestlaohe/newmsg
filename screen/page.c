@@ -262,10 +262,10 @@ void show_history_data(sFONT *Font)
 
 void chat_page(sFONT *Font)
 {
-#if DEBUG_ENABLED <= 1
-  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow); // 显示电池信息
-#endif
 
+  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow); // 显示电池信息
+
+#if DEBUG_ENABLED <= 1
   if (refreshState)
   {
     Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0); // 设置的图标
@@ -280,6 +280,7 @@ void chat_page(sFONT *Font)
 
   show_history_data(Font);
   handle_chat_event(Font);
+  #endif
 }
 void chat_history_page(sFONT *Font)
 {
