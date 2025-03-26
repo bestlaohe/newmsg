@@ -42,20 +42,20 @@ int main(void)
   Check_Reset_Flag();                                                // 查询复位原因
   My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
   TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
-  
+
 #if ENCODER_ENABLED
   TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
 #endif
-  
+
 #if SCREEN_ENABLED
   LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
   LCD_SHOW_API_INIT();                                               // 屏幕测试******8404-6224=2180
 #endif
-  
+
 #if BATTERY_ENABLED
   Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
 #endif
-  
+
 #if LORA_ENABLED
   SX1278_Init();                                                     // lora的初始化*****10268-9620=648
 #endif
@@ -86,7 +86,7 @@ int main(void)
       //      SX1278_LoRaTxPacket(data, 2);
       // DEBUG_PRINT("\r\nshow_page");
       show_page();
-      
+
 #if LORA_ENABLED
       SX1278_Receive();
 #endif

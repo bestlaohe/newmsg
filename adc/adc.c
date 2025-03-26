@@ -97,8 +97,8 @@ void Battery_Init(void)
 
     ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_241Cycles);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-    // Delay_Ms(50);
-    // ADC_SoftwareStartConvCmd(ADC1, DISABLE);//休眠模式的时候降低功耗用
+
+  
 }
 void Battery_DeInit(void)
 {

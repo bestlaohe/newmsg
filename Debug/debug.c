@@ -79,6 +79,8 @@ void Delay_Ms(uint32_t n)
     while ((SysTick->SR & (1 << 0)) != (1 << 0))
         ;
     SysTick->CTLR &= ~(1 << 0);
+
+    DEBUG_PRINT("Delay_Ms=%d\r\n",n); 
 }
 
 /*********************************************************************

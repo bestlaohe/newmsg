@@ -355,7 +355,7 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     dmaYpoint = Ypoint;
     dmaFont = &Fontline;
 
-    //Delay_Ms(1);
+
     LCD_0IN85_SetWindows(Xstart, Ystart, Xend, Yend); // 准备好窗口和复位
 // DEBUG_PRINT("Xstart, Ystart, Xend, Yend = %d= %d= %d= %d\r\n", Xstart, Ystart, Xend, Yend);
 // DEBUG_PRINT("wwwwdmaFont->Width:%d\r\n", dmaFont->Width);
@@ -554,7 +554,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     dmaXpoint = Xpoint;
     dmaYpoint = Ypoint;
     dmaFont = Font;
-   // Delay_Ms(1);
+
     LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备窗口
 #endif
 
@@ -620,7 +620,7 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     const unsigned char *ptr = &Font->table[Char_Offset];
 
 #if USE_DMA
-   // Delay_Ms(1);
+ 
     LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备好窗口和复位
 #endif
 

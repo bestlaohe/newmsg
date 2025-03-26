@@ -506,7 +506,7 @@ u8 LCD_Refrsh_DMA(int pic_size)
 
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
         ;
-    // Delay_Ms(1); // 发送完成后要等一下彻底完成
+  
 
     DMA_Cmd(DMA1_Channel3, DISABLE);
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
