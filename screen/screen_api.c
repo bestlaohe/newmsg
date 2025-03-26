@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "seting.h"
 void startup_animation() {
     for (int s = 0, o; s <= 80; s += 2) {
         o = s/2;

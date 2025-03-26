@@ -13,6 +13,7 @@
     "*.inc": "c",
     "ch32v00x_rcc.h": "c",
     "sx1278.h": "c",
-    "encode.h": "c"
+    "encode.h": "c",
+    "seting.h": "c"
   }
 }

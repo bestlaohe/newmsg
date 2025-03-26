@@ -6,6 +6,7 @@
  */
 #include "page.h"
 #include <string.h>
+#include "seting.h"
 #define MAX_LINE_TO_SHOW 5                                                             // 最大显示行数
 #define EDGE 1                                                                         // 边缘
 #define OPERATE_DOWN 20                                                                // 操作界面下边缘
@@ -29,13 +30,18 @@ u8 total_lines = 0;                                                             
 Setting settings[SETTING_COUNT] = {
     {"light", (u8 *)&TIM1->CH3CVR, NULL},
     {"shake", &shake_mode, NULL},
+#if LORA_ENABLED
     {"freq", &Lora_Freq, SX1278_Init},
     {"power", &Lora_Power, SX1278_Init},
     {"lorabw", &Lora_BandWide, SX1278_Init},
-    {"lorasf", &Lora_SpreadFactor, SX1278_Init}};
+    {"lorasf", &Lora_SpreadFactor, SX1278_Init}
+#endif
+};
 
 Page page = PAGE_SEND;
 u8 send_wait_time = 0;//设置首次250，自加1，第一次会发送
+
+#if LORA_ENABLED
 void handle_lora_msg(sFONT *Font)
 {
   // DEBUG_PRINT("lora_receive_flag=%d\r\n",lora_receive_flag);
@@ -69,10 +75,15 @@ void handle_lora_msg(sFONT *Font)
     // LCD_0IN85_Clear(EDGE, CHAT_UP + EDGE, 127 - EDGE, 127 - EDGE, MY_SCREEN_COLOR); // 清除输入内容
   }
 }
+#endif
+
 void handle_chat_event(sFONT *Font)
 {
 
+#if LORA_ENABLED
   handle_lora_msg(Font);
+#endif
+
   // 发送数据
   if (key.state == KEY_STATE_HOLD)
   {
@@ -263,7 +274,9 @@ void show_history_data(sFONT *Font)
 void chat_page(sFONT *Font)
 {
 
+#if BATTERY_ENABLED
   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow); // 显示电池信息
+#endif
 
 #if DEBUG_ENABLED <= 1
   if (refreshState)
@@ -284,7 +297,9 @@ void chat_page(sFONT *Font)
 }
 void chat_history_page(sFONT *Font)
 {
+#if BATTERY_ENABLED
   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow);
+#endif
   if (refreshState)
   {
     Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面高亮
@@ -299,7 +314,9 @@ void chat_history_page(sFONT *Font)
 
 void perpare_setting_page(sFONT *Font)
 {
+#if BATTERY_ENABLED
   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow); // 电池组件
+#endif
   if (refreshState)
   {
     LCD_0IN85_Clear(0, OPERATE_DOWN, 128, CHAT_DOWN, MY_SCREEN_COLOR); // 聊天记录界面
@@ -452,10 +469,18 @@ void show_info(int posx, int posy, const char *label, int value, int offset)
 
 void info_page()
 {
+#if BATTERY_ENABLED
   show_info(0, 0, "batadc", Battery_ADC_Average, 7);              // 调用显示电池信息
+#endif
+
+#if LORA_ENABLED
   show_info(0, 20, "rssi", SX1278_LoRaReadRSSI(), 5);             // 调用显示 Lora RSSI
   show_info(0, 40, "loraid", SX1278_Read_Reg(REG_LR_VERSION), 7); // 调用显示 Lora ID
+#endif
+
+#if SCREEN_ENABLED
   show_info(0, 60, "light", TIM1->CH3CVR, 6);                     // 调用显示屏幕亮度
+#endif
 }
 
 void show_page()

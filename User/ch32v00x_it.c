@@ -330,11 +330,24 @@ void system_wokeup()
   {
     //    My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
     TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
-                                                                       //    TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
+    
+#if ENCODER_ENABLED
+    //    TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
+#endif
+
+#if SCREEN_ENABLED
     LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
+#endif
+
+#if BATTERY_ENABLED
     Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
-                                                                       //  SX1278_Init();                                                     // 可能需要初始化                                              // lora的初始化*****10268-9620=648
-                                                                       // EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
+#endif
+
+#if LORA_ENABLED
+    //  SX1278_Init();                                                     // 可能需要初始化                                              // lora的初始化*****10268-9620=648
+#endif
+    
+    //  EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
     USART_Printf_Init(115200);
 
     DEBUG_PRINT("system_wokeup\r\n");
@@ -354,15 +367,26 @@ void system_enter_sleep()
     DEBUG_PRINT("system_Deinit\r\n");
     // My_GPIO_DeInit();//唤醒不了打开的话
 
-    #if DEBUG_ENABLED == 2
-     SX1278_Sleep(); 
-     #endif
+#if LORA_ENABLED
+#if DEBUG_ENABLED == 2
+    SX1278_Sleep(); 
+#endif
     //  SX1278_Standby(); 
+#endif
+
+#if SCREEN_ENABLED
     LCD_Drive_DeInit();
+#endif
+
+#if BATTERY_ENABLED
     Battery_DeInit();
+#endif
 
     TIM1_DeInit();
-      TIM2_DeInit();//编码器用
+    
+#if ENCODER_ENABLED
+    TIM2_DeInit();//编码器用
+#endif
 
     USART_DeInit(USART1);
     needDeinit = 0;

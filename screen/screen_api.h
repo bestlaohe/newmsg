@@ -7,6 +7,7 @@
 
 #ifndef SCREEN_SCREEN_API_H_
 #define SCREEN_SCREEN_API_H_
+
 #include "drive_screen.h"
 #include "GUI_Paint.h"
 
@@ -65,6 +66,7 @@ void LCD_0IN85_EnterSleepMode(void);
 void LCD_0IN85_ExitSleepMode(void);
 int LCD_Drive_DeInit(void);
 int LCD_Drive_Init(void);
+
 #endif /* SCREEN_SCREEN_API_H_ */
 
 

@@ -23,9 +23,8 @@
 #ifndef SX1278_H
 #define SX1278_H
 
- #include "debug.h"
+#include "debug.h"
 #include "gpio.h"
-
 
 //≈‰÷√≤Œøº∂®“Â 
 /********************Laro***************************/
@@ -239,4 +238,4 @@ extern u8   SX1278_LoRaTxPacket(u8 *valid_data, u8 packet_length);
 void SX1278_Receive() ;
 
 
-#endif
+#endif /* SX1278_H */
