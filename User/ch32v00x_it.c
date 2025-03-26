@@ -30,6 +30,11 @@ volatile u8 needDeinit = 0;
 volatile int circle = 0;
 int SleepCounter = 0;
 
+// 添加标志位用于延时操作
+volatile u8 needMotorShakeKey = 0;
+volatile u8 needMotorShakeLora = 0;
+volatile u8 needMotorShakeCharge = 0;
+
 Encode encode_struct = {ENCODE_EVENT_NONE, 0};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
 Charge charge = {UNCHARGING};
@@ -84,7 +89,7 @@ void DMA1_Channel1_IRQHandler(void)
     for (u8 i = 0; i < ADC_CONUT; i++)
     {
       Battery_ADC_Average += BattaryBuf[i];
-//        DEBUG_PRINT("BattaryBuf[i]=%d\r\n",BattaryBuf[i]);
+      //        DEBUG_PRINT("BattaryBuf[i]=%d\r\n",BattaryBuf[i]);
     }
     Battery_ADC_Average /= ADC_CONUT; // 求平均值
 
@@ -110,14 +115,10 @@ void DMA1_Channel1_IRQHandler(void)
  */
 void EXTI7_0_IRQHandler(void)
 {
-
   if (EXTI_GetITStatus(EXTI_Line2) != RESET)
   {
 
-    // DEBUG_PRINT("have key msg\r\n"); // 按键
-    MOTOR_SET(1);
-    Delay_Ms(SHAKE_TIME);
-    MOTOR_SET(0);
+    needMotorShakeKey = 1;
 
     EXTI_ClearITPendingBit(EXTI_Line2); /* Clear Flag */
 
@@ -131,7 +132,6 @@ void EXTI7_0_IRQHandler(void)
       DEBUG_PRINT("end press\r\n");
       if (key.LongKeyCounter <= HOLD_TIME)
       {
-
         key.event = KEY_EVENT_CLICK;
         DEBUG_PRINT("KEY_EVENT_CLICK ontime\r\n");
       }
@@ -166,22 +166,20 @@ void EXTI7_0_IRQHandler(void)
 
   if (EXTI_GetITStatus(EXTI_Line6) != RESET)
   {
-
     EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
     loraComplete = 1;
     DEBUG_PRINT("lora operate\r\n"); // 不管发送还是接收都会触发
 
-    MOTOR_SET(1);
-    Delay_Ms(SHAKE_TIME);
-    MOTOR_SET(0);
+    needMotorShakeLora = 1;
+
     system_wokeup(); // 系统唤醒
   }
 
   if (EXTI_GetITStatus(EXTI_Line1) != RESET)
   {
-    MOTOR_SET(1);
-    Delay_Ms(SHAKE_TIME);
-    MOTOR_SET(0);
+
+    needMotorShakeCharge = 1;
+
     if (!CHARGE)
     {
       charge.state = CHARGING;
@@ -330,23 +328,23 @@ void system_wokeup()
   {
     //    My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
     TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
-    
+
 #if ENCODER_ENABLED
     //    TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
 #endif
 
 #if SCREEN_ENABLED
-    LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
+    LCD_Drive_Init(); // 屏幕硬件初始化****200字节
 #endif
 
 #if BATTERY_ENABLED
-    Battery_Init();                                                    // 电池的adc初始化****9456-8636=820
+    Battery_Init(); // 电池的adc初始化****9456-8636=820
 #endif
 
 #if LORA_ENABLED
     //  SX1278_Init();                                                     // 可能需要初始化                                              // lora的初始化*****10268-9620=648
 #endif
-    
+
     //  EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
     USART_Printf_Init(115200);
 
@@ -369,9 +367,9 @@ void system_enter_sleep()
 
 #if LORA_ENABLED
 
-    SX1278_Sleep(); 
+    SX1278_Sleep();
 
-    //  SX1278_Standby(); 
+    //  SX1278_Standby();
 #endif
 
 #if SCREEN_ENABLED
@@ -383,9 +381,9 @@ void system_enter_sleep()
 #endif
 
     TIM1_DeInit();
-    
+
 #if ENCODER_ENABLED
-    TIM2_DeInit();//编码器用
+    TIM2_DeInit(); // 编码器用
 #endif
 
     USART_DeInit(USART1);
@@ -412,7 +410,7 @@ void TIM1_UP_IRQHandler(void)
 
 #if SLEEP == 1
     SleepCounter++;
-    if (SleepCounter >= SLEEP_TIME) 
+    if (SleepCounter >= SLEEP_TIME)
     {
       SleepCounter = 0;
       needSleep = 1;
@@ -443,8 +441,25 @@ void AWU_IRQHandler(void)
   {
 
 #if SLEEP == 1
-    DEBUG_PRINT("AWU Wake_up=%d\r\n",SleepCounter);
+    DEBUG_PRINT("AWU Wake_up=%d\r\n", SleepCounter);
 #endif
     EXTI_ClearITPendingBit(EXTI_Line9); /* Clear Flag */
+  }
+}
+
+
+void process_motor_flags(void)
+{
+  // 只要有任何一个震动标志位被设置，就执行一次震动
+  if (needMotorShakeKey || needMotorShakeLora || needMotorShakeCharge)
+  {
+    MOTOR_SET(1);
+    Delay_Ms(SHAKE_TIME);
+    MOTOR_SET(0);
+    
+    // 清除所有标志位
+    needMotorShakeKey = 0;
+    needMotorShakeLora = 0;
+    needMotorShakeCharge = 0;
   }
 }

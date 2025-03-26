@@ -82,7 +82,7 @@ extern volatile u8 needSleep;
 extern volatile u8 needDeinit;//改成u8就无法正常休眠
 
 
-
+void process_motor_flags(void);
 void refresh_SleepCounter(int newtime);
 void EXTI_INT_INIT(void);
 void Sleep_Scan();

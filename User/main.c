@@ -87,6 +87,9 @@ int main(void)
       // DEBUG_PRINT("\r\nshow_page");
       show_page();
 
+      // 处理电机震动标志位
+      process_motor_flags();
+
 #if LORA_ENABLED
       SX1278_Receive();
 #endif
