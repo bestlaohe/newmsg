@@ -532,7 +532,33 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
 {
     // 局部变量
     UWORD Page, Column;
-    uint32_t Char_Offset = (Acsii_Char - offsetAcsii) * Font->Height * ((Font->Width + 7) / 8);
+    uint32_t Char_Offset;
+    
+    // 为Font16_En字体使用映射表查找真实的偏移
+    extern const uint8_t Font16_english_map[];
+    extern sFONT Font16_En;
+    
+    if (Font == &Font16_En) {
+        // 查找字符在映射表中的位置
+        int map_index = -1;
+        for (int i = 0; i < 16; i++) {  // 目前映射表有16个字符
+            if (Font16_english_map[i] == Acsii_Char) {
+                map_index = i;
+                break;
+            }
+        }
+        
+        if (map_index != -1) {
+            // 找到了映射的字符，使用映射索引
+            Char_Offset = map_index * Font->Height * ((Font->Width + 7) / 8);
+        } else {
+            // 未找到映射，默认使用空格字符(使用第一个字符的偏移)
+            Char_Offset = 0;
+        }
+    } else {
+        // 其他字体使用普通偏移计算
+        Char_Offset = (Acsii_Char - offsetAcsii) * Font->Height * ((Font->Width + 7) / 8);
+    }
 
     const unsigned char *ptr = &Font->table[Char_Offset];
 
