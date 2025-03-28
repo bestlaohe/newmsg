@@ -64,7 +64,7 @@ void My_GPIO_DeInit()
 u8 shake_mode = 1; // 初始震动模式值
 void MOTOR_SET(int state)
 {
-    DEBUG_PRINT("MOTOR_SET=%d,%d\r\n", shake_mode, state);
+    // DEBUG_PRINT("MOTOR_SET=%d,%d\r\n", shake_mode, state);
     if (shake_mode)
     {
         if (state)

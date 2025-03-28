@@ -10,7 +10,7 @@
 #define MAX_LINE_TO_SHOW 5                                                             // 最大显示行数
 #define EDGE 1                                                                         // 边缘
 #define OPERATE_DOWN 20                                                                // 操作界面下边缘
-#define CHAT_DOWN 127                                                                  // 输入框下边缘
+#define CHAT_DOWN 122                                                                  // 输入框下边缘
 #define COLUMN ((LCD_WIDTH - EDGE - EDGE) / Font_WIDTH)                                // 行个数18
 #define CHAT_HISTORY_DOWN (MAX_LINE_TO_SHOW * Font_HEIGH) + OPERATE_DOWN + EDGE + EDGE // 聊天记录下边缘5行90/18=5*12=60
 #define CHAT_UP CHAT_HISTORY_DOWN + 2                                                  // 输入栏的上部分
@@ -20,12 +20,12 @@ int8_t Englishcount = 0;                                                        
 int8_t Englishposx = 0;                                                                // x的个数
 int8_t Englishposy = 0;                                                                // y的个数
 // u8 lora_send_buf[100];                                                                 // 只有3行可以输入一行18
-u8 current_setting = 0;                                                                // 当前设置的行
-u8 refreshState = 1;                                                                   // 内容刷新标志位
-u8 isFirstSettingShow = 1;                                                             // 设置刷新标志
-u8 isFirstBattaryShow = 1;                                                             // 电池刷新标志
-u8 current_line = 0;                                                                   // 当前显示的起始行
-u8 total_lines = 0;                                                                    // 总的聊天记录行数
+u8 current_setting = 0;    // 当前设置的行
+u8 refreshState = 1;       // 内容刷新标志位
+u8 isFirstSettingShow = 1; // 设置刷新标志
+u8 isFirstBattaryShow = 1; // 电池刷新标志
+u8 current_line = 0;       // 当前显示的起始行
+u8 total_lines = 0;        // 总的聊天记录行数
 
 Setting settings[SETTING_COUNT] = {
     {"light", (u8 *)&TIM1->CH3CVR, NULL},
@@ -39,7 +39,7 @@ Setting settings[SETTING_COUNT] = {
 };
 
 Page page = PAGE_SEND;
-u8 send_wait_time = 0;//设置首次250，自加1，第一次会发送
+u8 send_wait_time = 0; // 设置首次250，自加1，第一次会发送
 
 #if LORA_ENABLED
 void handle_lora_msg(sFONT *Font)
@@ -51,7 +51,7 @@ void handle_lora_msg(sFONT *Font)
   }
   if (lora_receive_flag == 2 && send_wait_time > 200) // 无限等待接收回应
   {
-     DEBUG_PRINT("lora send start\r\n");
+    DEBUG_PRINT("lora send start\r\n");
     send_wait_time = 0;
     if (!SX1278_LoRaTxPacket(lora_receive_buf, 1 + Englishposx + Englishposy * (LCD_HEIGHT / Font->Width)))
     {
@@ -100,7 +100,10 @@ void handle_chat_event(sFONT *Font)
     else if (encode_struct.state == ENCODE_EVENT_DOWN)
     {
       refreshState = 1;
-      lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = '\0';
+ 
+  // if (lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] != 0)
+      // lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = '\0';
+      // DEBUG_PRINT("数组位=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
       Englishposx--;
       // 输入回退
       if (Englishposx < 0)
@@ -127,7 +130,12 @@ void handle_chat_event(sFONT *Font)
   // 确认输入
   if (key.event == KEY_EVENT_CLICK)
   {
+
     refreshState = 1;
+    if (lora_receive_buf[0] == 0)
+    {
+      return;
+    }
 
     Englishposx++;
     // DEBUG_PRINT("我111的数字=%d \r\n", EDGE + EDGE + Englishposx * Font->Width);
@@ -136,14 +144,22 @@ void handle_chat_event(sFONT *Font)
     {
       Englishposx = 0;
       Englishposy++;
-      //  DEBUG_PRINT("我的数字=%d \r\n", CHAT_UP + EDGE + Englishposy * Font->Height);
-      if (CHAT_UP + EDGE + ((Englishposy + 1) * Font->Height) >= LCD_HEIGHT)
+      DEBUG_PRINT("当前竖向长度=%d \r\n", OPERATE_DOWN + EDGE + ((Englishposy)*Font->Height));
+      if (OPERATE_DOWN + EDGE + ((Englishposy + 1) * Font->Height) >= LCD_HEIGHT) // 多一行大于128，就说明超了，取消继续
       {
         Englishposy = 0; // 重置行位置
       }
     }
     Englishcount = 0; // 重置计数
+
+    if (lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] != 0)
+    {
+      DEBUG_PRINT("保持\r\n");
+      return;
+    }
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
+
+    DEBUG_PRINT("数组位=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
   }
 
   // 处理滚动状态
@@ -153,6 +169,7 @@ void handle_chat_event(sFONT *Font)
     lora_receive_flag = 2;
     send_wait_time = 250;
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
+    DEBUG_PRINT("数组位=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
   }
   else if (encode_struct.state == ENCODE_EVENT_DOWN)
   {
@@ -160,6 +177,7 @@ void handle_chat_event(sFONT *Font)
     lora_receive_flag = 2;
     send_wait_time = 250;
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
+    DEBUG_PRINT("数组位=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
   }
 }
 
@@ -205,9 +223,8 @@ void show_history_data(sFONT *Font)
   if (lora_receive_flag == 3)
   {
     lora_receive_flag = 0;
-    Englishposy=lora_receive_len/((LCD_WIDTH-(EDGE + EDGE))/Font->Width);
-    Englishposx = lora_receive_len-Englishposy*((LCD_WIDTH-(EDGE + EDGE))/Font->Width);
-   
+    Englishposy = lora_receive_len / ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width);
+    Englishposx = lora_receive_len - Englishposy * ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width);
 
     // DEBUG_PRINT("我111的数字=%d, %d,\r\n", Englishposx,Englishposy);
   }
@@ -255,7 +272,7 @@ void show_history_data(sFONT *Font)
         line_length++;
       }
 
-      Paint_DrawString(1, 22 + (displayed_lines++) * Font->Height, line, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
+      Paint_DrawString(1, 22 + (displayed_lines++) * Font->Height, line, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a',999);
     }
     else
     {
@@ -278,22 +295,21 @@ void chat_page(sFONT *Font)
   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow); // 显示电池信息
 #endif
 
+   if (refreshState)
+   {
 
-  if (refreshState)
-  {
-    Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0); // 设置的图标
-    // LCD_0IN85_Clear(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR);                // 聊天记录界面
-    LCD_0IN85_Clear(0, OPERATE_DOWN, 127, CHAT_DOWN, MY_SCREEN_COLOR);                           // 输入框
-    Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 输入框高亮
+     Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0); // 设置的图标
+     // LCD_0IN85_Clear(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR);                // 聊天记录界面
+     LCD_0IN85_Clear(0, OPERATE_DOWN, 127, CHAT_DOWN, MY_SCREEN_COLOR);                           // 输入框
+     Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 输入框高亮
 
-    refreshState = 0;
-  }
+     refreshState = 0;
+   }
 
-   Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
+  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a',Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
 
   show_history_data(Font);
   handle_chat_event(Font);
-
 }
 void chat_history_page(sFONT *Font)
 {
@@ -321,11 +337,11 @@ void perpare_setting_page(sFONT *Font)
   {
     LCD_0IN85_Clear(0, OPERATE_DOWN, 128, CHAT_DOWN, MY_SCREEN_COLOR); // 聊天记录界面
     Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);          // 设置页面高亮
-   
+
     refreshState = 0;
   }
-   Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a');
- show_history_data(Font);
+  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a',999);
+  show_history_data(Font);
 }
 
 /**************************************设置页面**************************************************** */
@@ -383,7 +399,7 @@ void draw_setting(int index, int highlight, sFONT *Font)
   char strBuf[4]; // 用于存储最多3位数字和一个终止符
   UWORD bg_color = highlight ? GREEN : MY_THEME_COMPONT_COLOR;
 
-  Paint_DrawString(0, index * CHAR_HEIGHT + Y_OFFSET, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a');
+  Paint_DrawString(0, index * CHAR_HEIGHT + Y_OFFSET, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a',999);
   Paint_DrawChar(Font->Width * strlen(settings[index].name), index * CHAR_HEIGHT + Y_OFFSET, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
 
   // 根据当前设置类型绘制值
@@ -395,13 +411,13 @@ void draw_setting(int index, int highlight, sFONT *Font)
       isFirstSettingShow = 0;
       if (*settings[index].value == ON)
       {
-        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0');
-        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1) + 15, index * CHAR_HEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, GREEN, WHITE, '0');
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0',999);
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1) + 15, index * CHAR_HEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, GREEN, WHITE, '0',999);
       }
       else
       {
-        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0');
-        Paint_DrawString((Font->Width * (strlen(settings[index].name) + 1)) + 2, index * CHAR_HEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, RED, WHITE, '0');
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0',999);
+        Paint_DrawString((Font->Width * (strlen(settings[index].name) + 1)) + 2, index * CHAR_HEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, RED, WHITE, '0',999);
       }
     }
 
@@ -412,7 +428,7 @@ void draw_setting(int index, int highlight, sFONT *Font)
     intToStr(*settings[index].value, strBuf, 3);
   }
 
-  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0');
+  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0',999);
 }
 
 void display_settings(sFONT *Font)
@@ -450,7 +466,7 @@ void handle_setting_event()
 void setting_page(sFONT *Font)
 {
   // 设置二字
-  Paint_DrawString(48, 0, "01", &Font16_setting, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0');
+  Paint_DrawString(48, 0, "01", &Font16_setting, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0',999);
 
   display_settings(Font);
   handle_setting_event();
@@ -461,16 +477,16 @@ void setting_page(sFONT *Font)
 void show_info(int posx, int posy, const char *label, int value, int offset)
 {
   char strBuf[4];                                                                                    // 存储最多3位数字和一个终止符
-  Paint_DrawString(posx, posy, label, &Font16_En, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a'); // 绘制标签
+  Paint_DrawString(posx, posy, label, &Font16_En, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a',999); // 绘制标签
   Paint_DrawChar(posx + Font16_En.Width * (offset - 1), posy, 11, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0);
   intToStr(value, strBuf, 3);
-  Paint_DrawString(posx + Font16_Num.Width * offset, posy, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0'); // 绘制值
+  Paint_DrawString(posx + Font16_Num.Width * offset, posy, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0',999); // 绘制值
 }
 
 void info_page()
 {
 #if BATTERY_ENABLED
-  show_info(0, 0, "batadc", Battery_ADC_Average, 7);              // 调用显示电池信息
+  show_info(0, 0, "batadc", Battery_ADC_Average, 7); // 调用显示电池信息
 #endif
 
 #if LORA_ENABLED
@@ -479,7 +495,7 @@ void info_page()
 #endif
 
 #if SCREEN_ENABLED
-  show_info(0, 60, "light", TIM1->CH3CVR, 6);                     // 调用显示屏幕亮度
+  show_info(0, 60, "light", TIM1->CH3CVR, 6); // 调用显示屏幕亮度
 #endif
 }
 
@@ -501,15 +517,15 @@ void show_page()
     }
     break;
 
-  // case PAGE_HISTROY_CHAT: // 聊天记录界面  需要滚动查看记录
-  //   chat_history_page(&Font12_En);
-  //   if (key.event == KEY_EVENT_LONG_CLICK)
-  //   {
-  //     refreshState = 1;
-  //     page = PAGE_PERPARE_SETTING;
-  //   }
+    // case PAGE_HISTROY_CHAT: // 聊天记录界面  需要滚动查看记录
+    //   chat_history_page(&Font12_En);
+    //   if (key.event == KEY_EVENT_LONG_CLICK)
+    //   {
+    //     refreshState = 1;
+    //     page = PAGE_PERPARE_SETTING;
+    //   }
 
-  //   break;
+    //   break;
 
   case PAGE_PERPARE_SETTING: // 准备设置界面
     perpare_setting_page(&Font12_En);
@@ -539,9 +555,9 @@ void show_page()
     break;
 
   case PAGE_SETTING: // 设置界面
-  
-     setting_page(&Font16_En);
-   
+
+    setting_page(&Font16_En);
+
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
       refreshState = 1;

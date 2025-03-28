@@ -80,7 +80,7 @@ void Delay_Ms(uint32_t n)
         ;
     SysTick->CTLR &= ~(1 << 0);
 
-    DEBUG_PRINT("Delay_Ms=%d\r\n",n); 
+    // DEBUG_PRINT("Delay_Ms=%d\r\n",n); 
 }
 
 /*********************************************************************

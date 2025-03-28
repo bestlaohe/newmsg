@@ -223,7 +223,7 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
         else if (percentage < 10)
         {
 
-            Paint_DrawString(Xpoint - Font16_Num.Width * 3, Ypoint, "<<", &Font16_Num, Color_Background, Color_Background, '0');
+            Paint_DrawString(Xpoint - Font16_Num.Width * 3, Ypoint, "<<", &Font16_Num, Color_Background, Color_Background, '0',999);
             strX = Xpoint - Font16_Num.Width; // 1 位数的显示位置
             color = RED;                      // 颜色
 
@@ -231,13 +231,13 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
         }
         else
         {
-            Paint_DrawString(Xpoint - Font16_Num.Width * 3, Ypoint, "<", &Font16_Num, Color_Background, Color_Background, '0');
+            Paint_DrawString(Xpoint - Font16_Num.Width * 3, Ypoint, "<", &Font16_Num, Color_Background, Color_Background, '0',999);
 
             intToStr(percentage, strBuf, 2);
         }
 
         // 数字百分比
-        Paint_DrawString(strX, Ypoint, strBuf, &Font16_Num, Color_Background, Color_Foreground, '0');
+        Paint_DrawString(strX, Ypoint, strBuf, &Font16_Num, Color_Background, Color_Foreground, '0',999);
         Paint_DrawChar(Xpoint, Ypoint, 10, &Font16_Num, Color_Background, Color_Foreground, 0); //%
 
         if (charge.state == CHARGING)

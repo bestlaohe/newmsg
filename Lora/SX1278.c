@@ -30,7 +30,7 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 
 /****************以下是移植需要实现的对应接口部分***********************************/
 #define SX1278_DelayMs(t) Delay_Ms(t) // 毫秒延时函数的实现
-char lora_receive_buf[200] = {0};
+char lora_receive_buf[145] = {0};
 u8 lora_receive_len = 0;
 u8 lora_receive_flag = 0; // 0是初始状态，1是接收到特殊回应了，2是等待接收回应，3是接收到了数据
 

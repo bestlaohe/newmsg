@@ -79,7 +79,7 @@
 #include <math.h>
 
 volatile PAINT Paint;
-u8 dmaXpoint, dmaYpoint = 0;//初始位置
+u8 dmaXpoint, dmaYpoint = 0; // 初始位置
 sFONT *dmaFont;
 // void (*DISPLAY)(UWORD, UWORD, UWORD);
 // void (*CLEAR)(UWORD);
@@ -240,8 +240,6 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
     LCD_0IN85_DrawPaint(X, Y, Color);
 }
 
-
-
 /******************************************************************************
 function:	Clear the color of a window
 parameter:
@@ -355,10 +353,9 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     dmaYpoint = Ypoint;
     dmaFont = &Fontline;
 
-
     LCD_0IN85_SetWindows(Xstart, Ystart, Xend, Yend); // 准备好窗口和复位
-// DEBUG_PRINT("Xstart, Ystart, Xend, Yend = %d= %d= %d= %d\r\n", Xstart, Ystart, Xend, Yend);
-// DEBUG_PRINT("wwwwdmaFont->Width:%d\r\n", dmaFont->Width);
+    // DEBUG_PRINT("Xstart, Ystart, Xend, Yend = %d= %d= %d= %d\r\n", Xstart, Ystart, Xend, Yend);
+    // DEBUG_PRINT("wwwwdmaFont->Width:%d\r\n", dmaFont->Width);
 
 #endif
 
@@ -399,8 +396,6 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     //  LCD_Refrsh_DMA(34);
 #endif
 }
-
-
 
 /******************************************************************************
 function:	Draw a rectangle
@@ -472,7 +467,7 @@ void Paint_DrawCircle(UWORD X_Center, UWORD Y_Center, UWORD Radius,
     int16_t sCountY;
     if (Draw_Fill == DRAW_FILL_FULL)
     {
-        
+
         while (XCurrent <= YCurrent)
         { // Realistic circles
             for (sCountY = XCurrent; sCountY <= YCurrent; sCountY++)
@@ -574,8 +569,6 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
                 Paint_SetPixel(Xpoint + Column, Ypoint + Page, Color_Background);
             }
 
-  
-
             // 每8列更新一次指针
             if (Column % 8 == 7)
                 ptr++;
@@ -596,10 +589,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
         LCD_Refrsh_DMA(total_pixels % (Y_MAX_PIXEL * X_MAX_PIXEL * 2)); // 补包操作
     }
 #endif
-
-
 }
-
 
 void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
                     sFONT *Font, UWORD Color_Background, UWORD Color_Foreground)
@@ -620,7 +610,7 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     const unsigned char *ptr = &Font->table[Char_Offset];
 
 #if USE_DMA
- 
+
     LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备好窗口和复位
 #endif
 
@@ -668,7 +658,7 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
     }
     if (dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2) // 补包操作
     {
-      
+
         LCD_Refrsh_DMA(dmaFont->Width * dmaFont->Height * 2 % Y_MAX_PIXEL * X_MAX_PIXEL * 2); // 把余数显示掉
     }
 
@@ -687,11 +677,11 @@ parameter:
 ******************************************************************************/
 // 数字的偏移为'/'，英文的偏移为'`'
 void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
-                      sFONT *Font, UWORD Color_Background, UWORD Color_Foreground, const char offsetAcsii)
+                      sFONT *Font, UWORD Color_Background, UWORD Color_Foreground, const char offsetAcsii, UWORD changeColorNumber)
 {
     UWORD Xpoint = Xstart;
     UWORD Ypoint = Ystart;
-
+    UWORD position = 0;
     if (Xstart > Paint.Width || Ystart > Paint.Height)
     {
         DEBUG_PRINT("Paint_DrawString erro,Xstart = %d, Ystart = %d\r\n", Xstart, Ystart);
@@ -702,9 +692,9 @@ void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
     while (*pString != '\0')
     {
 
-        //   DEBUG_PRINT("needshow%c\r\n",*pString);
+        //    DEBUG_PRINT("needshow%c\r\n",*pString);
         // if X direction filled , reposition to(Xstart,Ypoint),Ypoint is Y direction plus the Height of the character
-        if ((Xpoint + Font->Width) > Paint.Width-1)
+        if ((Xpoint + Font->Width) > Paint.Width - 1)
         {
             Xpoint = Xstart;
             Ypoint += Font->Height;
@@ -717,10 +707,13 @@ void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
             Ypoint = Ystart;
         }
 
-        Paint_DrawChar(Xpoint, Ypoint, *pString, Font, Color_Background, Color_Foreground, offsetAcsii);
-
+        if (Font->Height == 12 &&position == changeColorNumber)
+            Paint_DrawChar(Xpoint, Ypoint, *pString, Font, RED, Color_Foreground, offsetAcsii);
+        else
+            Paint_DrawChar(Xpoint, Ypoint, *pString, Font, Color_Background, Color_Foreground, offsetAcsii);
         // The next character of the address
         pString++;
+        position++;
 
         // The next word of the abscissa increases the font of the broadband
         Xpoint += Font->Width;
@@ -895,7 +888,7 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
     }
 
     // show
-    Paint_DrawString(Xpoint, Ypoint, (const char *)pStr, Font, Color_Background, Color_Foreground, ' ');
+    Paint_DrawString(Xpoint, Ypoint, (const char *)pStr, Font, Color_Background, Color_Foreground, ' ',999);
 }
 // /******************************************************************************
 // function:	Display float number
@@ -920,7 +913,7 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
 //         *(pStr + strlen(Str) - 3) = '\0';
 //     }
 //     // show
-//     Paint_DrawString(Xpoint, Ypoint, (const char *)pStr, Font, Color_Foreground, Color_Background, ' ');
+//     Paint_DrawString(Xpoint, Ypoint, (const char *)pStr, Font, Color_Foreground, Color_Background, ' ',999);
 //     free(pStr);
 //     pStr = NULL;
 // }
