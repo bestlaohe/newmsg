@@ -51,8 +51,8 @@ typedef struct
 typedef enum
 {
   ENCODE_EVENT_NONE, // 无事件
-  ENCODE_EVENT_UP,   // 按下事件
-  ENCODE_EVENT_DOWN, // 长按事件
+  ENCODE_EVENT_UP,   // 向上滚动
+  ENCODE_EVENT_DOWN, // 向下滚动
 } EncodeState;
 
 // 定义按键结构体

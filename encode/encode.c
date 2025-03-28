@@ -30,10 +30,10 @@ void Encoder_Scan()
   {
     if (precircle * 12 + precnt > circle * 12 + TIM2->CNT)
     {
-      encode_struct.state = ENCODE_EVENT_DOWN;
+      encode_struct.state = ENCODE_EVENT_UP;
       DEBUG_PRINT("Encoder up\r\n");
     }
-    encode_struct.state = ENCODE_EVENT_UP;
+ 
     if (precircle * 12 + precnt < circle * 12 + TIM2->CNT)
     {
       encode_struct.state = ENCODE_EVENT_DOWN;

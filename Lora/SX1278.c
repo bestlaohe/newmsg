@@ -225,25 +225,7 @@ void SX1278_Burst_Write(u8 adr, u8 *ptr, u8 length)
   }
 }
 
-// 功能：SX1276 寄存器读
-void SX1276ReadBuffer(unsigned char addr, unsigned char *buffer, unsigned char size)
-{
-  uint8_t i;
-  while (!READ_LCD_CS)
-  {
 
-    DEBUG_PRINT("wait lcd cs 1!\r\n");
-  }
-  SX1278_NSS_ENABLE;
-
-  SX1278_SPI_RW(addr & 0x7F);
-
-  for (i = 0; i < size; i++)
-  {
-    buffer[i] = SX1278_SPI_RW(0);
-  }
-  SX1278_NSS_DISABLE;
-}
 
 // 功能: SX1278 单个寄存器读操作
 unsigned char SX1276ReadReg(unsigned char addr)
