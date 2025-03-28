@@ -27,6 +27,9 @@ volatile u8 loraComplete = 0;
 volatile u8 needSleep = 0;
 volatile u8 needDeinit = 0;
 
+u8 motor_shaking=0;
+u8 motor_shake_time=0;
+
 volatile int circle = 0;
 int SleepCounter = 0;
 
@@ -425,6 +428,19 @@ void TIM1_UP_IRQHandler(void)
       if (key.LongKeyCounter >= DEBOUNCE_TIME) // 消抖
         key.state = KEY_STATE_HOLD;
     }
+
+
+    if (motor_shaking)
+    {
+      motor_shake_time++;
+      if (motor_shake_time >= SHAKE_TIME) // 消抖
+      {
+motor_shaking=0;
+       motor_shake_time=0;
+
+      } 
+    }
+    
   }
 }
 
@@ -447,19 +463,22 @@ void AWU_IRQHandler(void)
   }
 }
 
-
 void process_motor_flags(void)
 {
   // 只要有任何一个震动标志位被设置，就执行一次震动
   if (needMotorShakeKey || needMotorShakeLora || needMotorShakeCharge)
   {
     MOTOR_SET(1);
-    Delay_Ms(SHAKE_TIME);
-    MOTOR_SET(0);
-    
+
     // 清除所有标志位
     needMotorShakeKey = 0;
     needMotorShakeLora = 0;
     needMotorShakeCharge = 0;
+    motor_shaking=1;
+  }
+
+  if (motor_shaking==0)
+  {
+    MOTOR_SET(0);
   }
 }
