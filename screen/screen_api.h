@@ -1,5 +1,5 @@
 /*
- * screen_api.h
+ * Screen_api.h
  *
  *  Created on: 2024Äê8ÔÂ30ÈÕ
  *      Author: 12630
@@ -29,7 +29,7 @@
 #define HORIZONTAL 0
 #define VERTICAL   1
 
-#define LCD_0IN85_SetBacklight(Value) DEV_SetBacklight(Value)
+#define Screen_SetBacklight(Value) DEV_SetBacklight(Value)
 
 
 
@@ -37,8 +37,8 @@ typedef struct{
     UWORD WIDTH;
     UWORD HEIGHT;
     UBYTE SCAN_DIR;
-}LCD_0IN85_ATTRIBUTES;
-extern LCD_0IN85_ATTRIBUTES LCD;
+}Screen_ATTRIBUTES;
+extern Screen_ATTRIBUTES LCD;
 
 extern u8 dmaXpoint,dmaYpoint;
 extern sFONT* dmaFont;
@@ -50,20 +50,20 @@ extern volatile u8 dmaTransferComplete ;
 function:
             Macro definition variable name
 ********************************************************************************/
-u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color);
+u8 Screen_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color);
 u8 LCD_Refrsh_DMA(int pic_size);
 void LCD_SHOW_API_INIT();
-void LCD_0IN85_Init(UBYTE Scan_dir);
-void LCD_0IN85_Display(UWORD *Image);
-void LCD_0IN85_DisplayWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD *Image);
-void LCD_0IN85_DisplayPoint(UWORD X, UWORD Y, UWORD Color);
-void LCD_0IN85_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend);
-void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color);
-void LCD_0IN85_SetBackLight(UWORD Value);
+void Screen_Init(UBYTE Scan_dir);
+void Screen_Display(UWORD *Image);
+void Screen_DisplayWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD *Image);
+void Screen_DisplayPoint(UWORD X, UWORD Y, UWORD Color);
+void Screen_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend);
+void Screen_DrawPaint(UWORD x, UWORD y, UWORD Color);
+void Screen_SetBackLight(UWORD Value);
 void startup_animation();
-void LCD_0IN85_SendCommand(UBYTE Reg);
-void LCD_0IN85_EnterSleepMode(void);
-void LCD_0IN85_ExitSleepMode(void);
+void Screen_SendCommand(UBYTE Reg);
+void Screen_EnterSleepMode(void);
+void Screen_ExitSleepMode(void);
 int LCD_Drive_DeInit(void);
 int LCD_Drive_Init(void);
 

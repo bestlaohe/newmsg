@@ -71,7 +71,7 @@
 #include "fonts.h"
 #include "debug.h"
 
-#include "screen_api.h"
+#include "Screen_api.h"
 
 /**
  * Image attributes

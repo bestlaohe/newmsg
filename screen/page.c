@@ -72,7 +72,7 @@ void handle_lora_msg(sFONT *Font)
     // Englishposx = 0;  // 重置行位置
     // Englishcount = 0; // 清空一切
     // memset(lora_send_buf, '\0', sizeof(lora_send_buf));
-    // LCD_0IN85_Clear(EDGE, CHAT_UP + EDGE, 127 - EDGE, 127 - EDGE, MY_SCREEN_COLOR); // 清除输入内容
+    // Screen_Clear(EDGE, CHAT_UP + EDGE, 127 - EDGE, 127 - EDGE, MY_SCREEN_COLOR); // 清除输入内容
   }
 }
 #endif
@@ -207,7 +207,7 @@ void handle_chat_history_event()
     {
       refreshState = 1;
       memset(lora_receive_buf, 0, sizeof(lora_receive_len));                                             // 清空聊天记录
-      LCD_0IN85_Clear(EDGE, OPERATE_DOWN + EDGE, 127 - EDGE, CHAT_HISTORY_DOWN - EDGE, MY_SCREEN_COLOR); // 清空显示区域
+      Screen_Clear(EDGE, OPERATE_DOWN + EDGE, 127 - EDGE, CHAT_HISTORY_DOWN - EDGE, MY_SCREEN_COLOR); // 清空显示区域
 
       total_lines = 0;
       current_line = 0;
@@ -251,7 +251,7 @@ void show_history_data(sFONT *Font)
   }
 
   // 清空显示区域
-  //   LCD_0IN85_Clear(EDGE, OPERATE_DOWN + EDGE, 127 - EDGE, CHAT_HISTORY_DOWN - EDGE, MY_SCREEN_COLOR); // 清除聊天内容
+  //   Screen_Clear(EDGE, OPERATE_DOWN + EDGE, 127 - EDGE, CHAT_HISTORY_DOWN - EDGE, MY_SCREEN_COLOR); // 清除聊天内容
 
   // 动态解析 lora_receive_buf 并显示当前范围内的聊天记录
   const char *ptr = lora_receive_buf;
@@ -299,8 +299,8 @@ void chat_page(sFONT *Font)
    {
 
      Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0); // 设置的图标
-     // LCD_0IN85_Clear(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR);                // 聊天记录界面
-     LCD_0IN85_Clear(0, OPERATE_DOWN, 127, CHAT_DOWN, MY_SCREEN_COLOR);                           // 输入框
+     // Screen_Clear(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR);                // 聊天记录界面
+     Screen_Clear(0, OPERATE_DOWN, 127, CHAT_DOWN, MY_SCREEN_COLOR);                           // 输入框
      Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 输入框高亮
 
      refreshState = 0;
@@ -319,7 +319,7 @@ void chat_history_page(sFONT *Font)
   if (refreshState)
   {
     Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 聊天记录界面高亮
-                                                                                                         //  LCD_0IN85_Clear(0, CHAT_UP, 128, CHAT_DOWN, MY_SCREEN_COLOR);                                        // 输入框
+                                                                                                         //  Screen_Clear(0, CHAT_UP, 128, CHAT_DOWN, MY_SCREEN_COLOR);                                        // 输入框
     Paint_DrawRectangle(0, CHAT_UP, 127, CHAT_DOWN, MY_SCREEN_COLOR, DOT_PIXEL_1X1, DRAW_FILL_EMPTY);    // 输入框高亮
     show_history_data(Font);
     refreshState = 0;
@@ -335,7 +335,7 @@ void perpare_setting_page(sFONT *Font)
 #endif
   if (refreshState)
   {
-    LCD_0IN85_Clear(0, OPERATE_DOWN, 128, CHAT_DOWN, MY_SCREEN_COLOR); // 聊天记录界面
+    Screen_Clear(0, OPERATE_DOWN, 128, CHAT_DOWN, MY_SCREEN_COLOR); // 聊天记录界面
     Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);          // 设置页面高亮
 
     refreshState = 0;
@@ -532,14 +532,14 @@ void show_page()
     if (key.event == KEY_EVENT_CLICK)
     {
       refreshState = 1;
-      LCD_0IN85_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
+      Screen_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
 
       // // 这是一个播放设置的地方
       // Paint_DrawChar(40, 40, 0, &Font24_icon, MY_THEME_BACK_COLOR, BLUE, 0);
       // Delay_Ms(500);
       // // 考虑删掉
 
-      // LCD_0IN85_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
+      // Screen_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
       isFirstSettingShow = 1;
       page = PAGE_SETTING;
     }
@@ -547,7 +547,7 @@ void show_page()
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
       refreshState = 1;
-      LCD_0IN85_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
+      Screen_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
 
       isFirstBattaryShow = 1;
       page = PAGE_SEND;
@@ -561,7 +561,7 @@ void show_page()
     if (key.event == KEY_EVENT_LONG_CLICK)
     {
       refreshState = 1;
-      LCD_0IN85_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
+      Screen_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
       // page = PAGE_INFO;
       isFirstBattaryShow = 1;
       page = PAGE_SEND;
@@ -572,7 +572,7 @@ void show_page()
     //   info_page();
     //   if (key.event == KEY_EVENT_LONG_CLICK)
     //   {
-    //     LCD_0IN85_Clear(0,0,128,128,MY_THEME_BACK_COLOR);
+    //     Screen_Clear(0,0,128,128,MY_THEME_BACK_COLOR);
     //     page = PAGE_SEND;
     //   }
     //   break;

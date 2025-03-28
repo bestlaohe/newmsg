@@ -1,11 +1,11 @@
 /*
- * screen_api.c
+ * Screen_api.c
  *
  *  Created on: 2024年8月30日
  *      Author: 12630
  */
 
-#include "screen_api.h"
+#include "Screen_api.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -20,36 +20,36 @@ void startup_animation() {
                     0, &Font24_logo, BLACK, WHITE-s*819, 0
                 );
     }
-    LCD_0IN85_Clear(0,0,127,127,BLACK);
+    Screen_Clear(0,0,127,127,BLACK);
     Paint_DrawChar(40,40,0, &Font24_logo, BLACK, WHITE, 0);
     Delay_Ms(500);
-    LCD_0IN85_Clear(0,0,127,127,BLACK);
+    Screen_Clear(0,0,127,127,BLACK);
 }
 
-LCD_0IN85_ATTRIBUTES LCD;
+Screen_ATTRIBUTES LCD;
 uint8_t lcd_gram[Y_MAX_PIXEL * X_MAX_PIXEL * 2] = {0}; ///< 开辟一块内存空间当显存使用
 u8 dmaXoffset, dmaYoffset = 0;
 void LCD_SHOW_API_INIT()
 {
 
-    LCD_0IN85_Init(VERTICAL);
+    Screen_Init(VERTICAL);
     //    Delay_Ms(300);
     // DEBUG_PRINT("Set Clear and Display Funtion\r\n");
-    LCD_0IN85_Clear(0,0,127,127,MY_THEME_BACK_COLOR);
+    Screen_Clear(0,0,127,127,MY_THEME_BACK_COLOR);
     //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
 
     //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
 
-    //    LCD_0IN85_Init(VERTICAL);
-    //      LCD_0IN85_Clear(BLACK);
+    //    Screen_Init(VERTICAL);
+    //      Screen_Clear(BLACK);
     //
     //      DEBUG_PRINT("Paint_NewImage\r\n");
     //      Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_180, WHITE);
     //
     //      DEBUG_PRINT("Set Clear and Display Funtion\r\n");
-    //      //Paint_SetClearFuntion(LCD_0IN85_Clear);
-    //     // Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
+    //      //Paint_SetClearFuntion(Screen_Clear);
+    //     // Paint_SetDisplayFuntion(Screen_DrawPaint);
     //
     //      DEBUG_PRINT("Paint_Clear\r\n");
     //      //Paint_Clear(BLACK);
@@ -58,10 +58,10 @@ void LCD_SHOW_API_INIT()
     //      Paint_SetRotate(0);
 
     //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
-    // Paint_SetClearFuntion(LCD_0IN85_Clear);
-    // Paint_SetDisplayFuntion(LCD_0IN85_DrawPaint);
+    // Paint_SetClearFuntion(Screen_Clear);
+    // Paint_SetDisplayFuntion(Screen_DrawPaint);
 
-    //  DEBUG_PRINT("LCD_0IN85_Clear\r\n");
+    //  DEBUG_PRINT("Screen_Clear\r\n");
 
     // DEBUG_PRINT("drawing...\r\n");
     //  Paint_SetRotate(0);
@@ -73,7 +73,7 @@ void LCD_SHOW_API_INIT()
     //  Paint_DrawString_CN(0,80, "微雪电子",   &Font24CN,WHITE,  RED);
     //     Paint_DrawImage(set,30,3,48,48);
     //    Delay_Ms(3000);
-    //    LCD_0IN85_Clear(WHITE);
+    //    Screen_Clear(WHITE);
     //
     ////  Paint_DrawRectangle(0, 10, 225, 58, RED     ,DOT_PIXEL_2X2,DRAW_FILL_EMPTY);
     ////  Paint_DrawLine  (0, 10, 225, 58,    MAGENTA ,DOT_PIXEL_2X2,LINE_STYLE_SOLID);
@@ -90,7 +90,7 @@ void LCD_SHOW_API_INIT()
 }
 
 /*****************************************************************************
- * | File        :   LCD_0IN85.c
+ * | File        :   screen.c
  * | Author      :   Waveshare team
  * | Function    :   Hardware underlying interface
  * | Info        :
@@ -103,18 +103,18 @@ void LCD_SHOW_API_INIT()
  *
  ******************************************************************************/
 
-// LCD_0IN85_ATTRIBUTES LCD;
+// Screen_ATTRIBUTES LCD;
 
 /******************************************************************************
 function :  send command
 parameter:
      Reg : Command register
 ******************************************************************************/
-void LCD_0IN85_SendCommand(UBYTE Reg)
+void Screen_SendCommand(UBYTE Reg)
 {
     LCD_DC_0;
     LCD_CS_ENABLE;
-    DEV_SPI_WRite(Reg);
+    Screen_spi_write(Reg);
     LCD_CS_DISABLE;
 }
 
@@ -123,12 +123,12 @@ function :  send data
 parameter:
     Data : Write data
 ******************************************************************************/
-static void LCD_0IN85_SendData_8Bit(UBYTE Data)
+static void Screen_SendData_8Bit(UBYTE Data)
 {
 
     LCD_DC_1;
     LCD_CS_ENABLE;
-    DEV_SPI_WRite(Data);
+    Screen_spi_write(Data);
     LCD_CS_DISABLE;
 }
 
@@ -138,12 +138,12 @@ parameter:
     Data : Write data
 ******************************************************************************/
 #if !USE_DMA
-static void LCD_0IN85_SendData_16Bit(UWORD Data)
+static void Screen_SendData_16Bit(UWORD Data)
 {
     LCD_DC_1;
     LCD_CS_ENABLE;
-    DEV_SPI_WRite((Data >> 8) & 0xFF);
-    DEV_SPI_WRite(Data & 0xFF);
+    Screen_spi_write((Data >> 8) & 0xFF);
+    Screen_spi_write(Data & 0xFF);
     LCD_CS_DISABLE;
 }
 #endif
@@ -157,12 +157,12 @@ int LCD_Drive_Init(void)
     DMA_Cmd(DMA1_Channel3, ENABLE);                  // 启用DMA通道
     NVIC_EnableIRQ(DMA1_Channel3_IRQn);              // 启用DMA中断
 #endif
-    LCD_0IN85_ExitSleepMode();
+    Screen_ExitSleepMode();
     return 0;
 }
 int LCD_Drive_DeInit(void)
 {
-    LCD_0IN85_EnterSleepMode();
+    Screen_EnterSleepMode();
     // 禁用 PWM 输出
     TIM_CtrlPWMOutputs(TIM1, DISABLE);
     // 禁用 DMA 通道
@@ -207,7 +207,7 @@ static const uint8_t init_cmds[] = {
 };
 
 // 初始化 LCD 寄存器的函数
-static void LCD_0IN85_InitReg(void)
+static void Screen_InitReg(void)
 {
     // 遍历初始化命令数组
     for (int8_t i = 0; i < sizeof(init_cmds); ++i)
@@ -216,28 +216,28 @@ static void LCD_0IN85_InitReg(void)
         if (i % 2 == 0)
         {
             // 发送命令
-            LCD_0IN85_SendCommand(init_cmds[i]);
+            Screen_SendCommand(init_cmds[i]);
         }
         else
         {
             // 发送数据
-            LCD_0IN85_SendData_8Bit(init_cmds[i]);
+            Screen_SendData_8Bit(init_cmds[i]);
         }
     }
 }
- void LCD_0IN85_EnterSleepMode(void)
+ void Screen_EnterSleepMode(void)
 {
     // 发送睡眠模式命令 (0x10)
-    LCD_0IN85_SendCommand(0x10);
+    Screen_SendCommand(0x10);
 
     // 根据数据手册，可能需要等待一段时间（例如 5ms）以确保命令生效
     // 具体等待时间请参考 LCD 控制器的数据手册
     Delay_Ms(5);  // 使用 HAL 库的延时函数，延时 5 毫秒
 }
-  void LCD_0IN85_ExitSleepMode(void)
+  void Screen_ExitSleepMode(void)
  {
      // 发送退出睡眠模式命令 (0x11)
-     LCD_0IN85_SendCommand(0x11);
+     Screen_SendCommand(0x11);
 
      // 根据数据手册，可能需要等待一段时间（例如 120ms）以确保显示稳定
      Delay_Ms(120);  // 使用 HAL 库的延时函数，延时 120 毫秒
@@ -247,7 +247,7 @@ function:   Set the resolution and scanning method of the screen
 parameter:
         Scan_dir:   Scan direction
 ********************************************************************************/
-static void LCD_0IN85_SetAttributes(UBYTE Scan_dir)
+static void Screen_SetAttributes(UBYTE Scan_dir)
 {
     // Get the screen scan direction
     LCD.SCAN_DIR = Scan_dir;
@@ -268,11 +268,11 @@ static void LCD_0IN85_SetAttributes(UBYTE Scan_dir)
     // }
 
     // Set the read / write scan direction of the frame memory
-    LCD_0IN85_SendCommand(0x36);              // MX, MY, RGB mode
-    LCD_0IN85_SendData_8Bit(MemoryAccessReg); // 0x08 set RGB
+    Screen_SendCommand(0x36);              // MX, MY, RGB mode
+    Screen_SendData_8Bit(MemoryAccessReg); // 0x08 set RGB
 }
 
-static void LCD_0IN85_Reset(void)
+static void Screen_Reset(void)
 {
 
     LCD_RST_0;
@@ -285,17 +285,17 @@ static void LCD_0IN85_Reset(void)
 function :  Initialize the lcd
 parameter:
 ********************************************************************************/
-void LCD_0IN85_Init(UBYTE Scan_dir)
+void Screen_Init(UBYTE Scan_dir)
 {
 
     // Hardware reset
-    LCD_0IN85_Reset();
+    Screen_Reset();
 
     // Set the resolution and scanning method of the screen
-    LCD_0IN85_SetAttributes(Scan_dir);
+    Screen_SetAttributes(Scan_dir);
 
     // Set the initialization register
-    LCD_0IN85_InitReg();
+    Screen_InitReg();
 }
 
 /********************************************************************************
@@ -306,7 +306,7 @@ parameter:
         Xend    :   X direction end coordinates
         Yend    :   Y direction end coordinates
 ********************************************************************************/
-void LCD_0IN85_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend)
+void Screen_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend)
 {
 
     dmaXoffset = 0;
@@ -319,20 +319,20 @@ void LCD_0IN85_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend)
     Xend = Xend + 2;
 
     // set the X coordinates
-    LCD_0IN85_SendCommand(0x2A);
-    LCD_0IN85_SendData_8Bit((Xstart >> 8) & 0xFF);
-    LCD_0IN85_SendData_8Bit(Xstart & 0xFF);
-    LCD_0IN85_SendData_8Bit(((Xend) >> 8) & 0xFF);
-    LCD_0IN85_SendData_8Bit((Xend) & 0xFF);
+    Screen_SendCommand(0x2A);
+    Screen_SendData_8Bit((Xstart >> 8) & 0xFF);
+    Screen_SendData_8Bit(Xstart & 0xFF);
+    Screen_SendData_8Bit(((Xend) >> 8) & 0xFF);
+    Screen_SendData_8Bit((Xend) & 0xFF);
 
     // set the Y coordinates
-    LCD_0IN85_SendCommand(0x2B);
-    LCD_0IN85_SendData_8Bit((Ystart >> 8) & 0xFF);
-    LCD_0IN85_SendData_8Bit(Ystart & 0xFF);
-    LCD_0IN85_SendData_8Bit(((Yend) >> 8) & 0xFF);
-    LCD_0IN85_SendData_8Bit((Yend) & 0xFF);
+    Screen_SendCommand(0x2B);
+    Screen_SendData_8Bit((Ystart >> 8) & 0xFF);
+    Screen_SendData_8Bit(Ystart & 0xFF);
+    Screen_SendData_8Bit(((Yend) >> 8) & 0xFF);
+    Screen_SendData_8Bit((Yend) & 0xFF);
 
-    LCD_0IN85_SendCommand(0X2C);
+    Screen_SendCommand(0X2C);
 }
 
 /******************************************************************************
@@ -340,7 +340,7 @@ function :  Clear screen
 parameter:
 ******************************************************************************/
 //0到127
-u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color)
+u8 Screen_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color)
 {
 
 #if USE_DMA
@@ -350,7 +350,7 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
     }
     int dma_circular = 0;
     u8 retry = 0;
-    LCD_0IN85_SetWindows(Xstart, Ystart, Xend+0, Yend+0);
+    Screen_SetWindows(Xstart, Ystart, Xend+0, Yend+0);
     int index = 0; // 用于跟踪lcd_gram数组的索引
 
     // 用于减少临时变量占用的内存
@@ -405,7 +405,7 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
     DMA_ClearITPendingBit(DMA1_IT_TC3);
 
     LCD_CS_DISABLE;
-   // DEBUG_PRINT("LCD_0IN85_Clear OK\r\n"); // 等待SPI发送缓冲区为空
+   // DEBUG_PRINT("Screen_Clear OK\r\n"); // 等待SPI发送缓冲区为空
 
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
     {
@@ -421,7 +421,7 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
 
 #else
     UWORD i, j;
-    LCD_0IN85_SetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
+    Screen_SetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
     LCD_DC_1;
     for (i = 0; i < LCD_WIDTH; i++)
     {
@@ -429,8 +429,8 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
         {
             LCD_DC_1;
             LCD_CS_ENABLE;
-            DEV_SPI_WRite((Color >> 8) & 0xff);
-            DEV_SPI_WRite(Color & 0xff);
+            Screen_spi_write((Color >> 8) & 0xff);
+            Screen_spi_write(Color & 0xff);
             LCD_CS_DISABLE;
         }
     }
@@ -441,36 +441,36 @@ u8 LCD_0IN85_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Colo
 function :  Sends the image buffer in RAM to displays
 parameter:
 ******************************************************************************/
-void LCD_0IN85_Display(UWORD *Image)
+void Screen_Display(UWORD *Image)
 {
     UWORD i, j;
-    LCD_0IN85_SetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
+    Screen_SetWindows(0, 0, LCD_WIDTH - 1, LCD_HEIGHT - 1);
     LCD_DC_1;
     for (i = 0; i < LCD_WIDTH; i++)
     {
         for (j = 0; j < LCD_HEIGHT; j++)
         {
-            DEV_SPI_WRite((*(Image + i * LCD_WIDTH + j) >> 8) & 0xff);
-            DEV_SPI_WRite(*(Image + i * LCD_WIDTH + j));
+            Screen_spi_write((*(Image + i * LCD_WIDTH + j) >> 8) & 0xff);
+            Screen_spi_write(*(Image + i * LCD_WIDTH + j));
         }
     }
 }
 
-void LCD_0IN85_DisplayWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD *Image)
+void Screen_DisplayWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD *Image)
 {
     // display
     UDOUBLE Addr = 0;
 
     UWORD i, j;
-    LCD_0IN85_SetWindows(Xstart, Ystart, Xend - 1, Yend - 1);
+    Screen_SetWindows(Xstart, Ystart, Xend - 1, Yend - 1);
     LCD_DC_1;
     for (i = Ystart; i < Yend - 1; i++)
     {
         Addr = Xstart + i * LCD_WIDTH;
         for (j = Xstart; j < Xend - 1; j++)
         {
-            DEV_SPI_WRite((*(Image + Addr + j) >> 8) & 0xff);
-            DEV_SPI_WRite(*(Image + Addr + j));
+            Screen_spi_write((*(Image + Addr + j) >> 8) & 0xff);
+            Screen_spi_write(*(Image + Addr + j));
         }
     }
 }
@@ -538,7 +538,7 @@ parameter   :
         Y   :   Set the Y coordinate
       Color :   Set the color
 ******************************************************************************/
-void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
+void Screen_DrawPaint(UWORD x, UWORD y, UWORD Color)
 {
 
     //
@@ -567,8 +567,8 @@ void LCD_0IN85_DrawPaint(UWORD x, UWORD y, UWORD Color)
     }
 
 #else
-    LCD_0IN85_SetWindows(x, y, x, y);
-    LCD_0IN85_SendData_16Bit(Color);
+    Screen_SetWindows(x, y, x, y);
+    Screen_SendData_16Bit(Color);
 #endif
 }
 
@@ -578,7 +578,7 @@ function:
 parameter   :
       value : Range 0~1000   Duty cycle is value/1000
 *******************************************************************************/
-void LCD_0IN85_SetBackLight(UWORD Value)
+void Screen_SetBackLight(UWORD Value)
 {
     DEV_Set_PWM(Value);
 }

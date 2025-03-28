@@ -237,7 +237,7 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
     }
 
     // UDOUBLE Addr = X / 8 + Y * Paint.WidthByte;
-    LCD_0IN85_DrawPaint(X, Y, Color);
+    Screen_DrawPaint(X, Y, Color);
 }
 
 /******************************************************************************
@@ -353,7 +353,7 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
     dmaYpoint = Ypoint;
     dmaFont = &Fontline;
 
-    LCD_0IN85_SetWindows(Xstart, Ystart, Xend, Yend); // 准备好窗口和复位
+    Screen_SetWindows(Xstart, Ystart, Xend, Yend); // 准备好窗口和复位
     // DEBUG_PRINT("Xstart, Ystart, Xend, Yend = %d= %d= %d= %d\r\n", Xstart, Ystart, Xend, Yend);
     // DEBUG_PRINT("wwwwdmaFont->Width:%d\r\n", dmaFont->Width);
 
@@ -393,7 +393,6 @@ void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
 
 #if USE_DMA
     LCD_Refrsh_DMA(Dotted_Len * 2);
-    //  LCD_Refrsh_DMA(34);
 #endif
 }
 
@@ -550,7 +549,7 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     dmaYpoint = Ypoint;
     dmaFont = Font;
 
-    LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备窗口
+    Screen_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备窗口
 #endif
 
     // 遍历字符的每一行和每一列
@@ -611,7 +610,7 @@ void Paint_Drawicon(UWORD Xpoint, UWORD Ypoint, u8 number,
 
 #if USE_DMA
 
-    LCD_0IN85_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备好窗口和复位
+    Screen_SetWindows(Xpoint, Ypoint, (Xpoint + Font->Width) - 1, (Ypoint + Font->Height) - 1); // 准备好窗口和复位
 #endif
 
     for (Page = 0; Page < Font->Height; Page++)

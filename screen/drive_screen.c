@@ -84,7 +84,7 @@ void delay_us(uint16_t num)
     }
 }
 
-u8 DEV_SPI_WRite(uint8_t _dat)
+u8 Screen_spi_write(uint8_t _dat)
 {
     while (!READ_LORA_CS)
     {

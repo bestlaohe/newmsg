@@ -1,6 +1,6 @@
 #include "debug.h"
 #include "encode.h" // timeapp->encode->main
-#include "adc.h"    // timeapp->pwm.screen->screen_api->adc->main
+#include "adc.h"    // timeapp->pwm.screen->Screen_api->adc->main
 #include "SX1278.h" // gpio->SX1278->page
 #include "page.h"
 #include "seting.h"
@@ -65,7 +65,7 @@ int main(void)
   EXTI_INT_INIT(); // 按键，充电，lora中断初始化
   //   startup_animation();                                             // 开机动画
 
-  IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500,1除以500乘以4000=8s****12467-12356=111字节
+//  IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500,1除以500乘以4000=8s****12467-12356=111字节
 
 #if SLEEP == 1
   AWU_Init(); // 唤醒时间为25/12.5大约是2s左右。

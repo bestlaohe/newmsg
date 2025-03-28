@@ -9,7 +9,7 @@
 #define ADC_ADC_H_
 
 #include "debug.h"
-#include "screen_api.h"
+#include "Screen_api.h"
 #include <ch32v00x_it.h>
 
 extern u16 Battery_ADC_Average;
