@@ -27,8 +27,8 @@ volatile u8 loraComplete = 0;
 volatile u8 needSleep = 0;
 volatile u8 needDeinit = 0;
 
-u8 motor_shaking=0;
-u8 motor_shake_time=0;
+u8 motor_shaking = 0;
+u8 motor_shake_time = 0;
 
 volatile int circle = 0;
 int SleepCounter = 0;
@@ -37,6 +37,8 @@ int SleepCounter = 0;
 volatile u8 needMotorShakeKey = 0;
 volatile u8 needMotorShakeLora = 0;
 volatile u8 needMotorShakeCharge = 0;
+volatile u8 needMotorShakeEncode = 0;
+
 
 Encode encode_struct = {ENCODE_EVENT_NONE, 0};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
@@ -429,18 +431,16 @@ void TIM1_UP_IRQHandler(void)
         key.state = KEY_STATE_HOLD;
     }
 
-
     if (motor_shaking)
     {
       motor_shake_time++;
       if (motor_shake_time >= SHAKE_TIME) // 消抖
       {
-motor_shaking=0;
-       motor_shake_time=0;
-
-      } 
+        motor_shaking = 0;
+        motor_shake_time = 0;
+        MOTOR_SET(0);
+      }
     }
-    
   }
 }
 
@@ -466,7 +466,7 @@ void AWU_IRQHandler(void)
 void process_motor_flags(void)
 {
   // 只要有任何一个震动标志位被设置，就执行一次震动
-  if (needMotorShakeKey || needMotorShakeLora || needMotorShakeCharge)
+  if (needMotorShakeKey || needMotorShakeLora || needMotorShakeCharge|| needMotorShakeEncode)
   {
     MOTOR_SET(1);
 
@@ -474,11 +474,8 @@ void process_motor_flags(void)
     needMotorShakeKey = 0;
     needMotorShakeLora = 0;
     needMotorShakeCharge = 0;
-    motor_shaking=1;
-  }
-
-  if (motor_shaking==0)
-  {
-    MOTOR_SET(0);
+    needMotorShakeEncode=0;
+    motor_shaking = 1;
+    motor_shake_time = 0;
   }
 }

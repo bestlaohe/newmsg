@@ -14,7 +14,7 @@
 #include "debug.h"
 #include "encode.h"
 #include "SX1278.h"
-
+extern volatile u8 needMotorShakeEncode;
 void Encoder_Scan()
 {
 
@@ -52,9 +52,7 @@ void Encoder_Scan()
       DEBUG_PRINT("disable encode_struct operate\r\n");
     }
     refresh_SleepCounter(0); // Ë¢ÐÂÐÝÃßÊ±¼ä
-    MOTOR_SET(1);
-    Delay_Ms(SHAKE_TIME);
-    MOTOR_SET(0);
+  needMotorShakeEncode=1;
   }
 }
 void Encoder_Init(u16 arr, u16 psc)
