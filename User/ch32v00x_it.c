@@ -28,7 +28,7 @@ volatile u8 needSleep = 0;
 volatile u8 needDeinit = 0;
 
 u8 motor_shaking = 0;
-u8 motor_shake_time = 0;
+u16 motor_shake_time = 0;
 
 volatile int circle = 0;
 int SleepCounter = 0;
@@ -38,7 +38,6 @@ volatile u8 needMotorShakeKey = 0;
 volatile u8 needMotorShakeLora = 0;
 volatile u8 needMotorShakeCharge = 0;
 volatile u8 needMotorShakeEncode = 0;
-
 
 Encode encode_struct = {ENCODE_EVENT_NONE, 0};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
@@ -335,7 +334,7 @@ void system_wokeup()
     TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
 
 #if ENCODER_ENABLED
-    //    TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
+      TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
 #endif
 
 #if SCREEN_ENABLED
@@ -436,6 +435,8 @@ void TIM1_UP_IRQHandler(void)
       motor_shake_time++;
       if (motor_shake_time >= SHAKE_TIME) // 消抖
       {
+
+        DEBUG_PRINT("endshake\r\n");
         motor_shaking = 0;
         motor_shake_time = 0;
         MOTOR_SET(0);
@@ -466,7 +467,7 @@ void AWU_IRQHandler(void)
 void process_motor_flags(void)
 {
   // 只要有任何一个震动标志位被设置，就执行一次震动
-  if (needMotorShakeKey || needMotorShakeLora || needMotorShakeCharge|| needMotorShakeEncode)
+  if (needMotorShakeKey || needMotorShakeLora || needMotorShakeCharge || needMotorShakeEncode)
   {
     MOTOR_SET(1);
 
@@ -474,7 +475,7 @@ void process_motor_flags(void)
     needMotorShakeKey = 0;
     needMotorShakeLora = 0;
     needMotorShakeCharge = 0;
-    needMotorShakeEncode=0;
+    needMotorShakeEncode = 0;
     motor_shaking = 1;
     motor_shake_time = 0;
   }

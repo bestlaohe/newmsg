@@ -12,7 +12,7 @@
 u16 BattaryBuf[ADC_CONUT];
 // 关键点的 ADC 值和对应的电池百分比
 #define NUM_POINTS 5
-const uint16_t adc_points[NUM_POINTS] ={421, 477, 558, 609, 651}; // 示例关键点
+const uint16_t adc_points[NUM_POINTS] ={421, 477, 558, 609, 645}; // 示例关键点
 const uint8_t percent_points[NUM_POINTS] = {0, 25, 50, 75, 100};   // 对应的百分比
 
 
