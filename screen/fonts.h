@@ -93,16 +93,16 @@ extern "C"
 
   // extern sFONT Font8_Num;
 
-  extern sFONT Font16_Bat;
-  extern sFONT Fontline;
-  extern sFONT Font16_Num;
-  extern sFONT Font16_button;
+  extern sFONT Font16_Bat;     // 画电池
+  extern sFONT Fontline;       // 画框框和电池
+  extern sFONT Font16_Num;     // 电量的数字
+  extern sFONT Font16_button;  // 画按键
   extern sFONT Font16_setting; // 显示设置两个字
   extern sFONT Font24_logo;    // 开机log
-  extern sFONT Font16_cycle;   // 似乎可以优化
-  extern sFONT Font16_Operate;
-  extern sFONT Font16_En; // 设置页面的字体xyz被我省空间掉
-  extern sFONT Font12_En; // 主界面字体的宽高
+  extern sFONT Font16_cycle;   // 用于设置的开关画圆
+  extern sFONT Font16_Operate; // 设置的log
+  extern sFONT Font16_En;      // 设置页面的字体xyz被我省空间掉***
+  extern sFONT Font12_En;      // 主界面字体的宽高
   // extern cFONT Font12CN;
   // extern cFONT Font24CN;
 

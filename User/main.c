@@ -43,13 +43,13 @@ int main(void)
   Check_Reset_Flag(); // 查询复位原因
 #endif
   My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
-  TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
 
 #if ENCODER_ENABLED
   TIM2_Init(11, 1); // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
 #endif
 
 #if SCREEN_ENABLED
+  TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
   LCD_Drive_Init();    // 屏幕硬件初始化****200字节
   LCD_SHOW_API_INIT(); // 屏幕测试******8404-6224=2180
 #endif
@@ -65,7 +65,7 @@ int main(void)
   EXTI_INT_INIT(); // 按键，充电，lora中断初始化
   //   startup_animation();                                             // 开机动画
 
-//  IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500,1除以500乘以4000=8s****12467-12356=111字节
+  IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500,1除以500乘以4000=8s****12467-12356=111字节
 
 #if SLEEP == 1
   AWU_Init(); // 唤醒时间为25/12.5大约是2s左右。
