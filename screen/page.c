@@ -224,7 +224,7 @@ void show_history_data(sFONT *Font)
   {
     lora_receive_flag = 0;
     Englishposy = lora_receive_len / ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width);
-    Englishposx = lora_receive_len - Englishposy * ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width);
+    Englishposx = lora_receive_len - Englishposy * ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width)-1;
 
     // DEBUG_PRINT("ÎÒ111µÄÊý×Ö=%d, %d,\r\n", Englishposx,Englishposy);
   }
