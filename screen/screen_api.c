@@ -9,21 +9,22 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-void startup_animation() {
-    for (int s = 0, o; s <= 80; s += 2) {
-        o = s/2;
+void startup_animation()
+{
+    for (int s = 0, o; s <= 80; s += 2)
+    {
+        o = s / 2;
         for (int i = 0; i < 2; i++)
             for (int j = 0; j < 2; j++)
                 Paint_DrawChar(
-                    i*(LCD_WIDTH-48-o) + (1-i)*o,
-                    j*(LCD_HEIGHT-48-o) + (1-j)*o,
-                    0, &Font24_logo, BLACK, WHITE-s*819, 0
-                );
+                    i * (LCD_WIDTH - 48 - o) + (1 - i) * o,
+                    j * (LCD_HEIGHT - 48 - o) + (1 - j) * o,
+                    0, &Font24_logo, BLACK, WHITE - s * 819, 0);
     }
-    Screen_Clear(0,0,127,127,BLACK);
-    Paint_DrawChar(40,40,0, &Font24_logo, BLACK, WHITE, 0);
+    Screen_Clear(0, 0, 127, 127, BLACK);
+    Paint_DrawChar(40, 40, 0, &Font24_logo, BLACK, WHITE, 0);
     Delay_Ms(500);
-    Screen_Clear(0,0,127,127,BLACK);
+    Screen_Clear(0, 0, 127, 127, BLACK);
 }
 
 Screen_ATTRIBUTES LCD;
@@ -35,10 +36,13 @@ void LCD_SHOW_API_INIT()
     Screen_Init(VERTICAL);
     //    Delay_Ms(300);
     // DEBUG_PRINT("Set Clear and Display Funtion\r\n");
-    Screen_Clear(0,0,127,127,MY_THEME_BACK_COLOR);
+     Screen_Clear(0, 0, 128, 128, MY_THEME_BACK_COLOR);
+     
     //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
     Paint_NewImage(LCD_WIDTH, LCD_HEIGHT, ROTATE_0, WHITE);
 
+
+   
     //  DEBUG_PRINT("Set Clear and Display Funtion\r\n");
 
     //    Screen_Init(VERTICAL);
@@ -86,7 +90,6 @@ void LCD_SHOW_API_INIT()
     //    Delay_Ms(3000);
     //
     //    DEBUG_PRINT("quit...\r\n");
-
 }
 
 /*****************************************************************************
@@ -181,67 +184,68 @@ int LCD_Drive_DeInit(void)
 function :  Initialize the lcd register
 parameter:
 ******************************************************************************/
+
 // 常量数组存储初始化命令和数据
 static const uint8_t init_cmds[] = {
-    0xB0, 0xC0,  // 设置电源控制寄存器，配置电源相关参数
-    0xB2, 0x2F,  // 设置帧率控制寄存器，调整帧率或刷新率
-    0xB3, 0x03,  // 设置显示模式或时序控制寄存器，调整显示模式
-    0xB6, 0x19,  // 设置显示方向或扫描模式，调整显示方向
-    0xB7, 0x01,  // 设置显示控制寄存器，开启或关闭某些显示功能
-    0xAC, 0xCB,  // 设置电源控制或电压调节寄存器，调整电源或电压参数
-    0xAB, 0x0E,  // 设置显示亮度或对比度控制寄存器，调整亮度或对比度
-    0xB4, 0x04,  // 设置显示控制寄存器，调整显示控制参数
-    0xA8, 0x19,  // 设置显示模式或时序控制寄存器，调整显示模式
-    0x3A, 0x05,  // 设置像素格式，例如 RGB 565 或 RGB 666
-    0xB8, 0x08,  // 设置显示控制寄存器，调整显示控制参数
-    0xE8, 0x24,  // 设置电源控制或电压调节寄存器，调整电源或电压参数
-    0xE9, 0x48,  // 设置电源控制或电压调节寄存器，调整电源或电压参数
-    0xEA, 0x22,  // 设置电源控制或电压调节寄存器，调整电源或电压参数
-    0xC6, 0x30,  // 设置显示控制寄存器，调整显示控制参数
-    0xC7, 0x18,  // 设置显示控制寄存器，调整显示控制参数
-    0xF0, 0x1F, 0x28, 0x04, 0x3E, 0x2A, 0x2E, 0x20, 0x00, 0x0C, 0x06, 0x00, 0x1C, 0x1F, 0x0F,  // 设置 Gamma 校正寄存器，调整 Gamma 曲线
-    0xF1, 0x00, 0x2D, 0x2F, 0x3C, 0x6F, 0x1C, 0x0B, 0x00, 0x00, 0x00, 0x07, 0x0D, 0x11, 0x0F,  // 设置 Gamma 校正寄存器，调整 Gamma 曲线
-    0x21,        // 开启显示反转功能（Display Inversion ON）
-    0x11,        // 退出睡眠模式（Sleep Out），使 LCD 进入正常工作状态
-    0x29         // 开启显示（Display ON），使屏幕开始显示图像
+    0xB0, 0xC0,                                                                               // 设置电源控制寄存器，配置电源相关参数
+    0xB2, 0x2F,                                                                               // 设置帧率控制寄存器，调整帧率或刷新率
+    0xB3, 0x03,                                                                               // 设置显示模式或时序控制寄存器，调整显示模式
+    0xB6, 0x19,                                                                               // 设置显示方向或扫描模式，调整显示方向
+    0xB7, 0x01,                                                                               // 设置显示控制寄存器，开启或关闭某些显示功能
+    0xAC, 0xCB,                                                                               // 设置电源控制或电压调节寄存器，调整电源或电压参数
+    0xAB, 0x0E,                                                                               // 设置显示亮度或对比度控制寄存器，调整亮度或对比度
+    0xB4, 0x04,                                                                               // 设置显示控制寄存器，调整显示控制参数
+    0xA8, 0x19,                                                                               // 设置显示模式或时序控制寄存器，调整显示模式
+    0x3A, 0x05,                                                                               // 设置像素格式，例如 RGB 565 或 RGB 666
+    0xB8, 0x08,                                                                               // 设置显示控制寄存器，调整显示控制参数
+    0xE8, 0x24,                                                                               // 设置电源控制或电压调节寄存器，调整电源或电压参数
+    0xE9, 0x48,                                                                               // 设置电源控制或电压调节寄存器，调整电源或电压参数
+    0xEA, 0x22,                                                                               // 设置电源控制或电压调节寄存器，调整电源或电压参数
+    0xC6, 0x30,                                                                               // 设置显示控制寄存器，调整显示控制参数
+    0xC7, 0x18,                                                                               // 设置显示控制寄存器，调整显示控制参数
+    0xF0, 0x1F, 0x28, 0x04, 0x3E, 0x2A, 0x2E, 0x20, 0x00, 0x0C, 0x06, 0x00, 0x1C, 0x1F, 0x0F, // 设置 Gamma 校正寄存器，调整 Gamma 曲线
+    0xF1, 0x00, 0x2D, 0x2F, 0x3C, 0x6F, 0x1C, 0x0B, 0x00, 0x00, 0x00, 0x07, 0x0D, 0x11, 0x0F, // 设置 Gamma 校正寄存器，调整 Gamma 曲线
+    0x21,                                                                                     // 开启显示反转功能（Display Inversion ON）
+    0x11,                                                                                     // 退出睡眠模式（Sleep Out），使 LCD 进入正常工作状态
+    0x29                                                                                      // 开启显示（Display ON），使屏幕开始显示图像
 };
 
-// 初始化 LCD 寄存器的函数
 static void Screen_InitReg(void)
 {
-    // 遍历初始化命令数组
-    for (int8_t i = 0; i < sizeof(init_cmds); ++i)
+
+    for (int8_t i = 0; i < sizeof(init_cmds);)
     {
-        // 判断当前索引是否为偶数（即命令）
-        if (i % 2 == 0)
-        {
-            // 发送命令
-            Screen_SendCommand(init_cmds[i]);
-        }
-        else
-        {
-            // 发送数据
-            Screen_SendData_8Bit(init_cmds[i]);
-        }
+        uint8_t cmd = init_cmds[i++];
+        Screen_SendCommand(cmd);
+
+        // 跳过无参数命令
+        if (cmd == 0x21 || cmd == 0x11 || cmd == 0x29)
+            continue;
+
+        // 处理数据(1个或14个字节)
+        uint8_t len = (cmd == 0xF0 || cmd == 0xF1) ? 14 : 1;
+        while (len--)
+            Screen_SendData_8Bit(init_cmds[i++]);
     }
 }
- void Screen_EnterSleepMode(void)
+
+void Screen_EnterSleepMode(void)
 {
     // 发送睡眠模式命令 (0x10)
     Screen_SendCommand(0x10);
 
     // 根据数据手册，可能需要等待一段时间（例如 5ms）以确保命令生效
     // 具体等待时间请参考 LCD 控制器的数据手册
-    Delay_Ms(5);  // 使用 HAL 库的延时函数，延时 5 毫秒
+    Delay_Ms(5); // 使用 HAL 库的延时函数，延时 5 毫秒
 }
-  void Screen_ExitSleepMode(void)
- {
-     // 发送退出睡眠模式命令 (0x11)
-     Screen_SendCommand(0x11);
+void Screen_ExitSleepMode(void)
+{
+    // 发送退出睡眠模式命令 (0x11)
+    Screen_SendCommand(0x11);
 
-     // 根据数据手册，可能需要等待一段时间（例如 120ms）以确保显示稳定
-     Delay_Ms(120);  // 使用 HAL 库的延时函数，延时 120 毫秒
- }
+    // 根据数据手册，可能需要等待一段时间（例如 120ms）以确保显示稳定
+    Delay_Ms(120); // 使用 HAL 库的延时函数，延时 120 毫秒
+}
 /********************************************************************************
 function:   Set the resolution and scanning method of the screen
 parameter:
@@ -339,8 +343,8 @@ void Screen_SetWindows(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend)
 function :  Clear screen
 parameter:
 ******************************************************************************/
-//0到127
-u8 Screen_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color)
+// 0到128
+u8 Screen_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD Color)
 {
 
 #if USE_DMA
@@ -350,7 +354,7 @@ u8 Screen_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color)
     }
     int dma_circular = 0;
     u8 retry = 0;
-    Screen_SetWindows(Xstart, Ystart, Xend+0, Yend+0);
+    Screen_SetWindows(Xstart, Ystart, Xend + 0, Yend + 0);
     int index = 0; // 用于跟踪lcd_gram数组的索引
 
     // 用于减少临时变量占用的内存
@@ -375,7 +379,7 @@ u8 Screen_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color)
     DMA_Cmd(DMA1_Channel3, ENABLE);
 
     // 计算总传输次数
-    int total_dma_transfers = ((Yend-Ystart+0) * (Xend-Xstart+0) / (X_MAX_PIXEL * Y_MAX_PIXEL)) + 1;
+    int total_dma_transfers = ((Yend - Ystart) * (Xend - Xstart) / (X_MAX_PIXEL * Y_MAX_PIXEL)) + 1;
 
     while (dma_circular <= total_dma_transfers)
     {
@@ -385,7 +389,7 @@ u8 Screen_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color)
             dma_circular++;
 
             // 打印当前传输次数，帮助调试
-           // DEBUG_PRINT("Current DMA transfers: %d/%d\r\n", dma_circular, total_dma_transfers);
+            // DEBUG_PRINT("Current DMA transfers: %d/%d\r\n", dma_circular, total_dma_transfers);
         }
     }
 
@@ -396,16 +400,16 @@ u8 Screen_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,UWORD Color)
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
     {
         // 可以考虑在此处添加超时逻辑，以防死循环
-      //  DEBUG_PRINT("Waiting for SPI transmit buffer to be empty...\r\n"); // 打印等待信息
+        //  DEBUG_PRINT("Waiting for SPI transmit buffer to be empty...\r\n"); // 打印等待信息
     }
 
-    // 禁用DMA和SPI
-    DMA_Cmd(DMA1_Channel3, DISABLE);
-    SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
+    // // 禁用DMA和SPI
+     DMA_Cmd(DMA1_Channel3, DISABLE);
+     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
     DMA_ClearITPendingBit(DMA1_IT_TC3);
 
     LCD_CS_DISABLE;
-   // DEBUG_PRINT("Screen_Clear OK\r\n"); // 等待SPI发送缓冲区为空
+    // DEBUG_PRINT("Screen_Clear OK\r\n"); // 等待SPI发送缓冲区为空
 
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_RXNE) == RESET)
     {
@@ -506,7 +510,6 @@ u8 LCD_Refrsh_DMA(int pic_size)
 
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
         ;
-  
 
     DMA_Cmd(DMA1_Channel3, DISABLE);
     SPI_I2S_DMACmd(SPI1, SPI_I2S_DMAReq_Tx, DISABLE);
@@ -525,7 +528,7 @@ u8 LCD_Refrsh_DMA(int pic_size)
 
     LCD_CS_DISABLE;
 
-    memset(lcd_gram, 0xff,pic_size);
+    memset(lcd_gram, 0xff, pic_size);
 
     return (uint8_t)SPI_I2S_ReceiveData(SPI1);
 
@@ -549,14 +552,14 @@ void Screen_DrawPaint(UWORD x, UWORD y, UWORD Color)
 #if USE_DMA
 
     ///< 使用DMA的话，从对点刷屏到对显存数组写入数据，DMA传输数据的时候再统一进行传输
-    int index = ((y - dmaYpoint) * (dmaFont->Width) + (x - dmaXpoint)) * 2;//新的坐标过来转换成012345
+    int index = ((y - dmaYpoint) * (dmaFont->Width) + (x - dmaXpoint)) * 2; // 新的坐标过来转换成012345
     // DEBUG_PRINT("index开始偏移前:%d\r\n", index );
 
-    index = index - X_MAX_PIXEL * Y_MAX_PIXEL * 2 * dmaXoffset / X_MAX_PIXEL;// 偏移
-    lcd_gram[index] = (Color >> 8) & 0xff; // 高字节
-    lcd_gram[index + 1] = Color & 0xFF;    // 低字节
-                                           //  DEBUG_PRINT("开始偏移:%d\r\n", index + 1);
-   
+    index = index - X_MAX_PIXEL * Y_MAX_PIXEL * 2 * dmaXoffset / X_MAX_PIXEL; // 偏移
+    lcd_gram[index] = (Color >> 8) & 0xff;                                    // 高字节
+    lcd_gram[index + 1] = Color & 0xFF;                                       // 低字节
+                                                                              //  DEBUG_PRINT("开始偏移:%d\r\n", index + 1);
+
     if ((index + 1) == (Y_MAX_PIXEL * X_MAX_PIXEL * 2 - 1))
     {
 

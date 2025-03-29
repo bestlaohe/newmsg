@@ -325,13 +325,13 @@ parameter:
 void Paint_DrawLine(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend,
                     UWORD Color, DOT_PIXEL Line_width, LINE_STYLE Line_Style)
 {
-    if (Xstart > Paint.Width || Ystart > Paint.Height ||
-        Xend > Paint.Width || Yend > Paint.Height)
-    {
-        DEBUG_PRINT("Paint_DrawLine erro,Xstart = %d, Ystart = %d,Xend = %d, Yend = %d\r\n", Xstart, Ystart, Xend, Yend);
+    // if (Xstart > Paint.Width || Ystart > Paint.Height ||
+    //     Xend > Paint.Width || Yend > Paint.Height)
+    // {
+    //     DEBUG_PRINT("Paint_DrawLine erro,Xstart = %d, Ystart = %d,Xend = %d, Yend = %d\r\n", Xstart, Ystart, Xend, Yend);
 
-        return;
-    }
+    //     return;
+    // }
 
     UWORD Xpoint = Xstart;
     UWORD Ypoint = Ystart;
