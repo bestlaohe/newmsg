@@ -53,7 +53,7 @@ void handle_lora_msg(sFONT *Font)
   {
     DEBUG_PRINT("lora send start\r\n");
     send_wait_time = 0;
-    if (!SX1278_LoRaTxPacket(lora_receive_buf, 1 + Englishposx + Englishposy * (LCD_HEIGHT / Font->Width)))
+    if (!SX1278_LoRaTxPacket(lora_receive_buf, strlen(lora_receive_buf)))
     {
       DEBUG_PRINT("lora send ok\r\n");
       lora_receive_flag = 1; // 决定是否需要回应
