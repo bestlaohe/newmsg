@@ -87,21 +87,27 @@ void handle_chat_event(sFONT *Font)
   // 发送数据
   if (key.state == KEY_STATE_HOLD)
   {
-    if (encode_struct.state == ENCODE_EVENT_UP) // 原本是发送键，现在不需要发送了
+    if (encode_struct.state == ENCODE_EVENT_DOWN) // 原本是发送键，现在不需要发送了
     {
-      // refreshState = 1;
-      // DEBUG_PRINT("start lora send\r\n");
-      // lora_receive_flag = 2;
-      // send_wait_time = 250;
+      //  refreshState = 1;
+      //  DEBUG_PRINT("start lora send\r\n");
+
+      // Englishposy = 0;
+      // Englishposx = 0;
+
+      // memset(lora_receive_buf, '\0', sizeof(lora_receive_buf));
+
       encode_struct.enable = 0; // 禁用键
       key.enable = 0;           // 禁用键
+      // send_wait_time = 250;
+      // lora_receive_flag = 2;
       return;
     }
-    else if (encode_struct.state == ENCODE_EVENT_DOWN)
+    else if (encode_struct.state == ENCODE_EVENT_UP)
     {
       refreshState = 1;
- 
-  // if (lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] != 0)
+
+      // if (lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] != 0)
       // lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = '\0';
       // DEBUG_PRINT("数组位=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
       Englishposx--;
@@ -118,10 +124,11 @@ void handle_chat_event(sFONT *Font)
           Englishposx = 0;
         }
       }
-      lora_receive_flag = 2;
+
       send_wait_time = 250;
       encode_struct.enable = 1; // 禁用键
       key.enable = 0;           // 禁用键
+      // lora_receive_flag = 2;
       // DEBUG_PRINT("我111的数字=%d \r\n", Englishposx);
       return;
     }
@@ -160,6 +167,7 @@ void handle_chat_event(sFONT *Font)
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
 
     DEBUG_PRINT("数组位=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
+    // lora_receive_flag = 2;
   }
 
   // 处理滚动状态
@@ -206,7 +214,7 @@ void handle_chat_history_event()
     if (encode_struct.state == ENCODE_EVENT_DOWN)
     {
       refreshState = 1;
-      memset(lora_receive_buf, 0, sizeof(lora_receive_len));                                             // 清空聊天记录
+      memset(lora_receive_buf, 0, sizeof(lora_receive_len));                                          // 清空聊天记录
       Screen_Clear(EDGE, OPERATE_DOWN + EDGE, 127 - EDGE, CHAT_HISTORY_DOWN - EDGE, MY_SCREEN_COLOR); // 清空显示区域
 
       total_lines = 0;
@@ -222,9 +230,10 @@ void show_history_data(sFONT *Font)
 
   if (lora_receive_flag == 3)
   {
+    // refreshState = 1;
     lora_receive_flag = 0;
     Englishposy = lora_receive_len / ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width);
-    Englishposx = lora_receive_len - Englishposy * ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width)-1;
+    Englishposx = lora_receive_len - Englishposy * ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width) - 1;
 
     // DEBUG_PRINT("我111的数字=%d, %d,\r\n", Englishposx,Englishposy);
   }
@@ -295,18 +304,18 @@ void chat_page(sFONT *Font)
   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow); // 显示电池信息
 #endif
 
-   if (refreshState)
-   {
+  if (refreshState)
+  {
 
-     Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0); // 设置的图标
-     // Screen_Clear(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR);                // 聊天记录界面
-     Screen_Clear(0, OPERATE_DOWN, 127, CHAT_DOWN, MY_SCREEN_COLOR);                           // 输入框
-     Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 输入框高亮
+    Paint_DrawChar(1, 1, 0, &Font16_Operate, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0); // 设置的图标
+    // Screen_Clear(0, OPERATE_DOWN, 127, CHAT_HISTORY_DOWN, MY_SCREEN_COLOR);                // 聊天记录界面
+    Screen_Clear(0, OPERATE_DOWN, 127, CHAT_DOWN, MY_SCREEN_COLOR);                              // 输入框
+    Paint_DrawRectangle(0, OPERATE_DOWN, 127, CHAT_DOWN, GREEN, DOT_PIXEL_1X1, DRAW_FILL_EMPTY); // 输入框高亮
 
-     refreshState = 0;
-   }
+    refreshState = 0;
+  }
 
-  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a',Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
+  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a', Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
 
   show_history_data(Font);
   handle_chat_event(Font);
@@ -336,11 +345,11 @@ void perpare_setting_page(sFONT *Font)
   if (refreshState)
   {
     Screen_Clear(0, OPERATE_DOWN, 128, CHAT_DOWN, MY_SCREEN_COLOR); // 聊天记录界面
-    Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);          // 设置页面高亮
+    Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);       // 设置页面高亮
 
     refreshState = 0;
   }
-  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a',999);
+  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a', 999);
   show_history_data(Font);
 }
 
@@ -399,7 +408,7 @@ void draw_setting(int index, int highlight, sFONT *Font)
   char strBuf[4]; // 用于存储最多3位数字和一个终止符
   UWORD bg_color = highlight ? GREEN : MY_THEME_COMPONT_COLOR;
 
-  Paint_DrawString(0, index * CHAR_HEIGHT + Y_OFFSET, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a',999);
+  Paint_DrawString(0, index * CHAR_HEIGHT + Y_OFFSET, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a', 999);
   Paint_DrawChar(Font->Width * strlen(settings[index].name), index * CHAR_HEIGHT + Y_OFFSET, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
 
   // 根据当前设置类型绘制值
@@ -411,13 +420,13 @@ void draw_setting(int index, int highlight, sFONT *Font)
       isFirstSettingShow = 0;
       if (*settings[index].value == ON)
       {
-        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0',999);
-        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1) + 15, index * CHAR_HEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, GREEN, WHITE, '0',999);
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0', 999);
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1) + 15, index * CHAR_HEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, GREEN, WHITE, '0', 999);
       }
       else
       {
-        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0',999);
-        Paint_DrawString((Font->Width * (strlen(settings[index].name) + 1)) + 2, index * CHAR_HEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, RED, WHITE, '0',999);
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0', 999);
+        Paint_DrawString((Font->Width * (strlen(settings[index].name) + 1)) + 2, index * CHAR_HEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, RED, WHITE, '0', 999);
       }
     }
 
@@ -428,7 +437,7 @@ void draw_setting(int index, int highlight, sFONT *Font)
     intToStr(*settings[index].value, strBuf, 3);
   }
 
-  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0',999);
+  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0', 999);
 }
 
 void display_settings(sFONT *Font)
@@ -466,7 +475,7 @@ void handle_setting_event()
 void setting_page(sFONT *Font)
 {
   // 设置二字
-  Paint_DrawString(48, 0, "01", &Font16_setting, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0',999);
+  Paint_DrawString(48, 0, "01", &Font16_setting, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0', 999);
 
   display_settings(Font);
   handle_setting_event();
@@ -476,11 +485,11 @@ void setting_page(sFONT *Font)
 
 void show_info(int posx, int posy, const char *label, int value, int offset)
 {
-  char strBuf[4];                                                                                    // 存储最多3位数字和一个终止符
-  Paint_DrawString(posx, posy, label, &Font16_En, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a',999); // 绘制标签
+  char strBuf[4];                                                                                         // 存储最多3位数字和一个终止符
+  Paint_DrawString(posx, posy, label, &Font16_En, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a', 999); // 绘制标签
   Paint_DrawChar(posx + Font16_En.Width * (offset - 1), posy, 11, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 0);
   intToStr(value, strBuf, 3);
-  Paint_DrawString(posx + Font16_Num.Width * offset, posy, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0',999); // 绘制值
+  Paint_DrawString(posx + Font16_Num.Width * offset, posy, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0', 999); // 绘制值
 }
 
 void info_page()
