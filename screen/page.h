@@ -17,8 +17,8 @@
 extern Key key;
 
 extern Encode encode_struct;
-extern u8 lora_receive_len;
-extern u8 lora_receive_flag;
+extern volatile u8 lora_receive_len;
+extern volatile u8 lora_receive_flag;
 
 extern char lora_receive_buf[145];
 extern u16 Battery_ADC_Average;

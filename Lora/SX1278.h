@@ -232,7 +232,7 @@ extern void SX1278_Init();
 void SX1278_Write_Reg(u8 adr, u8 WrPara);
 extern u8   SX1278_LoRaReadRSSI(void);
 u8 SX1278_ReadRSSI(void);
-extern u8 SX1278_LoRaRxPacket(u8 *valid_data, u8* packet_length,u16 timeout);
+extern u8 SX1278_LoRaRxPacket(u8 *valid_data, u16 timeout);
 //extern u8   SX1278_LoRaEntryTx(u8 packet_length);
 extern u8   SX1278_LoRaTxPacket(u8 *valid_data, u8 packet_length);
 void SX1278_Receive() ;

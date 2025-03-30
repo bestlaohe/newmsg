@@ -31,8 +31,8 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 /****************以下是移植需要实现的对应接口部分***********************************/
 #define SX1278_DelayMs(t) Delay_Ms(t) // 毫秒延时函数的实现
 char lora_receive_buf[145] = {0};
-u8 lora_receive_len = 0;
-u8 lora_receive_flag = 0; // 0是初始状态，1是接收到特殊回应了，2是等待接收回应，3是接收到了数据
+volatile u8 lora_receive_len = 1;
+volatile u8 lora_receive_flag = 0; // 0是初始状态，1是接收到特殊回应了，2是等待接收回应，3是接收到了数据
 
 extern volatile u8 loraComplete; // lora中断操作完成的标志
 // 控制口配置初始化，中断口配置在完成中断初始化中
@@ -47,7 +47,7 @@ void SX1278_Receive()
 
   u8 res; // 操作的返回
 
-  res = SX1278_LoRaRxPacket(lora_receive_buf, &lora_receive_len, 5000);
+  res = SX1278_LoRaRxPacket(lora_receive_buf, 5000);
 
   if (res == 0)
   {
@@ -70,6 +70,7 @@ void SX1278_Receive()
   }
   else if (res == 2)
   {
+    DEBUG_PRINT("lora_receive_len= %d\r\n", lora_receive_len);
     DEBUG_PRINT("lora CRC eeror!\r\n");
   }
   else if (res == 3)
@@ -224,8 +225,6 @@ void SX1278_Burst_Write(u8 adr, u8 *ptr, u8 length)
     SX1278_NSS_DISABLE;
   }
 }
-
-
 
 // 功能: SX1278 单个寄存器读操作
 unsigned char SX1276ReadReg(unsigned char addr)
@@ -400,12 +399,12 @@ u8 SX1278_LoRaReadRSSI(void)
             timeout[in]   接收超时，为0时永久等待 单位时间ms
 返回：	 0:接收成功 1：接收失败超时 2:CRC校验错误
 ***************************************************************************/
-u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
+u8 SX1278_LoRaRxPacket(u8 *valid_data, u16 timeout)
 {
   u8 addr, irq_flag, mode;
   u8 packet_size;
   u8 temp_data[200];
-  
+
   mode = SX1278_Read_Reg(LR_RegOpMode);
 
   if ((mode & 0x05) != 0x05)
@@ -418,8 +417,8 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
   {
     loraComplete = 0;
     irq_flag = SX1278_Read_Reg(LR_RegIrqFlags);
-//      DEBUG_PRINT("0-irq_flag=0x%X\r\n", irq_flag);
-//    DEBUG_PRINT("1-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
+    //      DEBUG_PRINT("0-irq_flag=0x%X\r\n", irq_flag);
+    //    DEBUG_PRINT("1-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
 
     if ((irq_flag & RFLR_IRQFLAGS_RXDONE) == RFLR_IRQFLAGS_RXDONE)
     {
@@ -435,18 +434,25 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
       SX1278_Write_Reg(LR_RegFifoAddrPtr, addr);      // RxBaseAddr -> FiFoAddrPtr
       packet_size = SX1278_Read_Reg(LR_RegRxNbBytes); // Number for received bytes
 
-      if (packet_size >  sizeof(lora_receive_buf) || packet_size < 1)
-      {
-        DEBUG_PRINT("packet_size too long   %d\r\n", packet_size);
-        return 2;
-      }
+      // if (packet_size > sizeof(lora_receive_buf) || packet_size <= 1)
+      // {
+      //   memset(valid_data, '\0', sizeof(lora_receive_buf));
+      //   lora_receive_len = 1;    lora_receive_flag = 3;
+      //   DEBUG_PRINT("packet_size too long   %d  %d\r\n", packet_size, lora_receive_len);
+      //    SX1278_LoRaClearIrq();
+      //       DEBUG_PRINT("packet_size too long   %d  %d\r\n", packet_size, lora_receive_len);
+      //   SX1278_LoRaEntryRx(); // 进入接收模式
+
+      //      DEBUG_PRINT("packet_size too long   %d  %d\r\n", packet_size, lora_receive_len);
+      //   return 2;
+      // }
 
       // 记录当前有效数据的长度
-      u8 current_length = *packet_length;
+      u8 current_length = lora_receive_len;
 
       if ((current_length + packet_size) >= sizeof(lora_receive_buf)) // 超过200重头计数
       {
-        *packet_length = 0;
+        lora_receive_len = 1;
         current_length = 0;
       }
 
@@ -476,6 +482,9 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
           DEBUG_PRINT("illegal msg=%c\r\n", temp_data[packet_size - 1]);
           DEBUG_PRINT("illegal msg=%c\r\n", temp_data[packet_size - 2]);
           DEBUG_PRINT("illegal msg=%c\r\n", temp_data[0]);
+          lora_receive_len = 1;
+          lora_receive_flag = 3;
+          memset(valid_data, '\0', sizeof(lora_receive_buf));
           return 4;
         }
         else // 合法消息回应一下
@@ -498,7 +507,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
           }
           // 拷贝完整的数据
           memcpy(valid_data, temp_data, packet_size);
-          *packet_length = packet_size;
+          lora_receive_len = packet_size;
           DEBUG_PRINT("Received my msg\r\n");
           lora_receive_flag = 3;
         }
@@ -514,10 +523,10 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u8 *packet_length, u16 timeout)
       }
       else
       {
-         DEBUG_PRINT("2-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
-//
-//
-//           DEBUG_PRINT("3-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
+        DEBUG_PRINT("2-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
+        //
+        //
+        //           DEBUG_PRINT("3-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
       }
     }
   }
