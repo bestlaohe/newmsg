@@ -182,11 +182,11 @@ parameter:
 ******************************************************************************/
 void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
 {
-    if (Xpoint > Paint.Width || Ypoint > Paint.Height)
-    {
-        DEBUG_PRINT("Paint_SetPixel1 erro %d,%d\r\n", Xpoint, Ypoint);
-        return;
-    }
+    // if (Xpoint > Paint.Width || Ypoint > Paint.Height)
+    // {
+    //     DEBUG_PRINT("Paint_SetPixel1 erro %d,%d\r\n", Xpoint, Ypoint);
+    //     return;
+    // }
     UWORD X, Y;
 
     switch (Paint.Rotate)
@@ -230,11 +230,11 @@ void Paint_SetPixel(UWORD Xpoint, UWORD Ypoint, UWORD Color)
     //     return;
     // }
 
-    if (X > Paint.WidthMemory || Y > Paint.HeightMemory)
-    {
-        DEBUG_PRINT("Paint_SetPixel2 erro,x = %d, y = %d\r\n", X, Y);
-        return;
-    }
+    // if (X > Paint.WidthMemory || Y > Paint.HeightMemory)
+    // {
+    //     DEBUG_PRINT("Paint_SetPixel2 erro,x = %d, y = %d\r\n", X, Y);
+    //     return;
+    // }
 
     // UDOUBLE Addr = X / 8 + Y * Paint.WidthByte;
     Screen_DrawPaint(X, Y, Color);
@@ -270,11 +270,11 @@ parameter:
 ******************************************************************************/
 void Paint_DrawPoint(UWORD Xpoint, UWORD Ypoint, UWORD Color, DOT_PIXEL Dot_Pixel, DOT_STYLE Dot_FillWay)
 {
-    if (Xpoint >= Paint.Width || Ypoint >= Paint.Height)
-    {
-        DEBUG_PRINT("Paint_DrawPoint erro,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
-        return;
-    }
+//    if (Xpoint >= Paint.Width || Ypoint >= Paint.Height)
+//    {
+//        DEBUG_PRINT("Paint_DrawPoint erro,Xpoint = %d, Ypoint = %d\r\n", Xpoint, Ypoint);
+//        return;
+//    }
 
     int16_t XDir_Num, YDir_Num;
     if (Dot_FillWay == DOT_FILL_AROUND)
@@ -448,12 +448,12 @@ parameter:
 void Paint_DrawCircle(UWORD X_Center, UWORD Y_Center, UWORD Radius,
                       UWORD Color, DOT_PIXEL Line_width, DRAW_FILL Draw_Fill)
 {
-    if (X_Center > Paint.Width || Y_Center >= Paint.Height)
-    {
-        DEBUG_PRINT("Paint_DrawCircle erro,X_Center = %d, Y_Center = %d\r\n", X_Center, Y_Center);
+    // if (X_Center > Paint.Width || Y_Center >= Paint.Height)
+    // {
+    //     DEBUG_PRINT("Paint_DrawCircle erro,X_Center = %d, Y_Center = %d\r\n", X_Center, Y_Center);
 
-        return;
-    }
+    //     return;
+    // }
 
     // Draw a circle from(0, R) as a starting point
     int16_t XCurrent, YCurrent;
@@ -707,12 +707,12 @@ void Paint_DrawString(UWORD Xstart, UWORD Ystart, const char *pString,
     UWORD Xpoint = Xstart;
     UWORD Ypoint = Ystart;
     UWORD position = 0;
-    if (Xstart > Paint.Width || Ystart > Paint.Height)
-    {
-        DEBUG_PRINT("Paint_DrawString erro,Xstart = %d, Ystart = %d\r\n", Xstart, Ystart);
+    // if (Xstart > Paint.Width || Ystart > Paint.Height)
+    // {
+    //     DEBUG_PRINT("Paint_DrawString erro,Xstart = %d, Ystart = %d\r\n", Xstart, Ystart);
 
-        return;
-    }
+    //     return;
+    // }
 
     while (*pString != '\0')
     {
@@ -888,13 +888,13 @@ void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
     uint8_t Str_Array[ARRAY_LEN] = {0}, Num_Array[ARRAY_LEN] = {0};
     uint8_t *pStr = Str_Array;
 
-    if (Xpoint > Paint.Width || Ypoint > Paint.Height)
-    {
+    // if (Xpoint > Paint.Width || Ypoint > Paint.Height)
+    // {
 
-        DEBUG_PRINT("Paint_DrawNum erro %d,%d\r\n", Xpoint, Ypoint);
+    //     DEBUG_PRINT("Paint_DrawNum erro %d,%d\r\n", Xpoint, Ypoint);
 
-        return;
-    }
+    //     return;
+    // }
 
     // Converts a number to a string
     do

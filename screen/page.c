@@ -338,21 +338,21 @@ void chat_page(sFONT *Font)
 //   handle_chat_history_event();
 // }
 
-// void perpare_setting_page(sFONT *Font)
-// {
-// #if BATTERY_ENABLED
-//   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow); // 电池组件
-// #endif
-//   if (refreshState)
-//   {
-//     Screen_Clear(0, OPERATE_DOWN, 128, CHAT_DOWN, MY_SCREEN_COLOR); // 聊天记录界面
-//     Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);       // 设置页面高亮
+void perpare_setting_page(sFONT *Font)
+{
+#if BATTERY_ENABLED
+  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow); // 电池组件
+#endif
+  if (refreshState)
+  {
+    Screen_Clear(0, OPERATE_DOWN, 128, CHAT_DOWN, MY_SCREEN_COLOR); // 聊天记录界面
+    Paint_DrawChar(0, 0, 0, &Font16_Operate, GREEN, BLUE, 0);       // 设置页面高亮
 
-//     refreshState = 0;
-//   }
-//   Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a', 999);
-//   show_history_data(Font);
-// }
+    refreshState = 0;
+  }
+  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, 'a', 999);
+  show_history_data(Font);
+}
 
 /**************************************设置页面**************************************************** */
 void clamp_value(int *value, int min, int max)

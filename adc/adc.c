@@ -204,7 +204,7 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
     if (percentage > 100)
         percentage = 100;
 
-    if(abs(Prepercentage - percentage) > 1 || *needshow)
+    if(abs(Prepercentage - percentage) > 5 || *needshow)
     {
         *needshow = 0;
         Prepercentage = percentage;

@@ -70,7 +70,6 @@ void SX1278_Receive()
   }
   else if (res == 2)
   {
-    DEBUG_PRINT("lora_receive_len= %d\r\n", lora_receive_len);
     DEBUG_PRINT("lora CRC eeror!\r\n");
   }
   else if (res == 3)
@@ -434,18 +433,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u16 timeout)
       SX1278_Write_Reg(LR_RegFifoAddrPtr, addr);      // RxBaseAddr -> FiFoAddrPtr
       packet_size = SX1278_Read_Reg(LR_RegRxNbBytes); // Number for received bytes
 
-      // if (packet_size > sizeof(lora_receive_buf) || packet_size <= 1)
-      // {
-      //   memset(valid_data, '\0', sizeof(lora_receive_buf));
-      //   lora_receive_len = 1;    lora_receive_flag = 3;
-      //   DEBUG_PRINT("packet_size too long   %d  %d\r\n", packet_size, lora_receive_len);
-      //    SX1278_LoRaClearIrq();
-      //       DEBUG_PRINT("packet_size too long   %d  %d\r\n", packet_size, lora_receive_len);
-      //   SX1278_LoRaEntryRx(); // 进入接收模式
 
-      //      DEBUG_PRINT("packet_size too long   %d  %d\r\n", packet_size, lora_receive_len);
-      //   return 2;
-      // }
 
       // 记录当前有效数据的长度
       u8 current_length = lora_receive_len;
@@ -524,9 +512,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u16 timeout)
       else
       {
         DEBUG_PRINT("2-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
-        //
-        //
-        //           DEBUG_PRINT("3-irq_flag=0x%X\r\n", SX1278_Read_Reg(LR_RegIrqFlags));
+
       }
     }
   }

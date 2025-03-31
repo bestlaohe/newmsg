@@ -32,7 +32,7 @@
 #define BATTERY_Y 3   // 电池y坐标
 
 #define PWM_FRE         10000
-#define PWM_Duty        50
+#define PWM_Duty        20
 
 #define ADC_CONUT        15//最大允许64，因为u16/1024=64
 
