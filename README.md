@@ -153,8 +153,13 @@ LoRa通信模块提供较长的通信距离：
 **服务通道：**
 
 - 如有任何使用问题或需要技术支持，请联系技术支持团队，微信：bestlaohe。
+
+
 【帅气的带焊接补光的吸烟机-哔哩哔哩】： https://b23.tv/cCpQy1C
+
 【代码和结构开源链接】：https://github.com/bestlaohe/smokingmechiine
+
 【硬件开源链接】：https://oshwhub.com/he1263015218/chou-yan-ji
 
-![image.png](https://image.lceda.cn/oshwhub/pullImage/f0e05ef5131d45a69d606a94da0828d8.png)
+![image](https://github.com/user-attachments/assets/52238b9b-a36e-4cfe-b778-b25772ebd576)
+
