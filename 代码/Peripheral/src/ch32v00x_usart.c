@@ -73,6 +73,7 @@ void USART_DeInit(USART_TypeDef *USARTx)
     {
         RCC_APB2PeriphResetCmd(RCC_APB2Periph_USART1, ENABLE);
         RCC_APB2PeriphResetCmd(RCC_APB2Periph_USART1, DISABLE);
+         RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, DISABLE);
     }
 }
 

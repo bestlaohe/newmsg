@@ -163,13 +163,15 @@ void SDI_Printf_Enable(void)
 
 void my_uart_print(char *str)
 {
-
+    if ((RCC->APB2PCENR & RCC_APB2Periph_USART1)==0) {
+         return;
+    }
           while (*str)
           {
-              // µÈ´ý USART1 µÄ´«ÊäÍê³É±êÖ¾
+              // ï¿½È´ï¿½ USART1 ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½É±ï¿½Ö¾
               while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
                   ;
-              // ·¢ËÍÒ»¸ö×Ö·û
+              // ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½
               USART_SendData(USART1, *str++);
           }
 
@@ -260,34 +262,34 @@ void intToStr(int num, char *str, int minWidth)
     int i = 0;
     _Bool isNegative = 0;
 
-    // ´¦Àí¸ºÊý
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     if (num < 0)
     {
         isNegative = 1;
         num = -num;
     }
 
-    // ´¦ÀíÊý×Ö²¿·Ö
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö²ï¿½ï¿½ï¿½
     do
     {
         str[i++] = (num % 10) + '0';
         num /= 10;
     } while (num > 0);
 
-    // Ìí¼Ó¸ººÅ
+    // ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½
     if (isNegative)
     {
         str[i++] = '-';
     }
 
-    // Èç¹ûÐèÒª£¬Ìî³äÇ°µ¼Áã
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½
     while (i < minWidth)
     {
         str[i++] = '0';
     }
 
-    // ·´×ª×Ö·û´®
-    str[i] = '\0'; // ÏÈÌí¼ÓÖÕÖ¹·û
+    // ï¿½ï¿½×ªï¿½Ö·ï¿½ï¿½ï¿½
+    str[i] = '\0'; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½
     for (int j = 0; j < i / 2; j++)
     {
         char temp = str[j];

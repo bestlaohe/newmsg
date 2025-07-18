@@ -26,7 +26,7 @@ int main(void)
 {
 
   /*********************基本内容初始化******************************/
-  SystemCoreClockUpdate(); // 48000000系统时钟刷新3324-3212=100k
+    SystemInit(); // 48000000系统时钟刷新3324-3212=100k
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
   USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死3956-3324=600k
   DEBUG_PRINT("\r\nSystemClk:%d\r\n", SystemCoreClock);

@@ -330,7 +330,8 @@ void system_wokeup()
 
   if (needSleep) // 已经休眠了
   {
-    //    My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
+       SystemInit();
+     My_GPIO_Init();                                                 // IO口初始化****4484-4232=252字节
     TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
 
 #if ENCODER_ENABLED
