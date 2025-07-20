@@ -330,12 +330,12 @@ void system_wokeup()
 
   if (needSleep) // 已经休眠了
   {
-       SystemInit();
-     My_GPIO_Init();                                                 // IO口初始化****4484-4232=252字节
+    SystemInit();
+    My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
     TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
 
 #if ENCODER_ENABLED
-      TIM2_Init(11, 1);                                                  // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
+    TIM2_Init(11, 1); // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
 #endif
 
 #if SCREEN_ENABLED
@@ -471,7 +471,7 @@ void process_motor_flags(void)
   if (needMotorShakeKey || needMotorShakeLora || needMotorShakeCharge || needMotorShakeEncode)
   {
     MOTOR_SET(1);
-
+    DEBUG_PRINT("startshake\r\n");
     // 清除所有标志位
     needMotorShakeKey = 0;
     needMotorShakeLora = 0;

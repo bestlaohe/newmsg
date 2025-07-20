@@ -26,7 +26,7 @@ int main(void)
 {
 
   /*********************基本内容初始化******************************/
-    SystemInit(); // 48000000系统时钟刷新3324-3212=100k
+  SystemInit(); // 48000000系统时钟刷新3324-3212=100k
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
   USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死3956-3324=600k
   DEBUG_PRINT("\r\nSystemClk:%d\r\n", SystemCoreClock);
@@ -42,7 +42,7 @@ int main(void)
 #if DEBUG_ENABLED != 0
   Check_Reset_Flag(); // 查询复位原因
 #endif
-  My_GPIO_Init();                                                    // IO口初始化****4484-4232=252字节
+  My_GPIO_Init(); // IO口初始化****4484-4232=252字节
 
 #if ENCODER_ENABLED
   TIM2_Init(11, 1); // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
@@ -50,8 +50,8 @@ int main(void)
 
 #if SCREEN_ENABLED
   TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
-  LCD_Drive_Init();    // 屏幕硬件初始化****200字节
-  LCD_SHOW_API_INIT(); // 屏幕测试******8404-6224=2180
+  LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
+  LCD_SHOW_API_INIT();                                               // 屏幕测试******8404-6224=2180
 #endif
 
 #if BATTERY_ENABLED
@@ -63,7 +63,7 @@ int main(void)
 #endif
 
   EXTI_INT_INIT(); // 按键，充电，lora中断初始化
-  //   startup_animation();                                             // 开机动画
+  //  startup_animation();                                             // 开机动画
 
   IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500,1除以500乘以4000=8s****12467-12356=111字节
 
@@ -82,8 +82,8 @@ int main(void)
     }
     else
     {
-      //      u8 data[] = "rr";
-      //      SX1278_LoRaTxPacket(data, 2);
+      //  u8 data[] = "rr";
+      //  SX1278_LoRaTxPacket(data, 2);
       // DEBUG_PRINT("\r\nshow_page");
       show_page();
 
@@ -103,7 +103,7 @@ int main(void)
 #if SLEEP == 1
       Sleep_Scan(); // 检查是否睡觉
 #endif
-      //      Delay_Ms(1000);
+      //  Delay_Ms(1000);
     }
   }
 }
