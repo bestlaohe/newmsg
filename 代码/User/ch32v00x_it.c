@@ -96,7 +96,6 @@ void DMA1_Channel1_IRQHandler(void)
       //        DEBUG_PRINT("BattaryBuf[i]=%d\r\n",BattaryBuf[i]);
     }
     Battery_ADC_Average /= ADC_CONUT; // 求平均值
-
     if (abs(pre_Battery_ADC_Average - Battery_ADC_Average) < 10)
     {
       Battery_ADC_Average = pre_Battery_ADC_Average;

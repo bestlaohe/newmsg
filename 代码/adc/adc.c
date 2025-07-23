@@ -8,7 +8,8 @@
 #include "adc.h"
 #include "seting.h"
 
-
+#define VREFINT_CAL      1200    // 1.200V（单位：mV，根据实际校准调整）
+#define ADC_MAX          1023    // 10-bit ADC最大值
 u16 BattaryBuf[ADC_CONUT];
 // 关键点的 ADC 值和对应的电池百分比
 //2.8v屏幕可以亮起来
@@ -31,12 +32,10 @@ const uint8_t percent_points[NUM_POINTS] = {0, 10, 50, 75, 100};   // 对应的百分
 
 
 
-// 查找表的大小
-#define ADC_MAX 1023
-
 // 函数：使用线性插值获取电池百分比
 uint8_t get_battery_percentage(uint16_t adc_value)
 {
+    //  DEBUG_PRINT("adc_value=%d \r\n",adc_value);
     if (adc_value >= adc_points[NUM_POINTS - 1])
     {
         return percent_points[NUM_POINTS - 1];
@@ -47,8 +46,6 @@ uint8_t get_battery_percentage(uint16_t adc_value)
     {
         if (adc_value >= adc_points[i] && adc_value < adc_points[i + 1])
         {
-
-            //  DEBUG_PRINT("adc_value=%d \r\n",adc_value);
             // 线性插值公式
             uint16_t range = adc_points[i + 1] - adc_points[i];
             uint16_t delta = adc_value - adc_points[i];
@@ -123,7 +120,25 @@ void Battery_DeInit(void)
     // 禁用ADC时钟
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, DISABLE); // 禁用 ADC1 时钟
 }
+uint16_t ADC_ReadVREFINT(void) {
+       
+    ADC_RegularChannelConfig(ADC1, ADC_Channel_Vrefint, 1, ADC_SampleTime_241Cycles); // CH14 = VREFINT
+    ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+    while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
+    return ADC_GetConversionValue(ADC1);
+}
 
+uint16_t Get_Calibrated_ADC(uint16_t adc_value) {
+    uint16_t vrefint_adc = ADC_ReadVREFINT();
+    uint16_t vrefint_cal = VREFINT_CAL;
+
+     DEBUG_PRINT("vrefint_adc=%d, vrefint_cal=%d\r\n", vrefint_adc, vrefint_cal);
+
+    // 校准比例：Vref_now = 1.2V * vrefint_cal / vrefint_adc
+    // 对应电压：adc_real_voltage = adc_value * Vref_now / 4096
+    // 简化为：   adc_calibrated = adc_value * vrefint_cal / vrefint_adc
+    return (adc_value * vrefint_cal) / vrefint_adc;
+}
 /*********************************************************************
  * @fn      Get_ADC_Val
  *
@@ -143,6 +158,7 @@ void Battery_DeInit(void)
  *
  * @return  none
  */
+
 u16 Get_ADC_Val(u8 ch)
 {
     u16 val;
@@ -204,7 +220,7 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
     static u8 Prepercentage = 101;
     char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
 
-    // percentage = get_battery_percentage(Battery_ADC_Average);
+    percentage = get_battery_percentage(Battery_ADC_Average);
 //   DEBUG_PRINT("percentage=%d %d\r\n",percentage,Battery_ADC_Average);
     // percentage = 100;
 
