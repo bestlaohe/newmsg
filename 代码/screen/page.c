@@ -511,7 +511,7 @@ void info_page()
 
 void show_page()
 {
-#if DEBUG_ENABLED == 2
+#if DEBUG_ENABLED > 0
   page = PAGE_SEND;
 #endif
   switch (page) // ¥¶¿Ì“≥√Ê

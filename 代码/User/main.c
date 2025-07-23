@@ -87,8 +87,10 @@ int main(void)
       // DEBUG_PRINT("\r\nshow_page");
       show_page();
 
+#if BEER_ENABLED
       // 处理电机震动标志位
       process_motor_flags();
+#endif
 
 #if LORA_ENABLED
       SX1278_Receive();

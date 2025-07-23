@@ -81,5 +81,5 @@
 #define SCREEN_ENABLED   1  // 屏幕组件使能
 #define ENCODER_ENABLED  1  // 编码器组件使能
 #define BATTERY_ENABLED  1  // 电池组件使能
-
+#define BEER_ENABLED  1 // 电池组件使能
 #endif /* USER_SETING_H_ */

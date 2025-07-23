@@ -368,13 +368,10 @@ void system_enter_sleep()
   if (needDeinit)
   {
     DEBUG_PRINT("system_Deinit\r\n");
-    // My_GPIO_DeInit();//唤醒不了打开的话
+      //  My_GPIO_DeInit();//唤醒不了打开的话
 
 #if LORA_ENABLED
-
     SX1278_Sleep();
-
-    //  SX1278_Standby();
 #endif
 
 #if SCREEN_ENABLED
@@ -430,7 +427,7 @@ void TIM1_UP_IRQHandler(void)
       if (key.LongKeyCounter >= DEBOUNCE_TIME) // 消抖
         key.state = KEY_STATE_HOLD;
     }
-
+#if BEER_ENABLED
     if (motor_shaking)
     {
       motor_shake_time++;
@@ -443,6 +440,7 @@ void TIM1_UP_IRQHandler(void)
         MOTOR_SET(0);
       }
     }
+#endif
   }
 }
 

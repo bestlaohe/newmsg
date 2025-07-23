@@ -11,17 +11,23 @@
 
 u16 BattaryBuf[ADC_CONUT];
 // 关键点的 ADC 值和对应的电池百分比
+//2.8v屏幕可以亮起来
 #define NUM_POINTS 5
-const uint16_t adc_points[NUM_POINTS] ={421, 477, 558, 609, 645}; // 示例关键点
-const uint8_t percent_points[NUM_POINTS] = {0, 25, 50, 75, 100};   // 对应的百分比
+const uint16_t adc_points[NUM_POINTS] ={519, 525, 539, 580, 620}; // 示例关键点
+const uint8_t percent_points[NUM_POINTS] = {0, 10, 50, 75, 100};   // 对应的百分比
 
 
 //percentage=41 578
 // percentage=32 562
-// 4.2V ≈ 100%
-// 3.6V ≈ 50%
-// 3.0V ≈ 10%
-// 2.7V ≈ 0%
+// 4.15V ≈ 100%=620
+// 3.9V ≈ 75%=580
+// 3.6V ≈ 50%=539
+// 3.0V ≈ 10%=525
+// 2.7V ≈ 0%=519
+
+
+
+
 
 
 
@@ -41,6 +47,8 @@ uint8_t get_battery_percentage(uint16_t adc_value)
     {
         if (adc_value >= adc_points[i] && adc_value < adc_points[i + 1])
         {
+
+            //  DEBUG_PRINT("adc_value=%d \r\n",adc_value);
             // 线性插值公式
             uint16_t range = adc_points[i + 1] - adc_points[i];
             uint16_t delta = adc_value - adc_points[i];
@@ -196,7 +204,7 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
     static u8 Prepercentage = 101;
     char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
 
-    percentage = get_battery_percentage(Battery_ADC_Average);
+    // percentage = get_battery_percentage(Battery_ADC_Average);
 //   DEBUG_PRINT("percentage=%d %d\r\n",percentage,Battery_ADC_Average);
     // percentage = 100;
 
