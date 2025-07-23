@@ -180,7 +180,7 @@ void EXTI7_0_IRQHandler(void)
 
   if (EXTI_GetITStatus(EXTI_Line1) != RESET)
   {
-
+    EXTI_ClearITPendingBit(EXTI_Line1); /* Clear Flag */
     needMotorShakeCharge = 1;
 
     if (!CHARGE)
@@ -195,7 +195,7 @@ void EXTI7_0_IRQHandler(void)
     }
 
     system_wokeup();                    // ÏµÍ³»½ÐÑ
-    EXTI_ClearITPendingBit(EXTI_Line1); /* Clear Flag */
+
   }
 }
 /*********************************************************************
