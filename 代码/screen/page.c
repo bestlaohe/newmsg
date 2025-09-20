@@ -16,6 +16,8 @@
 #define CHAT_UP CHAT_HISTORY_DOWN + 2                                                  // 输入栏的上部分
 #define CHAR_HEIGHT 18                                                                 // 单个字符高度
 #define Y_OFFSET 22                                                                    // 设置页面初始的y轴偏移
+#define ENG_NUMBER 5                                                                    // 英文字母的个数，正常是27
+
 int8_t Englishcount = 0;                                                               // 字符的位号
 int8_t Englishposx = 0;                                                                // x的个数
 int8_t Englishposy = 0;                                                                // y的个数
@@ -174,7 +176,7 @@ void handle_chat_event(sFONT *Font)
   // 处理滚动状态
   if (encode_struct.state == ENCODE_EVENT_UP)
   {
-    Englishcount = (Englishcount + 1) % 27; // 循环计数
+    Englishcount = (Englishcount + 1) % ENG_NUMBER; // 循环计数
     lora_receive_flag = 2;
     send_wait_time = 250;
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
@@ -182,7 +184,7 @@ void handle_chat_event(sFONT *Font)
   }
   else if (encode_struct.state == ENCODE_EVENT_DOWN)
   {
-    Englishcount = (Englishcount - 1 + 27) % 27; // 循环计数
+    Englishcount = (Englishcount - 1 + ENG_NUMBER) % ENG_NUMBER; // 循环计数
     lora_receive_flag = 2;
     send_wait_time = 250;
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
