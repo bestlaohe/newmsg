@@ -30,6 +30,7 @@ int main(void)
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
   USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死3956-3324=600k
   DEBUG_PRINT("\r\nSystemClk:%d\r\n", SystemCoreClock);
+   IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500,1除以500乘以4000=8s****12467-12356=111字节
   //  DEBUG_PRINT("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
   Delay_Init(); // 延时初始化需要在延时前，不然会卡死4012-3956=100字节
 
@@ -65,7 +66,6 @@ int main(void)
   EXTI_INT_INIT(); // 按键，充电，lora中断初始化
   //  startup_animation();                                             // 开机动画
 
-  IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500,1除以500乘以4000=8s****12467-12356=111字节
 
 #if SLEEP == 1
   AWU_Init(); // 唤醒时间为25/12.5大约是2s左右。

@@ -33,6 +33,7 @@ Setting settings[SETTING_COUNT] = {
     {"light", (u8 *)&TIM1->CH3CVR, NULL},
     {"shake", &shake_mode, NULL},
 #if LORA_ENABLED
+    {"loraslp", &lora_sleep_mode, NULL},
     {"freq", &Lora_Freq, SX1278_Init},
     {"power", &Lora_Power, SX1278_Init},
     {"lorabw", &Lora_BandWide, SX1278_Init},
@@ -356,7 +357,7 @@ void perpare_setting_page(sFONT *Font)
   show_history_data(Font);
 }
 
-/**************************************设置页面**************************************************** */
+/**************************************设置页面开始**************************************************** */
 void clamp_value(int *value, int min, int max)
 {
   if (*value < min)
@@ -383,6 +384,9 @@ void update_current_setting(int value)
   case SETTING_SHAKE_MODE:
     *settings[current_setting].value = !(*settings[current_setting].value);
     break;
+  case SETTING_LORA_SLEEP_MODE:
+    *settings[current_setting].value = !(*settings[current_setting].value);
+    break;
   case SETTING_LORA_FREQ:
     update_setting_value(value, LORAFREQ_MIN, LORAFREQ_MAX, current_setting);
     break;
@@ -405,55 +409,76 @@ void update_current_setting(int value)
   }
 }
 
-void draw_setting(int index, int highlight, sFONT *Font)
+
+void draw_setting(int index, int highlight, sFONT *Font, int row)
 {
+    char strBuf[4];
+    UWORD bg_color = highlight ? GREEN : MY_THEME_COMPONT_COLOR;
 
-  char strBuf[4]; // 用于存储最多3位数字和一个终止符
-  UWORD bg_color = highlight ? GREEN : MY_THEME_COMPONT_COLOR;
+    int y = row * CHAR_HEIGHT + Y_OFFSET;   // 用 row 来决定绘制位置
 
-  Paint_DrawString(0, index * CHAR_HEIGHT + Y_OFFSET, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a', 999);
-  Paint_DrawChar(Font->Width * strlen(settings[index].name), index * CHAR_HEIGHT + Y_OFFSET, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
+    Paint_DrawString(0, y, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a', 999);
+    Paint_DrawChar(Font->Width * strlen(settings[index].name), y, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
 
-  // 根据当前设置类型绘制值
-  if (index == SETTING_SHAKE_MODE)
-  {
-
-    if (highlight || isFirstSettingShow)
+    if (index == SETTING_SHAKE_MODE || index == SETTING_LORA_SLEEP_MODE)
     {
-      isFirstSettingShow = 0;
-      if (*settings[index].value == ON)
-      {
-        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0', 999);
-        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1) + 15, index * CHAR_HEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, GREEN, WHITE, '0', 999);
-      }
-      else
-      {
-        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0', 999);
-        Paint_DrawString((Font->Width * (strlen(settings[index].name) + 1)) + 2, index * CHAR_HEIGHT + Y_OFFSET + 2, "0", &Font16_cycle, RED, WHITE, '0', 999);
-      }
+        if (highlight || isFirstSettingShow)
+        {
+            if (index == SETTING_LORA_SLEEP_MODE)
+                isFirstSettingShow = 0;
+            if (*settings[index].value == ON)
+            {
+                Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0', 999);
+                Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1) + 15, y + 2, "0", &Font16_cycle, GREEN, WHITE, '0', 999);
+            }
+            else
+            {
+                Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0', 999);
+                Paint_DrawString((Font->Width * (strlen(settings[index].name) + 1)) + 2, y + 2, "0", &Font16_cycle, RED, WHITE, '0', 999);
+            }
+        }
+        return;
+    }
+    else
+    {
+        intToStr(*settings[index].value, strBuf, 3);
     }
 
-    return;
-  }
-  else
-  {
-    intToStr(*settings[index].value, strBuf, 3);
-  }
-
-  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), index * CHAR_HEIGHT + Y_OFFSET, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0', 999);
+    Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0', 999);
 }
+#define PAGE_SIZE 6   // 一屏显示的条目数
+u8 firstVisible = 0; // 当前页面的起始下标
 
 void display_settings(sFONT *Font)
 {
-
-  if (refreshState)
-  {
-    for (int i = 0; i < SETTING_COUNT; i++)
+ static u8 lastFirstVisible=-1;
+    if (refreshState)
     {
-      draw_setting(i, i == current_setting, Font);
+        // 保证 current_setting 在窗口范围内
+        if (current_setting < firstVisible) {
+            firstVisible = current_setting;
+        } else if (current_setting >= firstVisible + PAGE_SIZE) {
+            firstVisible = current_setting - PAGE_SIZE + 1;
+          
+        }
+
+
+if (firstVisible != lastFirstVisible) {
+    Screen_Clear(16, 16, 127, 127, MY_THEME_BACK_COLOR);
+    isFirstSettingShow = 1;
+    lastFirstVisible = firstVisible;
+}
+           
+
+        // 画窗口里的 PAGE_SIZE 个
+        for (int i = 0; i < PAGE_SIZE && (firstVisible + i) < SETTING_COUNT; i++)
+        {
+            int index = firstVisible + i;
+            draw_setting(index, index == current_setting, Font, i);  // 额外传入“相对行号”
+        }
+
+        refreshState = 0;
     }
-    refreshState = 0;
-  }
 }
 
 void handle_setting_event()
@@ -484,7 +509,7 @@ void setting_page(sFONT *Font)
   handle_setting_event();
 }
 
-/**************************************设置页面**************************************************** */
+/**************************************设置页面结束**************************************************** */
 
 void show_info(int posx, int posy, const char *label, int value, int offset)
 {

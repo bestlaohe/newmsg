@@ -41,6 +41,7 @@ typedef enum
 {
   SETTING_SCREEN_LIGHT,
   SETTING_SHAKE_MODE,
+  SETTING_LORA_SLEEP_MODE,
   SETTING_LORA_FREQ,
   SETTING_LORA_POWER,
   SETTING_LORA_BANDWIDTH,
@@ -63,7 +64,7 @@ typedef struct
 // 定义按键事件
 typedef enum
 {
-  PAGE_SEND, // 发送页面
+  PAGE_SEND,            // 发送页面
   PAGE_PERPARE_SETTING, // 准备设置页面
   PAGE_HISTROY_CHAT,
 

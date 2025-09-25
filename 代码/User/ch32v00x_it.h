@@ -80,7 +80,7 @@ typedef struct
 
 extern volatile u8 needSleep;
 extern volatile u8 needDeinit;//改成u8就无法正常休眠
-
+extern  u8 lora_sleep_mode; 
 
 void process_motor_flags(void);
 void refresh_SleepCounter(int newtime);

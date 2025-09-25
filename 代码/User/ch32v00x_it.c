@@ -26,7 +26,7 @@ volatile u8 dmaTransferComplete = 0;
 volatile u8 loraComplete = 0;
 volatile u8 needSleep = 0;
 volatile u8 needDeinit = 0;
-
+u8 lora_sleep_mode = 1;  // 决定休眠的时候lora收不收消息,1不收，0收
 u8 motor_shaking = 0;
 u16 motor_shake_time = 0;
 
@@ -182,7 +182,7 @@ void EXTI7_0_IRQHandler(void)
   if (EXTI_GetITStatus(EXTI_Line1) != RESET)
   {
     EXTI_ClearITPendingBit(EXTI_Line1); /* Clear Flag */
-    needMotorShakeCharge = 1;
+    // needMotorShakeCharge = 1;
 
     if (!CHARGE)
     {
@@ -370,9 +370,8 @@ void system_enter_sleep()
     DEBUG_PRINT("system_Deinit\r\n");
       //  My_GPIO_DeInit();//唤醒不了打开的话
 
-#if LORA_ENABLED
+if (lora_sleep_mode)  //这里决定了休眠时候收不收消息
     SX1278_Sleep();
-#endif
 
 #if SCREEN_ENABLED
     LCD_Drive_DeInit();
