@@ -42,7 +42,7 @@ typedef struct
   KeyState state;          // 当前按键状态
   KeyEvent event;          // 当前按键事件
   u8 debounce_counter;     // 去抖动计数器
-  uint16_t LongKeyCounter; // 长按计数器
+  uint32_t LongKeyCounter; // 长按计数器
   u8 enable;               // 使能
 
 } Key;

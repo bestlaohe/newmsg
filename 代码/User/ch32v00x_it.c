@@ -40,7 +40,7 @@ volatile u8 needMotorShakeCharge = 0;
 volatile u8 needMotorShakeEncode = 0;
 
 Encode encode_struct = {ENCODE_EVENT_NONE, 0};
-Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 1};
+Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 0};//enable为0是为了长按起来让按键失效，同时开机第一次的按键是会失效的
 Charge charge = {UNCHARGING};
 
 void TIM2_IRQHandler()
@@ -133,6 +133,7 @@ void EXTI7_0_IRQHandler(void)
     else
     {
       DEBUG_PRINT("end press\r\n");
+
       if (key.LongKeyCounter <= HOLD_TIME)
       {
         key.event = KEY_EVENT_CLICK;
@@ -425,6 +426,14 @@ void TIM1_UP_IRQHandler(void)
       key.LongKeyCounter++;
       if (key.LongKeyCounter >= DEBOUNCE_TIME) // 消抖
         key.state = KEY_STATE_HOLD;
+
+      if (key.LongKeyCounter >= HOLD_RST_TIME)
+      {
+        DEBUG_PRINT("HOLD_RST_TIME ontime%d\r\n",key.LongKeyCounter);
+          key.state = KEY_STATE_IDLE;
+        NVIC_SystemReset();   // 立即复位
+      } 
+
     }
 #if BEER_ENABLED
     if (motor_shaking)
