@@ -103,7 +103,16 @@ void Battery_Init(void)
     ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_241Cycles);
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);
 
-  
+    if (!CHARGE)
+    {
+      charge.state = CHARGING;
+      DEBUG_PRINT("start chage\r\n");
+    }
+    else
+    {
+      charge.state = UNCHARGING;
+      DEBUG_PRINT("end chage\r\n");
+    }
 }
 void Battery_DeInit(void)
 {
