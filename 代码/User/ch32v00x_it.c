@@ -26,7 +26,7 @@ volatile u8 dmaTransferComplete = 0;
 volatile u8 loraComplete = 0;
 volatile u8 needSleep = 0;
 volatile u8 needDeinit = 0;
-u8 lora_sleep_mode = 1;  // 决定休眠的时候lora收不收消息,1不收，0收
+u8 lora_sleep_mode = 1; // 决定休眠的时候lora收不收消息,1不收，0收
 u8 motor_shaking = 0;
 u16 motor_shake_time = 0;
 
@@ -40,7 +40,7 @@ volatile u8 needMotorShakeCharge = 0;
 volatile u8 needMotorShakeEncode = 0;
 
 Encode encode_struct = {ENCODE_EVENT_NONE, 0};
-Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 0};//enable为0是为了长按起来让按键失效，同时开机第一次的按键是会失效的
+Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 0}; // enable为0是为了长按起来让按键失效，同时开机第一次的按键是会失效的
 Charge charge = {UNCHARGING};
 
 void TIM2_IRQHandler()
@@ -195,8 +195,7 @@ void EXTI7_0_IRQHandler(void)
       DEBUG_PRINT("end chage\r\n");
     }
 
-    system_wokeup();                    // 系统唤醒
-
+    system_wokeup(); // 系统唤醒
   }
 }
 /*********************************************************************
@@ -368,10 +367,10 @@ void system_enter_sleep()
   if (needDeinit)
   {
     DEBUG_PRINT("system_Deinit\r\n");
-      //  My_GPIO_DeInit();//唤醒不了打开的话
+    //  My_GPIO_DeInit();//唤醒不了打开的话
 
-if (lora_sleep_mode)  //这里决定了休眠时候收不收消息
-    SX1278_Sleep();
+    if (lora_sleep_mode) // 这里决定了休眠时候收不收消息
+      SX1278_Sleep();
 
 #if SCREEN_ENABLED
     LCD_Drive_DeInit();
@@ -428,11 +427,10 @@ void TIM1_UP_IRQHandler(void)
 
       if (key.LongKeyCounter >= HOLD_RST_TIME)
       {
-        DEBUG_PRINT("HOLD_RST_TIME ontime%d\r\n",key.LongKeyCounter);
-          key.state = KEY_STATE_IDLE;
-        NVIC_SystemReset();   // 立即复位
-      } 
-
+        DEBUG_PRINT("HOLD_RST_TIME ontime%d\r\n", key.LongKeyCounter);
+        key.state = KEY_STATE_IDLE;
+        NVIC_SystemReset(); // 立即复位
+      }
     }
 #if BEER_ENABLED
     if (motor_shaking)

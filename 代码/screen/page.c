@@ -16,12 +16,13 @@
 #define CHAT_UP CHAT_HISTORY_DOWN + 2                                                  // 输入栏的上部分
 #define CHAR_HEIGHT 18                                                                 // 单个字符高度
 #define Y_OFFSET 22                                                                    // 设置页面初始的y轴偏移
-#define ENG_NUMBER 5                                                                    // 英文字母的个数，正常是27
+#define ENG_NUMBER 5                                                                   // 英文字母的个数，正常是27
 
-int8_t Englishcount = 0;                                                               // 字符的位号
-int8_t Englishposx = 0;                                                                // x的个数
-int8_t Englishposy = 0;                                                                // y的个数
 // u8 lora_send_buf[100];                                                                 // 只有3行可以输入一行18
+
+int8_t Englishcount = 0;   // 字符的位号
+int8_t Englishposx = 0;    // x的个数
+int8_t Englishposy = 0;    // y的个数
 u8 current_setting = 0;    // 当前设置的行
 u8 refreshState = 1;       // 内容刷新标志位
 u8 isFirstSettingShow = 1; // 设置刷新标志
@@ -56,7 +57,7 @@ void handle_lora_msg(sFONT *Font)
   {
     DEBUG_PRINT("lora send start\r\n");
     send_wait_time = 0;
-    if (!SX1278_LoRaTxPacket(lora_receive_buf, strlen(lora_receive_buf)))//这个逻辑没毛病，用户a不能控制b的输入位置，太傻逼了这样
+    if (!SX1278_LoRaTxPacket(lora_receive_buf, strlen(lora_receive_buf))) // 这个逻辑没毛病，用户a不能控制b的输入位置，太傻逼了这样
     {
       DEBUG_PRINT("lora send ok\r\n");
       lora_receive_flag = 1; // 决定是否需要回应
@@ -92,7 +93,7 @@ void handle_chat_event(sFONT *Font)
   {
     if (encode_struct.state == ENCODE_EVENT_DOWN) // 改成删除键，删除要不要对方也删除呢，
     {
-       refreshState = 1;
+      refreshState = 1;
       //  DEBUG_PRINT("start lora send\r\n");
 
       Englishposy = 0;
@@ -170,8 +171,8 @@ void handle_chat_event(sFONT *Font)
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
 
     DEBUG_PRINT("数组位=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
-     lora_receive_flag = 2;
-      send_wait_time = 250;
+    lora_receive_flag = 2;
+    send_wait_time = 250;
   }
 
   // 处理滚动状态
@@ -234,12 +235,12 @@ void show_history_data(sFONT *Font)
 
   if (lora_receive_flag == 3)
   {
-     refreshState = 1;
+    refreshState = 1;
     lora_receive_flag = 0;
     Englishposy = lora_receive_len / ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width);
     Englishposx = lora_receive_len - Englishposy * ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width) - 1;
 
-     DEBUG_PRINT("收到信息=%d, %d,%d,\r\n", Englishposx,Englishposy,lora_receive_len);
+    DEBUG_PRINT("收到信息=%d, %d,%d,\r\n", Englishposx, Englishposy, lora_receive_len);
   }
 #if 0
   int start_line = current_line;
@@ -409,76 +410,76 @@ void update_current_setting(int value)
   }
 }
 
-
 void draw_setting(int index, int highlight, sFONT *Font, int row)
 {
-    char strBuf[4];
-    UWORD bg_color = highlight ? GREEN : MY_THEME_COMPONT_COLOR;
+  char strBuf[4];
+  UWORD bg_color = highlight ? GREEN : MY_THEME_COMPONT_COLOR;
 
-    int y = row * CHAR_HEIGHT + Y_OFFSET;   // 用 row 来决定绘制位置
+  int y = row * CHAR_HEIGHT + Y_OFFSET; // 用 row 来决定绘制位置
 
-    Paint_DrawString(0, y, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a', 999);
-    Paint_DrawChar(Font->Width * strlen(settings[index].name), y, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
+  Paint_DrawString(0, y, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a', 999);
+  Paint_DrawChar(Font->Width * strlen(settings[index].name), y, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
 
-    if (index == SETTING_SHAKE_MODE || index == SETTING_LORA_SLEEP_MODE)
+  if (index == SETTING_SHAKE_MODE || index == SETTING_LORA_SLEEP_MODE)
+  {
+    if (highlight || isFirstSettingShow)
     {
-        if (highlight || isFirstSettingShow)
-        {
-            if (index == SETTING_LORA_SLEEP_MODE)
-                isFirstSettingShow = 0;
-            if (*settings[index].value == ON)
-            {
-                Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0', 999);
-                Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1) + 15, y + 2, "0", &Font16_cycle, GREEN, WHITE, '0', 999);
-            }
-            else
-            {
-                Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0', 999);
-                Paint_DrawString((Font->Width * (strlen(settings[index].name) + 1)) + 2, y + 2, "0", &Font16_cycle, RED, WHITE, '0', 999);
-            }
-        }
-        return;
+      if (index == SETTING_LORA_SLEEP_MODE)
+        isFirstSettingShow = 0;
+      if (*settings[index].value == ON)
+      {
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0', 999);
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1) + 15, y + 2, "0", &Font16_cycle, GREEN, WHITE, '0', 999);
+      }
+      else
+      {
+        Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, "0", &Font16_button, MY_THEME_BACK_COLOR, RED, '0', 999);
+        Paint_DrawString((Font->Width * (strlen(settings[index].name) + 1)) + 2, y + 2, "0", &Font16_cycle, RED, WHITE, '0', 999);
+      }
     }
-    else
-    {
-        intToStr(*settings[index].value, strBuf, 3);
-    }
+    return;
+  }
+  else
+  {
+    intToStr(*settings[index].value, strBuf, 3);
+  }
 
-    Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0', 999);
+  Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, strBuf, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, '0', 999);
 }
-#define PAGE_SIZE 6   // 一屏显示的条目数
+#define PAGE_SIZE 6  // 一屏显示的条目数
 u8 firstVisible = 0; // 当前页面的起始下标
 
 void display_settings(sFONT *Font)
 {
- static u8 lastFirstVisible=-1;
-    if (refreshState)
+  static u8 lastFirstVisible = -1;
+  if (refreshState)
+  {
+    // 保证 current_setting 在窗口范围内
+    if (current_setting < firstVisible)
     {
-        // 保证 current_setting 在窗口范围内
-        if (current_setting < firstVisible) {
-            firstVisible = current_setting;
-        } else if (current_setting >= firstVisible + PAGE_SIZE) {
-            firstVisible = current_setting - PAGE_SIZE + 1;
-          
-        }
-
-
-if (firstVisible != lastFirstVisible) {
-    Screen_Clear(16, 16, 127, 127, MY_THEME_BACK_COLOR);
-    isFirstSettingShow = 1;
-    lastFirstVisible = firstVisible;
-}
-           
-
-        // 画窗口里的 PAGE_SIZE 个
-        for (int i = 0; i < PAGE_SIZE && (firstVisible + i) < SETTING_COUNT; i++)
-        {
-            int index = firstVisible + i;
-            draw_setting(index, index == current_setting, Font, i);  // 额外传入“相对行号”
-        }
-
-        refreshState = 0;
+      firstVisible = current_setting;
     }
+    else if (current_setting >= firstVisible + PAGE_SIZE)
+    {
+      firstVisible = current_setting - PAGE_SIZE + 1;
+    }
+
+    if (firstVisible != lastFirstVisible)
+    {
+      Screen_Clear(16, 16, 127, 127, MY_THEME_BACK_COLOR);
+      isFirstSettingShow = 1;
+      lastFirstVisible = firstVisible;
+    }
+
+    // 画窗口里的 PAGE_SIZE 个
+    for (int i = 0; i < PAGE_SIZE && (firstVisible + i) < SETTING_COUNT; i++)
+    {
+      int index = firstVisible + i;
+      draw_setting(index, index == current_setting, Font, i); // 额外传入“相对行号”
+    }
+
+    refreshState = 0;
+  }
 }
 
 void handle_setting_event()
