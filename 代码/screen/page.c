@@ -32,7 +32,9 @@ u8 total_lines = 0;        // 总的聊天记录行数
 
 Setting settings[SETTING_COUNT] = {
     {"light", (u8 *)&TIM1->CH3CVR, NULL},
+#if BEER_ENABLED
     {"shake", &shake_mode, NULL},
+#endif
 #if LORA_ENABLED
     {"loraslp", &lora_sleep_mode, NULL},
     {"freq", &Lora_Freq, SX1278_Init},
@@ -382,9 +384,11 @@ void update_current_setting(int value)
                                             : value;
     TIM1->CH3CVR = value;
     break;
-  case SETTING_SHAKE_MODE:
+#if BEER_ENABLED
+     case SETTING_SHAKE_MODE:
     *settings[current_setting].value = !(*settings[current_setting].value);
     break;
+    #endif 
   case SETTING_LORA_SLEEP_MODE:
     *settings[current_setting].value = !(*settings[current_setting].value);
     break;
@@ -420,7 +424,11 @@ void draw_setting(int index, int highlight, sFONT *Font, int row)
   Paint_DrawString(0, y, settings[index].name, Font, MY_THEME_BACK_COLOR, bg_color, 'a', 999);
   Paint_DrawChar(Font->Width * strlen(settings[index].name), y, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
 
-  if (index == SETTING_SHAKE_MODE || index == SETTING_LORA_SLEEP_MODE)
+  if (
+    #if BEER_ENABLED
+    index == SETTING_SHAKE_MODE   ||
+    #endif 
+    index == SETTING_LORA_SLEEP_MODE)
   {
     if (highlight || isFirstSettingShow)
     {
