@@ -388,7 +388,8 @@ void update_current_setting(int value)
      case SETTING_SHAKE_MODE:
     *settings[current_setting].value = !(*settings[current_setting].value);
     break;
-    #endif 
+#endif 
+#if LORA_ENABLED
   case SETTING_LORA_SLEEP_MODE:
     *settings[current_setting].value = !(*settings[current_setting].value);
     break;
@@ -404,6 +405,7 @@ void update_current_setting(int value)
   case SETTING_LORA_SPREAD_FACTOR:
     update_setting_value(value, LORASpreadFactor_MIN, LORASpreadFactor_MAX, current_setting);
     break;
+#endif 
   default:
     break;
   }
@@ -426,14 +428,20 @@ void draw_setting(int index, int highlight, sFONT *Font, int row)
 
   if (
     #if BEER_ENABLED
-    index == SETTING_SHAKE_MODE   ||
+    index == SETTING_SHAKE_MODE  
     #endif 
-    index == SETTING_LORA_SLEEP_MODE)
+    #if LORA_ENABLED
+    || index == SETTING_LORA_SLEEP_MODE
+       #endif 
+    )
+     
   {
     if (highlight || isFirstSettingShow)
     {
+#if LORA_ENABLED
       if (index == SETTING_LORA_SLEEP_MODE)
         isFirstSettingShow = 0;
+#endif 
       if (*settings[index].value == ON)
       {
         Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0', 999);
