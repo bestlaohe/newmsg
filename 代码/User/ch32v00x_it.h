@@ -18,6 +18,7 @@
 #include "time_app.h"
 #include "drive_screen.h"
 #include "seting.h"
+#include "wave_wheel.h"
 extern u16 BattaryBuf[ADC_CONUT];
 // ¶¨Òå°´¼ü×´Ì¬
 typedef enum

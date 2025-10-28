@@ -147,6 +147,7 @@
 							"${project}/encode",
 							"${project}/Gpio",
 							"${project}/Time",
+							"${project}/wave_wheel",
 							"${project}/adc",
 							"${project}/Lora"
 						],
@@ -434,6 +435,7 @@
 							"${project}/encode",
 							"${project}/Gpio",
 							"${project}/Time",
+							"${project}/wave_wheel",
 							"${project}/adc",
 							"${project}/Lora"
 						],

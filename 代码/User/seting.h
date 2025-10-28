@@ -42,7 +42,7 @@
 
 #define SHAKE_TIME 50 * 10    // 大约50ms触发一次
 #define SLEEP_TIME 30000 * 10 // 大约10s触发一次
-
+#define  WAVE_WHEEL_FRE 100  //波轮编码器的频率
 // 开启或关闭调试信息输出
 #define DEBUG_ENABLED 0
 
@@ -77,6 +77,7 @@
 #define LORA_ENABLED 1    // LoRa组件使能
 #define SCREEN_ENABLED 1  // 屏幕组件使能
 #define ENCODER_ENABLED 1 // 编码器组件使能
+#define WAVE_WHEEL_ENABLED 1 // 编码器组件使能
 #define BATTERY_ENABLED 1 // 电池组件使能
 #define BEER_ENABLED 1    // 震动组件使能
 #endif                    /* USER_SETING_H_ */

@@ -8,7 +8,7 @@
 #ifndef TIME_TIME_APP_H_
 #define TIME_TIME_APP_H_
 #include "ch32v00x_rcc.h"
-
+#include "seting.h"
 void TIM1_Init(u16 arr, u16 psc, u16 ccp);
 void TIM2_Init(u16 arr, u16 psc);
 void IWDG_Feed_Init(u16 prer, u16 rlr);//ø¥√≈π∑
