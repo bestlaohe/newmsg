@@ -12,6 +12,7 @@
 #include <ch32v00x_it.h>
 #include "adc.h"
 #include "seting.h"
+#include "wave_wheel.h"
 // #include <core_riscv.h>
 void NMI_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
 void HardFault_Handler(void) __attribute__((interrupt("WCH-Interrupt-fast")));
@@ -45,9 +46,9 @@ Charge charge = {UNCHARGING};
 
 void TIM2_IRQHandler()
 {
-
+#if ENCODER_ENABLED
   volatile uint16_t tempcnt = TIM2->CNT, temparr = TIM2->ATRLR;
-
+#endif
   if (TIM_GetITStatus(TIM2, TIM_IT_Update))
   {
 

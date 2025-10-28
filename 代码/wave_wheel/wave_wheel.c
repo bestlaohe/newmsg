@@ -1,5 +1,5 @@
 #include "wave_wheel.h"
-#include <stdio.h>
+
 // 方案设计，用定时器去调用这个
 //========================= 用户配置区 =========================//
 
@@ -21,8 +21,8 @@ extern uint32_t get_sys_time_ms(void);
 
 static uint32_t last_step_time = 0;
 static uint32_t hold_start_time = 0;
-static bool is_up = false;
-static bool is_down = false;
+static uint8_t is_up = 0;
+static uint8_t is_down = 0;
 static uint16_t hold_ticks = 0; // 按下保持计数
 static uint16_t step_ticks = 0; // 自加步进计数
 //========================= 内部函数 =========================//
@@ -32,8 +32,8 @@ void WaveWheel_Init(void)
 
     last_step_time = 0;
     hold_start_time = 0;
-    is_up = false;
-    is_down = false;
+    is_up = 0;
+    is_down = 0;
 }
 
 /**
@@ -51,17 +51,17 @@ void WaveWheel_Task(void)
         // 初次拨动
         if (!is_up && (up_state == WAVE_ACTIVE_LEVEL))
         {
-            encode.state = ENCODE_EVENT_UP;
+            encode_struct.state = ENCODE_EVENT_UP;
             hold_ticks = 0;
             step_ticks = 0;
-            is_up = true;
+            is_up = 1;
         }
         else if (!is_down && (down_state == WAVE_ACTIVE_LEVEL))
         {
-            encode.state = ENCODE_EVENT_DOWN;
+            encode_struct.state = ENCODE_EVENT_DOWN;
             hold_ticks = 0;
             step_ticks = 0;
-            is_down = true;
+            is_down = 1;
         }
 
         // 持续拨动计数
@@ -78,18 +78,18 @@ void WaveWheel_Task(void)
         {
             step_ticks = 0;
             if (is_up)
-                encode.state = ENCODE_EVENT_UP;
+                encode_struct.state = ENCODE_EVENT_UP;
             else if (is_down)
-                encode.state = ENCODE_EVENT_DOWN;
+                encode_struct.state = ENCODE_EVENT_DOWN;
         }
     }
     else
     {
         // 没有拨动，重置
-        encode.state = ENCODE_EVENT_NONE;
+        encode_struct.state = ENCODE_EVENT_NONE;
         hold_ticks = 0;
         step_ticks = 0;
-        is_up = false;
-        is_down = false;
+        is_up = 0;
+        is_down = 0;
     }
 }

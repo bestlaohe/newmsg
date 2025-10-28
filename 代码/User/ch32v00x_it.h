@@ -18,7 +18,7 @@
 #include "time_app.h"
 #include "drive_screen.h"
 #include "seting.h"
-#include "wave_wheel.h"
+
 extern u16 BattaryBuf[ADC_CONUT];
 // 定义按键状态
 typedef enum
@@ -60,15 +60,14 @@ typedef enum
 typedef struct
 {
   EncodeState state; // 当前按键状态
- u8 enable;               // 使能
+  u8 enable;         // 使能
 } Encode;
-
 
 // 定义按键事件
 typedef enum
 {
-  UNCHARGING,   // 没充电
-  CHARGING, // 充电中
+  UNCHARGING, // 没充电
+  CHARGING,   // 充电中
 
 } ChargeState;
 
@@ -80,8 +79,8 @@ typedef struct
 } Charge;
 
 extern volatile u8 needSleep;
-extern volatile u8 needDeinit;//改成u8就无法正常休眠
-extern  u8 lora_sleep_mode; 
+extern volatile u8 needDeinit; // 改成u8就无法正常休眠
+extern u8 lora_sleep_mode;
 
 void process_motor_flags(void);
 void refresh_SleepCounter(int newtime);
