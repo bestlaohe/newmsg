@@ -54,6 +54,7 @@ void TIM2_IRQHandler()
     //     DEBUG_PRINT("当前计数=%d\r\n", tempcnt);
     //     DEBUG_PRINT("重装载值=%d\r\n", temparr);
 
+#if ENCODER_ENABLED
     if (tempcnt < temparr / 2)
     {
       circle += 1;
@@ -62,6 +63,11 @@ void TIM2_IRQHandler()
     {
       circle -= 1;
     }
+#endif
+
+#if WAVE_WHEEL_ENABLED
+    WaveWheel_Task();
+#endif
   }
   TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
 }

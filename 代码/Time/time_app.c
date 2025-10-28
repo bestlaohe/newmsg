@@ -77,12 +77,16 @@ void TIM1_DeInit(void)
 // 用于编码器
 void TIM2_Init(u16 arr, u16 psc)
 {
-
     TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
+#if ENCODER_ENABLED
     TIM_ICInitTypeDef TIM_ICInitStructure;
+#endif
     NVIC_InitTypeDef NVIC_InitStructure;
 
+    // 1. 使能 TIM2 时钟
     RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
+
+    // 2. 定时器基本配置
     TIM_TimeBaseStructInit(&TIM_TimeBaseStructure);
     TIM_TimeBaseStructure.TIM_Prescaler = psc; // 预分频器
     TIM_TimeBaseStructure.TIM_Period = arr;    // 自动重装载值
@@ -90,6 +94,8 @@ void TIM2_Init(u16 arr, u16 psc)
     TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
     TIM_TimeBaseStructure.TIM_RepetitionCounter = 0; // 重复计数器值
     TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
+
+#if ENCODER_ENABLED
     TIM_EncoderInterfaceConfig(TIM2, TIM_EncoderMode_TI12, TIM_ICPolarity_Rising, TIM_ICPolarity_Rising);
 
     // 配置 TIM1 输入捕获d3d4
@@ -99,6 +105,7 @@ void TIM2_Init(u16 arr, u16 psc)
     TIM_ICInitStructure.TIM_ICPrescaler = TIM_ICPSC_DIV1;            // 设置输入捕获预分频器为 1（不分频）
     TIM_ICInitStructure.TIM_ICFilter = 10;                           // 设置输入捕获滤波器的采样周期为 10（用于滤波抖动）
     TIM_ICInit(TIM2, &TIM_ICInitStructure);                          // 3，4捕获被我禁用了
+#endif
 
     // 清除更新中断标志
     TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
@@ -158,11 +165,11 @@ void IWDG_Feed_Init(u16 prer, u16 rlr)
     IWDG_Enable();                                // 启用 IWDG，使其开始工作
 }
 
-//128khz
-// 以EVT例程10240分频为例，10240分频之后大约是12.5Hz。
-// 此外，AWU有一个唤醒窗口寄存器，可配置窗口值，该值是6位的，最大可配置是0x3F，即是63，例程配置的是25。
-// 10240分频之后是12.5Hz，计数一次的时间为1/12.5Hz，窗口值设置是25，则唤醒时间为25/12.5大约是2s左右。
-// 若要加大唤醒时间间隔，可可知最大61440分频，然后窗口值设置为最大63.
+// 128khz
+//  以EVT例程10240分频为例，10240分频之后大约是12.5Hz。
+//  此外，AWU有一个唤醒窗口寄存器，可配置窗口值，该值是6位的，最大可配置是0x3F，即是63，例程配置的是25。
+//  10240分频之后是12.5Hz，计数一次的时间为1/12.5Hz，窗口值设置是25，则唤醒时间为25/12.5大约是2s左右。
+//  若要加大唤醒时间间隔，可可知最大61440分频，然后窗口值设置为最大63.
 void AWU_Init()
 {
 
