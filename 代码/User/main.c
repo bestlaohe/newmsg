@@ -50,13 +50,13 @@ int main(void)
 #endif
 
 #if WAVE_WHEEL_ENABLED
-  TIM2_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1); // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
+  TIM2_Init(100, (SystemCoreClock / (100 * WAVE_WHEEL_FRE)) - 1); // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
   WaveWheel_Init();
 #endif
 
 
 #if SCREEN_ENABLED
-  TIM1_Init(100, (SystemCoreClock / (100 * WAVE_WHEEL_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
+   TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
   LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
   LCD_SHOW_API_INIT();                                               // 屏幕测试******8404-6224=2180
 #endif

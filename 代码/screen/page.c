@@ -502,12 +502,18 @@ void handle_setting_event()
 {
   if (encode_struct.state == ENCODE_EVENT_UP)
   { // 编码器向上滚动
+  if(current_setting==SETTING_LORA_POWER)
+    update_current_setting(*settings[current_setting].value + 3);
+  else
     update_current_setting(*settings[current_setting].value + 1);
     refreshState = 1;
   }
   else if (encode_struct.state == ENCODE_EVENT_DOWN)
   { // 编码器向下滚动
-    update_current_setting(*settings[current_setting].value - 1);
+   if(current_setting==SETTING_LORA_POWER)
+    update_current_setting(*settings[current_setting].value - 3);
+      else
+       update_current_setting(*settings[current_setting].value - 1);
     refreshState = 1;
   }
   if (key.event == KEY_EVENT_CLICK)

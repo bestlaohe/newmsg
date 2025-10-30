@@ -29,8 +29,8 @@ extern u16 Battery_ADC_Average;
 // Lora参数范围定义
 #define LORAFREQ_MIN 1
 #define LORAFREQ_MAX 11
-#define LORAPOWER_MIN 11
-#define LORAPOWER_MAX 20
+#define LORAPOWER_MIN 0xF6
+#define LORAPOWER_MAX 0xFF
 #define LORASpreadFactor_MIN 7
 #define LORASpreadFactor_MAX 12
 #define LORABANDWIDTH_MIN 0
