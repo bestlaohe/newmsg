@@ -33,7 +33,6 @@ void Encoder_Scan()
       encode_struct.state = ENCODE_EVENT_UP;
       DEBUG_PRINT("Encoder up\r\n");
     }
- 
     if (precircle * 12 + precnt < circle * 12 + TIM2->CNT)
     {
       encode_struct.state = ENCODE_EVENT_DOWN;
@@ -52,7 +51,7 @@ void Encoder_Scan()
       DEBUG_PRINT("disable encode_struct operate\r\n");
     }
     refresh_SleepCounter(0); // Ë¢ÐÂÐÝÃßÊ±¼ä
-  needMotorShakeEncode=1;
+    needMotorShakeEncode = 1;
   }
 }
 void Encoder_Init(u16 arr, u16 psc)

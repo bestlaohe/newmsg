@@ -54,9 +54,8 @@ int main(void)
   WaveWheel_Init();
 #endif
 
-
 #if SCREEN_ENABLED
-   TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
+  TIM1_Init(100, (SystemCoreClock / (100 * PWM_FRE)) - 1, PWM_Duty); // 屏幕的背光调节  默认百分百亮度******5076-4484=592字节pwm要200多+定时器300
   LCD_Drive_Init();                                                  // 屏幕硬件初始化****200字节
   LCD_SHOW_API_INIT();                                               // 屏幕测试******8404-6224=2180
 #endif
@@ -80,9 +79,9 @@ int main(void)
 
     if (needSleep)
     {
-#if SLEEP == 1
       IWDG_ReloadCounter(); // 喂狗
-      Sleep_Scan();         // 检查是否睡觉1
+#if SLEEP == 1
+      Sleep_Scan(); // 检查是否睡觉1
 #endif
     }
     else

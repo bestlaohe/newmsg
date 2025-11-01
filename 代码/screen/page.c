@@ -91,9 +91,9 @@ void handle_chat_event(sFONT *Font)
 #endif
 
   // 发送数据
-  if (key.state == KEY_STATE_HOLD)
+  if (key.state == KEY_STATE_HOLD || encode_struct.state == ENCODE_EVENT_UP_LONG || encode_struct.state == ENCODE_EVENT_DOWN_LONG)
   {
-    if (encode_struct.state == ENCODE_EVENT_DOWN) // 改成删除键，删除要不要对方也删除呢，
+    if (encode_struct.state == ENCODE_EVENT_DOWN || encode_struct.state == ENCODE_EVENT_DOWN_LONG) // 改成删除键，删除要不要对方也删除呢，
     {
       refreshState = 1;
       //  DEBUG_PRINT("start lora send\r\n");
@@ -109,7 +109,7 @@ void handle_chat_event(sFONT *Font)
       lora_receive_flag = 2;
       return;
     }
-    else if (encode_struct.state == ENCODE_EVENT_UP)
+    else if (encode_struct.state == ENCODE_EVENT_UP || encode_struct.state == ENCODE_EVENT_UP_LONG)
     {
       refreshState = 1;
 
@@ -172,7 +172,7 @@ void handle_chat_event(sFONT *Font)
     }
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
 
-    DEBUG_PRINT("数组位=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
+    DEBUG_PRINT("数组位1=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
     lora_receive_flag = 2;
     send_wait_time = 250;
   }
@@ -184,7 +184,7 @@ void handle_chat_event(sFONT *Font)
     lora_receive_flag = 2;
     send_wait_time = 250;
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
-    DEBUG_PRINT("数组位=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
+    DEBUG_PRINT("数组位2=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
   }
   else if (encode_struct.state == ENCODE_EVENT_DOWN)
   {
@@ -192,7 +192,7 @@ void handle_chat_event(sFONT *Font)
     lora_receive_flag = 2;
     send_wait_time = 250;
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
-    DEBUG_PRINT("数组位=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
+    DEBUG_PRINT("数组位3=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
   }
 }
 
@@ -427,14 +427,14 @@ void draw_setting(int index, int highlight, sFONT *Font, int row)
   Paint_DrawChar(Font->Width * strlen(settings[index].name), y, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
 
   if (
+      0
 #if BEER_ENABLED
-      index == SETTING_SHAKE_MODE
+      || index == SETTING_SHAKE_MODE
 #endif
 #if LORA_ENABLED
       || index == SETTING_LORA_SLEEP_MODE
 #endif
   )
-
   {
     if (highlight || isFirstSettingShow)
     {
