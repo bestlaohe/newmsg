@@ -385,10 +385,10 @@ void update_current_setting(int value)
     TIM1->CH3CVR = value;
     break;
 #if BEER_ENABLED
-     case SETTING_SHAKE_MODE:
+  case SETTING_SHAKE_MODE:
     *settings[current_setting].value = !(*settings[current_setting].value);
     break;
-#endif 
+#endif
 #if LORA_ENABLED
   case SETTING_LORA_SLEEP_MODE:
     *settings[current_setting].value = !(*settings[current_setting].value);
@@ -405,7 +405,7 @@ void update_current_setting(int value)
   case SETTING_LORA_SPREAD_FACTOR:
     update_setting_value(value, LORASpreadFactor_MIN, LORASpreadFactor_MAX, current_setting);
     break;
-#endif 
+#endif
   default:
     break;
   }
@@ -427,21 +427,21 @@ void draw_setting(int index, int highlight, sFONT *Font, int row)
   Paint_DrawChar(Font->Width * strlen(settings[index].name), y, 11, &Font16_Num, MY_THEME_BACK_COLOR, bg_color, 0);
 
   if (
-    #if BEER_ENABLED
-    index == SETTING_SHAKE_MODE  
-    #endif 
-    #if LORA_ENABLED
-    || index == SETTING_LORA_SLEEP_MODE
-       #endif 
-    )
-     
+#if BEER_ENABLED
+      index == SETTING_SHAKE_MODE
+#endif
+#if LORA_ENABLED
+      || index == SETTING_LORA_SLEEP_MODE
+#endif
+  )
+
   {
     if (highlight || isFirstSettingShow)
     {
 #if LORA_ENABLED
       if (index == SETTING_LORA_SLEEP_MODE)
         isFirstSettingShow = 0;
-#endif 
+#endif
       if (*settings[index].value == ON)
       {
         Paint_DrawString(Font->Width * (strlen(settings[index].name) + 1), y, "0", &Font16_button, MY_THEME_BACK_COLOR, GREEN, '0', 999);
@@ -502,18 +502,25 @@ void handle_setting_event()
 {
   if (encode_struct.state == ENCODE_EVENT_UP)
   { // 编码器向上滚动
-  if(current_setting==SETTING_LORA_POWER)
-    update_current_setting(*settings[current_setting].value + 3);
-  else
-    update_current_setting(*settings[current_setting].value + 1);
+
+#if LORA_ENABLED
+
+    if (current_setting == SETTING_LORA_POWER)
+      update_current_setting(*settings[current_setting].value + 3);
+    else
+#endif
+      update_current_setting(*settings[current_setting].value + 1);
     refreshState = 1;
   }
   else if (encode_struct.state == ENCODE_EVENT_DOWN)
   { // 编码器向下滚动
-   if(current_setting==SETTING_LORA_POWER)
-    update_current_setting(*settings[current_setting].value - 3);
-      else
-       update_current_setting(*settings[current_setting].value - 1);
+
+#if LORA_ENABLED
+    if (current_setting == SETTING_LORA_POWER)
+      update_current_setting(*settings[current_setting].value - 3);
+    else
+#endif
+      update_current_setting(*settings[current_setting].value - 1);
     refreshState = 1;
   }
   if (key.event == KEY_EVENT_CLICK)
