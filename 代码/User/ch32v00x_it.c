@@ -196,11 +196,13 @@ void EXTI7_0_IRQHandler(void)
     {
       charge.state = CHARGING;
       DEBUG_PRINT("start chage\r\n");
+      isFirstBattaryShow = 1;
     }
     else
     {
       charge.state = UNCHARGING;
       DEBUG_PRINT("end chage\r\n");
+      isFirstBattaryShow = 1;
     }
 
     system_wokeup(); // ÏµÍ³»½ÐÑ

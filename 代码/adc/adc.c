@@ -16,7 +16,7 @@ u16 BattaryBuf[ADC_CONUT];
 #define NUM_POINTS 5
 const uint16_t adc_points[NUM_POINTS] ={519, 525, 539, 580, 620}; // 示例关键点
 const uint8_t percent_points[NUM_POINTS] = {0, 10, 50, 75, 100};   // 对应的百分比
-
+u8 isFirstBattaryShow = 1; // 电池刷新标志
 
 //percentage=41 578
 // percentage=32 562
@@ -107,11 +107,13 @@ void Battery_Init(void)
     {
       charge.state = CHARGING;
       DEBUG_PRINT("start chage\r\n");
+      isFirstBattaryShow = 1;
     }
     else
     {
       charge.state = UNCHARGING;
       DEBUG_PRINT("end chage\r\n");
+      isFirstBattaryShow = 1;
     }
 }
 void Battery_DeInit(void)
@@ -222,7 +224,7 @@ void DMA_Tx_Init(DMA_Channel_TypeDef *DMA_CHx, u32 ppadr, u32 memadr, u16 bufsiz
     NVIC_Init(&NVIC_InitStructure); // 配置NVIC
 }
 
-void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Color_Foreground, u8 *needshow)
+void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Color_Foreground)
 {
 
     static u8 percentage = 0;
@@ -237,9 +239,9 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
     if (percentage > 100)
         percentage = 100;
 
-    if(abs(Prepercentage - percentage) > 5 || *needshow)
+    if(abs(Prepercentage - percentage) > 5 || isFirstBattaryShow)
     {
-        *needshow = 0;
+        isFirstBattaryShow = 0;
         Prepercentage = percentage;
 
         u8 cnt = percentage / 25;

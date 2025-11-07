@@ -71,7 +71,6 @@ typedef enum
   PAGE_SEND,            // 发送页面
   PAGE_PERPARE_SETTING, // 准备设置页面
   PAGE_HISTROY_CHAT,
-
   PAGE_SETTING, // 设置页面
   PAGE_INFO,    // 信息页面
 } Page;

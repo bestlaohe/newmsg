@@ -26,7 +26,6 @@ int8_t Englishposy = 0;    // y的个数
 u8 current_setting = 0;    // 当前设置的行
 u8 refreshState = 1;       // 内容刷新标志位
 u8 isFirstSettingShow = 1; // 设置刷新标志
-u8 isFirstBattaryShow = 1; // 电池刷新标志
 u8 current_line = 0;       // 当前显示的起始行
 u8 total_lines = 0;        // 总的聊天记录行数
 
@@ -308,7 +307,7 @@ void chat_page(sFONT *Font)
 {
 
 #if BATTERY_ENABLED
-  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow); // 显示电池信息
+  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR); // 显示电池信息
 #endif
 
   if (refreshState)
@@ -330,7 +329,7 @@ void chat_page(sFONT *Font)
 // void chat_history_page(sFONT *Font)
 // {
 // #if BATTERY_ENABLED
-//   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow);
+//   show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR);
 // #endif
 //   if (refreshState)
 //   {
@@ -347,7 +346,7 @@ void chat_page(sFONT *Font)
 void perpare_setting_page(sFONT *Font)
 {
 #if BATTERY_ENABLED
-  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, &isFirstBattaryShow); // 电池组件
+  show_battery(BATTERY_X, BATTERY_Y, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR); // 电池组件
 #endif
   if (refreshState)
   {
