@@ -6,12 +6,6 @@
 extern Encode encode_struct;
 
 /**
- * @brief 波动滚轮初始化
- * @param none
- */
-void WaveWheel_Init(void);
-
-/**
  * @brief 波动滚轮任务函数（需周期调用）
  * 建议每 10~20ms 调用一次
  */

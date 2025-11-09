@@ -19,22 +19,12 @@ extern uint32_t get_sys_time_ms(void);
 
 //========================= 全局变量 =========================//
 
-static uint32_t last_step_time = 0;
-static uint32_t hold_start_time = 0;
 static uint8_t is_up = 0;
 static uint8_t is_down = 0;
 static uint16_t hold_ticks = 0; // 按下保持计数
 static uint16_t step_ticks = 0; // 自加步进计数
 //========================= 内部函数 =========================//
 
-void WaveWheel_Init(void)
-{
-
-    last_step_time = 0;
-    hold_start_time = 0;
-    is_up = 0;
-    is_down = 0;
-}
 
 /**
  * @brief 波动滚轮任务函数

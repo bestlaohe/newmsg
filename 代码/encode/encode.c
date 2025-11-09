@@ -19,7 +19,7 @@ void Encoder_Scan()
 {
 
   static u8 precnt = 0;
-  static int precircle = 0;
+  static u8 precircle = 0;
   if (precnt == 0 && precircle == 0)
   {
 

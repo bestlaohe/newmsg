@@ -51,7 +51,6 @@ int main(void)
 
 #if WAVE_WHEEL_ENABLED
   TIM2_Init(100, (SystemCoreClock / (100 * WAVE_WHEEL_FRE)) - 1); // 编码器的内容,重载值为65535，不分频，1圈12个****6020-6900=880字节输入捕获要500多+定时器300
-  WaveWheel_Init();
 #endif
 
 #if SCREEN_ENABLED
@@ -92,8 +91,7 @@ int main(void)
       show_page();
 
 #if BEER_ENABLED
-      // 处理电机震动标志位
-      process_motor_flags();
+      process_motor_flags();// 处理电机震动标志位
 #endif
 
 #if LORA_ENABLED

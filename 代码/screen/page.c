@@ -615,7 +615,7 @@ void show_page()
       refreshState = 1;
       Screen_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
 
-      isFirstBattaryShow = 1;
+      needshowbattary();
       page = PAGE_SEND;
     }
     break;
@@ -629,7 +629,7 @@ void show_page()
       refreshState = 1;
       Screen_Clear(0, 0, 127, 127, MY_THEME_BACK_COLOR);
       // page = PAGE_INFO;
-      isFirstBattaryShow = 1;
+      needshowbattary();
       page = PAGE_SEND;
     }
     break;

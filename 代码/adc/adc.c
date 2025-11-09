@@ -16,7 +16,7 @@ u16 BattaryBuf[ADC_CONUT];
 #define NUM_POINTS 5
 const uint16_t adc_points[NUM_POINTS] ={519, 525, 539, 580, 620}; // 示例关键点
 const uint8_t percent_points[NUM_POINTS] = {0, 10, 50, 75, 100};   // 对应的百分比
-u8 isFirstBattaryShow = 1; // 电池刷新标志
+static u8 isFirstBattaryShow = 1; // 电池刷新标志
 
 //percentage=41 578
 // percentage=32 562
@@ -107,14 +107,13 @@ void Battery_Init(void)
     {
       charge.state = CHARGING;
       DEBUG_PRINT("start chage\r\n");
-      isFirstBattaryShow = 1;
     }
     else
     {
       charge.state = UNCHARGING;
       DEBUG_PRINT("end chage\r\n");
-      isFirstBattaryShow = 1;
     }
+    needshowbattary();
 }
 void Battery_DeInit(void)
 {
@@ -290,4 +289,10 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
    
         }
     }
+}
+
+
+void needshowbattary(){
+
+    isFirstBattaryShow=1;
 }

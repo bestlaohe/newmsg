@@ -2,6 +2,7 @@
     "idf.pythonInstallPath": "h:\\vscodeespidf\\Espressif\\tools\\idf-python\\3.8.7\\python.exe",
     "files.encoding": "gb2312",
     "files.associations": {
-        "gpio.h": "c"
+        "gpio.h": "c",
+        "sx1278.h": "c"
     }
 }
