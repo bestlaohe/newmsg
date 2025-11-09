@@ -90,9 +90,18 @@ void handle_chat_event(sFONT *Font)
 #endif
 
   // 发送数据
-  if (key.state == KEY_STATE_HOLD || encode_struct.state == ENCODE_EVENT_UP_LONG || encode_struct.state == ENCODE_EVENT_DOWN_LONG)
+  if (key.state == KEY_STATE_HOLD
+#if WAVE_WHEEL_ENABLED
+      || encode_struct.state == ENCODE_EVENT_UP_LONG || encode_struct.state == ENCODE_EVENT_DOWN_LONG
+#endif
+
+  )
   {
-    if (encode_struct.state == ENCODE_EVENT_DOWN || encode_struct.state == ENCODE_EVENT_DOWN_LONG) // 改成删除键，删除要不要对方也删除呢，
+    if (encode_struct.state == ENCODE_EVENT_DOWN
+#if WAVE_WHEEL_ENABLED
+        || encode_struct.state == ENCODE_EVENT_DOWN_LONG
+#endif
+        ) // 改成删除键，删除要不要对方也删除呢，
     {
       refreshState = 1;
       //  DEBUG_PRINT("start lora send\r\n");
@@ -108,7 +117,11 @@ void handle_chat_event(sFONT *Font)
       lora_receive_flag = 2;
       return;
     }
-    else if (encode_struct.state == ENCODE_EVENT_UP || encode_struct.state == ENCODE_EVENT_UP_LONG)
+    else if (encode_struct.state == ENCODE_EVENT_UP
+#if WAVE_WHEEL_ENABLED
+             || encode_struct.state == ENCODE_EVENT_UP_LONG
+#endif
+    )
     {
       refreshState = 1;
 

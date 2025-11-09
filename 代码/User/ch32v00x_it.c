@@ -31,6 +31,8 @@ u8 lora_sleep_mode = 1; // 决定休眠的时候lora收不收消息,1不收，0收
 u8 motor_shaking = 0;
 u16 motor_shake_time = 0;
 
+u16 Battery_ADC_Average = 0;
+u16 pre_Battery_ADC_Average = 0;
 volatile int circle = 0;
 int SleepCounter = 0;
 
@@ -87,8 +89,7 @@ void DMA1_Channel3_IRQHandler(void)
     DMA_ClearITPendingBit(DMA1_IT_TC3); // 清除中断标志
   }
 }
-u16 Battery_ADC_Average = 0;
-u16 pre_Battery_ADC_Average = 0;
+
 void DMA1_Channel1_IRQHandler(void)
 {
 

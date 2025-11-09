@@ -25,7 +25,6 @@ static uint16_t hold_ticks = 0; // 按下保持计数
 static uint16_t step_ticks = 0; // 自加步进计数
 //========================= 内部函数 =========================//
 
-
 /**
  * @brief 波动滚轮任务函数
  * 每 10~20ms 调用一次
@@ -67,12 +66,16 @@ void WaveWheel_Task(void)
             if (is_up)
             {
                 hold_ticks = 0;
+#if WAVE_WHEEL_ENABLED
                 encode_struct.state = ENCODE_EVENT_UP_LONG;
+#endif
             }
             else if (is_down)
             {
                 hold_ticks = 0;
+#if WAVE_WHEEL_ENABLED
                 encode_struct.state = ENCODE_EVENT_DOWN_LONG;
+#endif
             }
         }
 

@@ -76,14 +76,7 @@ int main(void)
   while (1)
   {
 
-    if (needSleep)
-    {
-      IWDG_ReloadCounter(); // 喂狗
-#if SLEEP == 1
-      Sleep_Scan(); // 检查是否睡觉1
-#endif
-    }
-    else
+    if (!needSleep)
     {
       //  u8 data[] = "rr";
       //  SX1278_LoRaTxPacket(data, 2);
@@ -91,7 +84,7 @@ int main(void)
       show_page();
 
 #if BEER_ENABLED
-      process_motor_flags();// 处理电机震动标志位
+      process_motor_flags(); // 处理电机震动标志位
 #endif
 
 #if LORA_ENABLED
@@ -102,12 +95,12 @@ int main(void)
       Encoder_Scan();
 #endif
 
-      IWDG_ReloadCounter(); // 喂狗
-
-#if SLEEP == 1
-      Sleep_Scan(); // 检查是否睡觉
-#endif
       //  Delay_Ms(1000);
     }
+
+    IWDG_ReloadCounter(); // 喂狗
+#if SLEEP == 1
+    Sleep_Scan(); // 检查是否睡觉1
+#endif
   }
 }
