@@ -8,29 +8,23 @@
 #include "adc.h"
 #include "seting.h"
 
-#define VREFINT_CAL      1200    // 1.200V（单位：mV，根据实际校准调整）
-#define ADC_MAX          1023    // 10-bit ADC最大值
+#define VREFINT_CAL 1200 // 1.200V（单位：mV，根据实际校准调整）
+#define ADC_MAX 1023     // 10-bit ADC最大值
 u16 BattaryBuf[ADC_CONUT];
 // 关键点的 ADC 值和对应的电池百分比
-//2.8v屏幕可以亮起来
+// 2.8v屏幕可以亮起来
 #define NUM_POINTS 5
-const uint16_t adc_points[NUM_POINTS] ={519, 525, 539, 580, 620}; // 示例关键点
+const uint16_t adc_points[NUM_POINTS] = {519, 525, 539, 580, 620}; // 示例关键点
 const uint8_t percent_points[NUM_POINTS] = {0, 10, 50, 75, 100};   // 对应的百分比
-static u8 isFirstBattaryShow = 1; // 电池刷新标志
+static u8 isFirstBattaryShow = 1;                                  // 电池刷新标志
 
-//percentage=41 578
-// percentage=32 562
-// 4.15V ≈ 100%=620
-// 3.9V ≈ 75%=580
-// 3.6V ≈ 50%=539
-// 3.0V ≈ 10%=525
-// 2.7V ≈ 0%=519
-
-
-
-
-
-
+// percentage=41 578
+//  percentage=32 562
+//  4.15V ≈ 100%=620
+//  3.9V ≈ 75%=580
+//  3.6V ≈ 50%=539
+//  3.0V ≈ 10%=525
+//  2.7V ≈ 0%=519
 
 // 函数：使用线性插值获取电池百分比
 uint8_t get_battery_percentage(uint16_t adc_value)
@@ -51,8 +45,7 @@ uint8_t get_battery_percentage(uint16_t adc_value)
             uint16_t delta = adc_value - adc_points[i];
             uint8_t percentage_range = percent_points[i + 1] - percent_points[i];
             uint8_t percentage = percent_points[i] + (delta * percentage_range) / range;
-            if (percentage > 100)
-                percentage = 100;
+
             return percentage;
         }
     }
@@ -105,13 +98,13 @@ void Battery_Init(void)
 
     if (!CHARGE)
     {
-      charge.state = CHARGING;
-      DEBUG_PRINT("start chage\r\n");
+        charge.state = CHARGING;
+        DEBUG_PRINT("start chage\r\n");
     }
     else
     {
-      charge.state = UNCHARGING;
-      DEBUG_PRINT("end chage\r\n");
+        charge.state = UNCHARGING;
+        DEBUG_PRINT("end chage\r\n");
     }
     needshowbattary();
 }
@@ -130,19 +123,22 @@ void Battery_DeInit(void)
     // 禁用ADC时钟
     RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, DISABLE); // 禁用 ADC1 时钟
 }
-uint16_t ADC_ReadVREFINT(void) {
-       
+uint16_t ADC_ReadVREFINT(void)
+{
+
     ADC_RegularChannelConfig(ADC1, ADC_Channel_Vrefint, 1, ADC_SampleTime_241Cycles); // CH14 = VREFINT
     ADC_SoftwareStartConvCmd(ADC1, ENABLE);
-    while(!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC));
+    while (!ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC))
+        ;
     return ADC_GetConversionValue(ADC1);
 }
 
-uint16_t Get_Calibrated_ADC(uint16_t adc_value) {
+uint16_t Get_Calibrated_ADC(uint16_t adc_value)
+{
     uint16_t vrefint_adc = ADC_ReadVREFINT();
     uint16_t vrefint_cal = VREFINT_CAL;
 
-     DEBUG_PRINT("vrefint_adc=%d, vrefint_cal=%d\r\n", vrefint_adc, vrefint_cal);
+    DEBUG_PRINT("vrefint_adc=%d, vrefint_cal=%d\r\n", vrefint_adc, vrefint_cal);
 
     // 校准比例：Vref_now = 1.2V * vrefint_cal / vrefint_adc
     // 对应电压：adc_real_voltage = adc_value * Vref_now / 4096
@@ -231,14 +227,9 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
     char strBuf[4]; // 要存储最多3位数字和一个终止符，所以数组大小为4
 
     percentage = get_battery_percentage(Battery_ADC_Average);
-//   DEBUG_PRINT("percentage=%d %d\r\n",percentage,Battery_ADC_Average);
-    // percentage = 100;
+    //   DEBUG_PRINT("percentage=%d %d\r\n",percentage,Battery_ADC_Average);
 
-    // 限制百分比范围
-    if (percentage > 100)
-        percentage = 100;
-
-    if(abs(Prepercentage - percentage) > 5 || isFirstBattaryShow)
+    if (abs(Prepercentage - percentage) > 5 || isFirstBattaryShow)
     {
         isFirstBattaryShow = 0;
         Prepercentage = percentage;
@@ -251,13 +242,13 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
         {
             strX = Xpoint - 3 * Font16_Num.Width; // 3 位数的显示位置
             color = GREEN;                        // 颜色
-
+            percentage = 100;
             intToStr(percentage, strBuf, 3);
         }
         else if (percentage < 10)
         {
 
-            Paint_DrawString(Xpoint - Font16_Num.Width * 3, Ypoint, "<<", &Font16_Num, Color_Background, Color_Background, '0',999);
+            Paint_DrawString(Xpoint - Font16_Num.Width * 3, Ypoint, "<<", &Font16_Num, Color_Background, Color_Background, '0', 999);
             strX = Xpoint - Font16_Num.Width; // 1 位数的显示位置
             color = RED;                      // 颜色
 
@@ -265,19 +256,18 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
         }
         else
         {
-            Paint_DrawString(Xpoint - Font16_Num.Width * 3, Ypoint, "<", &Font16_Num, Color_Background, Color_Background, '0',999);
+            Paint_DrawString(Xpoint - Font16_Num.Width * 3, Ypoint, "<", &Font16_Num, Color_Background, Color_Background, '0', 999);
 
             intToStr(percentage, strBuf, 2);
         }
 
         // 数字百分比
-        Paint_DrawString(strX, Ypoint, strBuf, &Font16_Num, Color_Background, Color_Foreground, '0',999);
+        Paint_DrawString(strX, Ypoint, strBuf, &Font16_Num, Color_Background, Color_Foreground, '0', 999);
         Paint_DrawChar(Xpoint, Ypoint, 10, &Font16_Num, Color_Background, Color_Foreground, 0); //%
 
         if (charge.state == CHARGING)
         {
             Paint_DrawChar(Xpoint + Font16_Num.Width, Ypoint, 1, &Font16_Bat, Color_Background, color, 0); // 充电log
-      
         }
         else if (charge.state == UNCHARGING)
         {
@@ -286,13 +276,12 @@ void show_battery(UWORD Xpoint, UWORD Ypoint, UWORD Color_Background, UWORD Colo
             {
                 Paint_DrawLine(108 + 4 + i * 3, 3 + Ypoint, 108 + 4 + i * 3, 7 + Ypoint, color, 1, LINE_STYLE_SOLID);
             }
-   
         }
     }
 }
 
+void needshowbattary()
+{
 
-void needshowbattary(){
-
-    isFirstBattaryShow=1;
+    isFirstBattaryShow = 1;
 }
