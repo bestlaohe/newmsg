@@ -34,7 +34,7 @@ u16 motor_shake_time = 0;
 u16 Battery_ADC_Average = 0;
 u16 pre_Battery_ADC_Average = 0;
 volatile int circle = 0;
-int SleepCounter = 0;
+volatile int SleepCounter = 0;
 
 // 添加标志位用于延时操作
 volatile u8 needMotorShakeKey = 0;

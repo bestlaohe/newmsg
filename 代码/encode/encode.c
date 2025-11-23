@@ -18,8 +18,8 @@ extern volatile u8 needMotorShakeEncode;
 void Encoder_Scan()
 {
 
-  static u8 precnt = 0;
-  static u8 precircle = 0;
+  static uint16_t precnt = 0;
+  static int precircle = 0;
   if (precnt == 0 && precircle == 0)
   {
 
@@ -32,6 +32,8 @@ void Encoder_Scan()
     {
       encode_struct.state = ENCODE_EVENT_UP;
       DEBUG_PRINT("Encoder up\r\n");
+      // DEBUG_PRINT("circle up=%d =%d \r\n",circle,precircle);
+      //       DEBUG_PRINT("precnt up=%d =%d \r\n",precnt,TIM2->CNT);
     }
     if (precircle * 12 + precnt < circle * 12 + TIM2->CNT)
     {
