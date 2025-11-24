@@ -18,7 +18,7 @@ const u8 sx1276_7_8FreqTbl[][3] =
 };
 //
 
-#define SX1278_MAX_BUFSIZE 64 // 定义接收最大数据长度
+#define SX1278_MAX_BUFSIZE 145 // 定义接收最大数据长度
 
 // 参数配置部分，其中只有载波频率是可以通过程序更改，其参数设置后为固定值
 u8 Lora_Freq = LORAFREQ_434MHZ;         //  默认频率设置428-439MHz
@@ -30,7 +30,8 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 
 /****************以下是移植需要实现的对应接口部分***********************************/
 #define SX1278_DelayMs(t) Delay_Ms(t) // 毫秒延时函数的实现
-char lora_receive_buf[145] = {0};
+
+char lora_receive_buf[SX1278_MAX_BUFSIZE] = {0};
 volatile u8 lora_receive_len = 1;
 volatile u8 lora_receive_flag = 0; // 0是初始状态，1是接收到特殊回应了，2是等待接收回应，3是接收到了数据
 
@@ -483,16 +484,14 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u16 timeout)
 
             DEBUG_PRINT("mode=0x%X \r\n", SX1278_Read_Reg(LR_RegOpMode)); // 0x88 1000 1000
             DEBUG_PRINT("Lora send ok\r\n");
-            SX1278_LoRaEntryRx(); // 进入接收模式
           }
           else
           {
 
             DEBUG_PRINT("mode=0x%X \r\n", SX1278_Read_Reg(LR_RegOpMode)); // 0x8b 1000 1010
-
             DEBUG_PRINT("Lora send fail\r\n");
-            SX1278_LoRaEntryRx(); // 进入接收模式
           }
+          SX1278_LoRaEntryRx(); // 进入接收模式
           // 拷贝完整的数据
           memcpy(valid_data, temp_data, packet_size);
           lora_receive_len = packet_size;
@@ -563,7 +562,7 @@ u8 SX1278_LoRaEntryTx(u8 packet_length)
 u8 SX1278_LoRaTxPacket(u8 *valid_data, u8 packet_length)
 {
   //  u8 timeout = 255;
-  u8 temp_data[54];
+  u8 temp_data[SX1278_MAX_BUFSIZE+1];
   u8 temp_packet_length = packet_length;
   // 将原始数据复制到临时缓冲区
   memcpy(temp_data, valid_data, packet_length);

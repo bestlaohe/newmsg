@@ -66,6 +66,7 @@ void MOTOR_SET (int state) {
     if (shake_mode) {
         if (state) {
             MOTOR_ON;
+            //  NVIC_SystemReset(); // Á¢¼´¸´Î»
         } else
             MOTOR_OFF;
     } 

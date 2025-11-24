@@ -74,7 +74,6 @@ int main(void)
   AWU_Init(); // 唤醒时间为25/12.5大约是2s左右。
 #endif
 
-// DEBUG_PRINT("lora_receive_buf=%d\r\n",sizeof(lora_receive_buf)); 
   while (1)
   {
 

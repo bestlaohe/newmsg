@@ -168,10 +168,10 @@ void my_uart_print(char *str)
     }
           while (*str)
           {
-              // ï¿½È´ï¿½ USART1 ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½É±ï¿½Ö¾
+              // µÈ´ý USART1 µÄ´«ÊäÍê³É±êÖ¾
               while (USART_GetFlagStatus(USART1, USART_FLAG_TC) == RESET)
                   ;
-              // ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½Ö·ï¿½
+              // ·¢ËÍÒ»¸ö×Ö·û
               USART_SendData(USART1, *str++);
           }
 
@@ -262,34 +262,34 @@ void intToStr(int num, char *str, int minWidth)
     int i = 0;
     _Bool isNegative = 0;
 
-    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    // ´¦Àí¸ºÊý
     if (num < 0)
     {
         isNegative = 1;
         num = -num;
     }
 
-    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö²ï¿½ï¿½ï¿½
+    // ´¦ÀíÊý×Ö²¿·Ö
     do
     {
         str[i++] = (num % 10) + '0';
         num /= 10;
     } while (num > 0);
 
-    // ï¿½ï¿½ï¿½Ó¸ï¿½ï¿½ï¿½
+    // Ìí¼Ó¸ººÅ
     if (isNegative)
     {
         str[i++] = '-';
     }
 
-    // ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½
+    // Èç¹ûÐèÒª£¬Ìî³äÇ°µ¼Áã
     while (i < minWidth)
     {
         str[i++] = '0';
     }
 
-    // ï¿½ï¿½×ªï¿½Ö·ï¿½ï¿½ï¿½
-    str[i] = '\0'; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¹ï¿½ï¿½
+    // ·´×ª×Ö·û´®
+    str[i] = '\0'; // ÏÈÌí¼ÓÖÕÖ¹·û
     for (int j = 0; j < i / 2; j++)
     {
         char temp = str[j];

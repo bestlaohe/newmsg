@@ -32,7 +32,7 @@ u8 total_lines = 0;        // 总的聊天记录行数
 Setting settings[SETTING_COUNT] = {
     {"light", (u8 *)&TIM1->CH3CVR, NULL},
 #if BEER_ENABLED
-    {"shake", &shake_mode, NULL},
+    {"shake", (u8 *)&shake_mode, NULL},
 #endif
 #if LORA_ENABLED
     {"loraslp", &lora_sleep_mode, NULL},
