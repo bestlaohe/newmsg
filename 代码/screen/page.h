@@ -20,7 +20,7 @@ extern Encode encode_struct;
 extern volatile u8 lora_receive_len;
 extern volatile u8 lora_receive_flag;
 
-extern char lora_receive_buf[145];
+extern char lora_receive_buf[SX1278_MAX_BUFSIZE];
 extern u16 Battery_ADC_Average;
 
 #define ON 1
