@@ -18,7 +18,7 @@ const u8 sx1276_7_8FreqTbl[][3] =
 };
 //
 
-#define SX1278_MAX_BUFSIZE 145 // 18列*8行
+
 
 // 参数配置部分，其中只有载波频率是可以通过程序更改，其参数设置后为固定值
 u8 Lora_Freq = LORAFREQ_434MHZ;         //  默认频率设置428-439MHz
@@ -38,13 +38,13 @@ char lora_receive_buf[SX1278_MAX_BUFSIZE] = {0};
 extern  u8 shake_mode; 
 void check_snapshot_once(void) {
 
-        if (shake_mode||lora_receive_buf[120]!=0||lora_receive_buf[121]!=0
-        ||lora_receive_buf[122]!=0||lora_receive_buf[113]!=0||lora_receive_buf[115]!=0
-        ||lora_receive_buf[123]!=0||lora_receive_buf[58]!=0||lora_receive_buf[2]!=0) {
+        // if (shake_mode||lora_receive_buf[120]!=0||lora_receive_buf[121]!=0
+        // ||lora_receive_buf[122]!=0||lora_receive_buf[113]!=0||lora_receive_buf[115]!=0
+        // ||lora_receive_buf[123]!=0||lora_receive_buf[58]!=0||lora_receive_buf[116]!=0) {
 
-            __asm__ volatile ("ebreak");
-            while (1);
-        }
+        //     __asm__ volatile ("ebreak");
+        //     while (1);
+        // }
     // }
 }
 
@@ -56,7 +56,7 @@ extern volatile u8 loraComplete; // lora中断操作完成的标志
 void SX1278_Receive()
 {
 
-check_snapshot_once();
+// check_snapshot_once();
   //  DEBUG_PRINT("lora ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION)); // 0x12
   //  DEBUG_PRINT("lora mode  0x%X\r\n", SX1278_Read_Reg(LR_RegOpMode)); // 0x89  0100 0101
   //

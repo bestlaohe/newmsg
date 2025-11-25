@@ -11,8 +11,7 @@
 #include "encode.h"
 #include "adc.h"
 #include "seting.h"
-
-// #include "SX1278.h"
+#include "SX1278.h"
 
 extern Key key;
 

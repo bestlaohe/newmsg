@@ -215,6 +215,8 @@
 #define	 RegPllHop				0x44
 #define  RegPaDac					0x4d
 #define	 RegBitRateFrac		0x5d
+
+#define SX1278_MAX_BUFSIZE 145 // 18ÁÐ*8ÐÐ
 /*********************************************************/
 //command
 /*********************************************************/

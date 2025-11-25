@@ -65,8 +65,8 @@ void MOTOR_SET (int state) {
     // DEBUG_PRINT("MOTOR_SET=%d,%d\r\n", shake_mode, state);
     if (shake_mode) {
         if (state) {
-             MOTOR_OFF; 
-            // MOTOR_ON;
+            //  MOTOR_OFF; 
+           MOTOR_ON;
             //  NVIC_SystemReset(); // Á¢¼´¸´Î»
         } else
             MOTOR_OFF;
