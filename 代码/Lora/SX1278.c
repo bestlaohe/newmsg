@@ -420,7 +420,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u16 timeout)
 {
   u8 addr, irq_flag, mode;
   u8 packet_size;
-  u8 temp_data[200];
+  u8 temp_data[200] = {0};
 
   mode = SX1278_Read_Reg(LR_RegOpMode);
 

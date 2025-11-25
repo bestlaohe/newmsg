@@ -10,7 +10,7 @@
 
 #define VREFINT_CAL 1200 // 1.200V（单位：mV，根据实际校准调整）
 #define ADC_MAX 1023     // 10-bit ADC最大值
-u16 BattaryBuf[ADC_CONUT];
+u16 BattaryBuf[ADC_CONUT] = {0};
 // 关键点的 ADC 值和对应的电池百分比
 // 2.8v屏幕可以亮起来
 #define NUM_POINTS 5
