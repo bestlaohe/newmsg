@@ -81,9 +81,6 @@ int main(void)
 
     if (!needSleep)
     {
-      //  u8 data[] = "rr";
-      //  SX1278_LoRaTxPacket(data, 2);
-      // DEBUG_PRINT("\r\nshow_page");
       show_page();
 
 #if BEER_ENABLED

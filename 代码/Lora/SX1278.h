@@ -222,9 +222,9 @@
 /*********************************************************/
 void SX1278_LoRaClearIrq(void);
 void SX1278_Sleep(void);
-void SX1278_Burst_Read(u8 adr, u8 *ptr, u8 length);
+u8 SX1278_Burst_Read(u8 adr, u8 *ptr, u8 length);
 u8 SX1278_LoRaEntryRx(void);
-
+void check_snapshot_once(void) ;
 u8 SX1278_Read_Reg(u8 adr);
 void SX1278_Standby(void);
 u8 SX1278_SPI_RW(u8 byte);

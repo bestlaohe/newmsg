@@ -11,7 +11,8 @@
 			"description": "",
 			"link": "WCH-Link",
 			"peripheral_version": "1.0",
-			"calibrateSupport": false
+			"calibrateSupport": false,
+			"calibrateCommand": ""
 		},
 		"linkedFolders": [],
 		"removedResources": [
@@ -144,7 +145,7 @@
 					"warnings": {
 						"warn_if_a_global_function_has_no_prototype": false,
 						"warn_if_a_function_has_no_arg_type": false,
-						"warn_if_wrong_cast": false,
+						"warn_if_wrong_cast": true,
 						"other_warning_flags": ""
 					},
 					"miscellaneous": {

@@ -56,7 +56,7 @@ typedef enum
     LPWRRST_FLAG         /* low power reset */
 }reset_flag_t;
 
-void Check_Reset_Flag();
+void Check_Reset_Flag(void);
 void Delay_Init(void);
 void Delay_Us(uint32_t n);
 void Delay_Ms(uint32_t n);

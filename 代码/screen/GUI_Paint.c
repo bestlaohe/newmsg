@@ -526,6 +526,8 @@ parameter:
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
 
+extern const uint8_t Font16_english_map[];
+extern sFONT Font16_En;
 void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
                     sFONT *Font, UWORD Color_Background, UWORD Color_Foreground,
                     const char offsetAcsii)
@@ -534,9 +536,6 @@ void Paint_DrawChar(UWORD Xpoint, UWORD Ypoint, const char Acsii_Char,
     UWORD Page, Column;
     uint32_t Char_Offset;
     
-    // 为Font16_En字体使用映射表查找真实的偏移
-    extern const uint8_t Font16_english_map[];
-    extern sFONT Font16_En;
     
     if (Font == &Font16_En) {
         // 查找字符在映射表中的位置
@@ -880,23 +879,13 @@ parameter:
     Color_Background : Select the background color of the English character
     Color_Foreground : Select the foreground color of the English character
 ******************************************************************************/
-#define ARRAY_LEN 255
+#define ARRAY_LEN 4
 void Paint_DrawNum(UWORD Xpoint, UWORD Ypoint, int32_t Nummber,
                    sFONT *Font, UWORD Color_Background, UWORD Color_Foreground)
 {
     int16_t Num_Bit = 0, Str_Bit = 0;
     uint8_t Str_Array[ARRAY_LEN] = {0}, Num_Array[ARRAY_LEN] = {0};
     uint8_t *pStr = Str_Array;
-
-    // if (Xpoint > Paint.Width || Ypoint > Paint.Height)
-    // {
-
-    //     DEBUG_PRINT("Paint_DrawNum erro %d,%d\r\n", Xpoint, Ypoint);
-
-    //     return;
-    // }
-
-    // Converts a number to a string
     do
     {
         Num_Array[Num_Bit] = Nummber % 10 + '0';

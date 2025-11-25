@@ -18,7 +18,7 @@
 #define Y_OFFSET 22                                                                    // 设置页面初始的y轴偏移
 #define ENG_NUMBER 5                                                                   // 英文字母的个数，正常是27
 
-// u8 lora_send_buf[100];                                                                 // 只有3行可以输入一行18
+
 
 int8_t Englishcount = 0;   // 字符的位号
 int8_t Englishposx = 0;    // x的个数
