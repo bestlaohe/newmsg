@@ -18,7 +18,7 @@ const u8 sx1276_7_8FreqTbl[][3] =
 };
 //
 
-#define SX1278_MAX_BUFSIZE 145 // 定义接收最大数据长度
+#define SX1278_MAX_BUFSIZE 145 // 18列*8行
 
 // 参数配置部分，其中只有载波频率是可以通过程序更改，其参数设置后为固定值
 u8 Lora_Freq = LORAFREQ_434MHZ;         //  默认频率设置428-439MHz
@@ -32,6 +32,22 @@ u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 #define SX1278_DelayMs(t) Delay_Ms(t) // 毫秒延时函数的实现
 
 char lora_receive_buf[SX1278_MAX_BUFSIZE] = {0};
+
+
+
+extern  u8 shake_mode; 
+void check_snapshot_once(void) {
+
+        if (shake_mode||lora_receive_buf[120]!=0||lora_receive_buf[121]!=0
+        ||lora_receive_buf[122]!=0||lora_receive_buf[113]!=0||lora_receive_buf[115]!=0
+        ||lora_receive_buf[123]!=0||lora_receive_buf[58]!=0||lora_receive_buf[2]!=0) {
+
+            __asm__ volatile ("ebreak");
+            while (1);
+        }
+    // }
+}
+
 volatile u8 lora_receive_len = 1;
 volatile u8 lora_receive_flag = 0; // 0是初始状态，1是接收到特殊回应了，2是等待接收回应，3是接收到了数据
 
@@ -40,6 +56,7 @@ extern volatile u8 loraComplete; // lora中断操作完成的标志
 void SX1278_Receive()
 {
 
+check_snapshot_once();
   //  DEBUG_PRINT("lora ID  0x%X\r\n", SX1278_Read_Reg(REG_LR_VERSION)); // 0x12
   //  DEBUG_PRINT("lora mode  0x%X\r\n", SX1278_Read_Reg(LR_RegOpMode)); // 0x89  0100 0101
   //
@@ -576,7 +593,7 @@ u8 SX1278_LoRaTxPacket(u8 *valid_data, u8 packet_length)
     DEBUG_PRINT("sss=%c ", temp_data[t]);
     // DEBUG_PRINT("%d=%c ", t, temp_data[t]);
   }
-  DEBUG_PRINT("\r\n");
+  DEBUG_PRINT("temp_packet_length=%d,=%d\r\n",temp_packet_length,packet_length);
   SX1278_LoRaEntryTx(temp_packet_length); // 进入待机模式
   SX1278_Burst_Write(0x00, temp_data, temp_packet_length);
   SX1278_Write_Reg(LR_RegOpMode, 0x8b); // Tx Mode 1000 1011  lora模式，tx模式

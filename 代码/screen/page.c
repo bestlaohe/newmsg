@@ -157,7 +157,7 @@ void handle_chat_event(sFONT *Font)
   {
 
     refreshState = 1;
-    if (lora_receive_buf[0] == 0)
+    if (lora_receive_buf[0] == 0)//开机第一下单击为无操作输入
     {
       return;
     }
@@ -183,7 +183,6 @@ void handle_chat_event(sFONT *Font)
       return;
     }
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
-
     DEBUG_PRINT("数组位1=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
     lora_receive_flag = 2;
     send_wait_time = 250;

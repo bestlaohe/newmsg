@@ -360,8 +360,9 @@ void system_wokeup()
 #endif
 
     //  EXTI_INT_INIT();                                                   // 按键，充电，lora中断初始化
+      #if DEBUG_ENABLED != 0
     USART_Printf_Init(115200);
-
+  #endif
     DEBUG_PRINT("system_wokeup\r\n");
 
     // 处理完事件后清除事件

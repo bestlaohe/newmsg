@@ -53,7 +53,7 @@ typedef enum
   SETTING_COUNT
 } SettingIndex;
 
-extern volatile u8 shake_mode;        // 振动模式，0为off，1为on
+extern u8 shake_mode;        // 振动模式，0为off，1为on
 extern u8 Lora_Freq;         // 默认频率设置
 extern u8 Lora_Power;        // 输出功率设置
 extern u8 Lora_BandWide;     // 带宽设置

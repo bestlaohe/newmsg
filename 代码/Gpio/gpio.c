@@ -6,7 +6,7 @@
  */
 
 #include "gpio.h"
-volatile u8 shake_mode = 0;  // 初始震动模式值
+ u8 shake_mode = 0;  // 初始震动模式值
 void GPIO_Init_Pin (GPIO_TypeDef *GPIOx, uint16_t pin, GPIOMode_TypeDef mode) {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
 
@@ -65,7 +65,8 @@ void MOTOR_SET (int state) {
     // DEBUG_PRINT("MOTOR_SET=%d,%d\r\n", shake_mode, state);
     if (shake_mode) {
         if (state) {
-            MOTOR_ON;
+             MOTOR_OFF; 
+            // MOTOR_ON;
             //  NVIC_SystemReset(); // 立即复位
         } else
             MOTOR_OFF;

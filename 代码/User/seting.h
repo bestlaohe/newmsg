@@ -59,7 +59,7 @@
 
 #else
 #define DEBUG_PRINT(fmt, ...)
-#define SLEEP 1 // 是否要休眠
+#define SLEEP 0 // 是否要休眠
 
 #endif
 

@@ -28,7 +28,9 @@ int main(void)
   /*********************基本内容初始化******************************/
   SystemInit(); // 48000000系统时钟刷新3324-3212=100k
   NVIC_PriorityGroupConfig(NVIC_PriorityGroup_1);
+  #if DEBUG_ENABLED != 0
   USART_Printf_Init(115200); // 串口初始化需要在打印前，不然会卡死3956-3324=600k
+  #endif
   DEBUG_PRINT("\r\nSystemClk:%d\r\n", SystemCoreClock);
   IWDG_Feed_Init(IWDG_Prescaler_256, 4000); // 该参数必须是介于 0 和 0x0FFF 之间的一个数值    // 4秒不喂狗就复位   低频时钟内部128khz除以256=500,1除以500乘以4000=8s****12467-12356=111字节
   //  DEBUG_PRINT("ChipID:%08x\r\n", DBGMCU_GetCHIPID());
