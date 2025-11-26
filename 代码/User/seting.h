@@ -46,8 +46,7 @@
 // 开启或关闭调试信息输出
 #define DEBUG_ENABLED 0
 
-#define PCBV1 1
-#define PCBV3 0
+#define PCB 3
 
 #if DEBUG_ENABLED == 2
 #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)
@@ -77,7 +76,7 @@
 
 // 组件使能配置
 // 1表示启用，0表示禁用
-#if PCBV1
+#if PCB == 1
 #define LORA_ENABLED 1       // LoRa组件使能
 #define SCREEN_ENABLED 1     // 屏幕组件使能
 #define ENCODER_ENABLED 1    // 编码器组件使能
@@ -86,7 +85,7 @@
 #define BEER_ENABLED 1       // 震动组件使能
 #endif
 
-#if PCBV3
+#if PCB == 3
 #define LORA_ENABLED 1       // LoRa组件使能
 #define SCREEN_ENABLED 1     // 屏幕组件使能
 #define ENCODER_ENABLED 0    // 编码器组件使能
