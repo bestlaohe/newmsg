@@ -459,13 +459,13 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u16 timeout)
       packet_size = SX1278_Read_Reg(LR_RegRxNbBytes); // Number for received bytes
 
       // 记录当前有效数据的长度
-      u8 current_length = lora_receive_len;
+      // u8 current_length = lora_receive_len;
 
-      if ((current_length + packet_size) >= sizeof(lora_receive_buf)) // 超过200重头计数
-      {
-        lora_receive_len = 1;
-        current_length = 0;
-      }
+      // if ((current_length + packet_size) >= sizeof(lora_receive_buf)) // 超过200重头计数
+      // {
+      //   lora_receive_len = 1;
+      //   current_length = 0;
+      // }
 
       // 从FIFO中读取数据到valid_data数组中放尾巴一直累加
       // SX1278_Burst_Read(0x00, valid_data + current_length, packet_size);

@@ -394,7 +394,7 @@ u8 Screen_Clear(UWORD Xstart, UWORD Ystart, UWORD Xend, UWORD Yend, UWORD Color)
     }
 
     // 重置计数器
-    dma_circular = 0;
+    // dma_circular = 0;//上面初始化了
 
     // 等待SPI发送缓冲区为空
     while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_TXE) == RESET)
