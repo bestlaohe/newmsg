@@ -66,7 +66,6 @@ void SX1278_Receive()
 
   if (res == 0)
   {
-
     DEBUG_PRINT("lora_receive_len=  %d\r\n", lora_receive_len);
   }
   else if (res == 2)
@@ -466,6 +465,12 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u16 timeout)
       //   lora_receive_len = 1;
       //   current_length = 0;
       // }
+      if (packet_size > SX1278_MAX_BUFSIZE)
+      {
+        DEBUG_PRINT("packet_size==%d\r\n", packet_size);
+        SX1278_LoRaEntryRx(); // 进入接收模式
+        return 4;
+      }
 
       // 从FIFO中读取数据到valid_data数组中放尾巴一直累加
       // SX1278_Burst_Read(0x00, valid_data + current_length, packet_size);
@@ -535,7 +540,7 @@ u8 SX1278_LoRaRxPacket(u8 *valid_data, u16 timeout)
 
       for (u8 var = 0; var < lora_receive_len; ++var)
       {
-        DEBUG_PRINT("lora_receive_buf= %d\r\n", lora_receive_buf[var]);
+        DEBUG_PRINT("rrr= %d= %d", var, lora_receive_buf[var]);
       }
 
       valid_data[packet_size - 1] = 0;         // 要清空不然以为有东西会出现

@@ -18,8 +18,6 @@
 #define Y_OFFSET 22                                                                    // 设置页面初始的y轴偏移
 #define ENG_NUMBER 5                                                                   // 英文字母的个数，正常是27
 
-
-
 int8_t Englishcount = 0;   // 字符的位号
 int8_t Englishposx = 0;    // x的个数
 int8_t Englishposy = 0;    // y的个数
@@ -157,7 +155,7 @@ void handle_chat_event(sFONT *Font)
   {
 
     refreshState = 1;
-    if (lora_receive_buf[0] == 0)//开机第一下单击为无操作输入
+    if (lora_receive_buf[0] == 0) // 开机第一下单击为无操作输入
     {
       return;
     }
@@ -179,7 +177,7 @@ void handle_chat_event(sFONT *Font)
 
     if (lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] != 0)
     {
-      DEBUG_PRINT("保持\r\n");
+      DEBUG_PRINT("保持不发送\r\n"); // 因为值没改变
       return;
     }
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
@@ -250,8 +248,12 @@ void show_history_data(sFONT *Font)
   {
     refreshState = 1;
     lora_receive_flag = 0;
-    Englishposy = lora_receive_len / ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width);
-    Englishposx = lora_receive_len - Englishposy * ((LCD_WIDTH - (EDGE + EDGE)) / Font->Width) - 1;
+    
+    u8 max_col = (LCD_WIDTH - 2 * EDGE) / Font->Width;
+    u8 index = lora_receive_len - 1;
+
+    Englishposy = index / max_col;
+    Englishposx = index % max_col;
 
     DEBUG_PRINT("收到信息=%d, %d,%d,\r\n", Englishposx, Englishposy, lora_receive_len);
   }
