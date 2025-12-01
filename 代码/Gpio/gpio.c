@@ -6,7 +6,9 @@
  */
 
 #include "gpio.h"
- u8 shake_mode = 0;  // 初始震动模式值
+#if BEER_ENABLED
+u8 shake_mode = 0;  // 初始震动模式值
+#endif
 void GPIO_Init_Pin (GPIO_TypeDef *GPIOx, uint16_t pin, GPIOMode_TypeDef mode) {
     GPIO_InitTypeDef GPIO_InitStructure = {0};
 
@@ -48,8 +50,10 @@ void My_GPIO_Init() {
     GPIO_Init_Pin (GPIOD, GPIO_Pin_3 | GPIO_Pin_4, GPIO_Mode_IPU);
     // LCD_SCK_1;  SPI_SDA_1;
     GPIO_Init_Pin (GPIOC, GPIO_Pin_5 | GPIO_Pin_6, GPIO_Mode_AF_PP);
-
+#if BEER_ENABLED
     MOTOR_OFF;  // 关闭电机
+#endif
+
     LCD_CS_DISABLE;
     SX1278_NSS_DISABLE;
 }
@@ -59,8 +63,7 @@ void My_GPIO_DeInit() {
     GPIO_DeInit (GPIOC);
     GPIO_DeInit (GPIOD);
 }
-
-
+#if BEER_ENABLED
 void MOTOR_SET (int state) {
     // DEBUG_PRINT("MOTOR_SET=%d,%d\r\n", shake_mode, state);
     if (shake_mode) {
@@ -76,3 +79,5 @@ void MOTOR_SET (int state) {
     //     MOTOR_OFF;
     // }
 }
+
+#endif

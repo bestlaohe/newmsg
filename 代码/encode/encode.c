@@ -14,7 +14,10 @@
 #include "debug.h"
 #include "encode.h"
 #include "SX1278.h"
+#if BEER_ENABLED
 extern volatile u8 needMotorShakeEncode;
+#endif
+
 void Encoder_Scan()
 {
 
@@ -53,7 +56,9 @@ void Encoder_Scan()
       DEBUG_PRINT("disable encode_struct operate\r\n");
     }
     refresh_SleepCounter(0); // Ë¢ÐÂÐÝÃßÊ±¼ä
+#if BEER_ENABLED
     needMotorShakeEncode = 1;
+#endif
   }
 }
 void Encoder_Init(u16 arr, u16 psc)

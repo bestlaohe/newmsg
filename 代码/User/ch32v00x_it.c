@@ -28,19 +28,19 @@ volatile u8 loraComplete = 0;
 volatile u8 needSleep = 0;
 volatile u8 needDeinit = 0;
 u8 lora_sleep_mode = 1; // 决定休眠的时候lora收不收消息,1不收，0收
+#if BEER_ENABLED
 u8 motor_shaking = 0;
 u16 motor_shake_time = 0;
+// 添加标志位用于延时操作
+volatile u8 needMotorShakeKey = 0;
+volatile u8 needMotorShakeLora = 0;
+volatile u8 needMotorShakeEncode = 0;
+#endif
 
 u16 Battery_ADC_Average = 0;
 u16 pre_Battery_ADC_Average = 0;
 volatile int circle = 0;
 volatile int SleepCounter = 0;
-
-// 添加标志位用于延时操作
-volatile u8 needMotorShakeKey = 0;
-volatile u8 needMotorShakeLora = 0;
-volatile u8 needMotorShakeCharge = 0;
-volatile u8 needMotorShakeEncode = 0;
 
 Encode encode_struct = {ENCODE_EVENT_NONE, 0};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 0}; // enable为0是为了长按起来让按键失效，同时开机第一次的按键是会失效的
@@ -128,8 +128,9 @@ void EXTI7_0_IRQHandler(void)
 {
   if (EXTI_GetITStatus(EXTI_Line2) != RESET)
   {
-
+#if BEER_ENABLED
     needMotorShakeKey = 1;
+#endif
 
     EXTI_ClearITPendingBit(EXTI_Line2); /* Clear Flag */
 
@@ -181,8 +182,9 @@ void EXTI7_0_IRQHandler(void)
     EXTI_ClearITPendingBit(EXTI_Line6); /* Clear Flag */
     loraComplete = 1;
     DEBUG_PRINT("lora operate\r\n"); // 不管发送还是接收都会触发
-
+#if BEER_ENABLED
     needMotorShakeLora = 1;
+#endif
 
     system_wokeup(); // 系统唤醒
   }
@@ -479,7 +481,7 @@ void AWU_IRQHandler(void)
     EXTI_ClearITPendingBit(EXTI_Line9); /* Clear Flag */
   }
 }
-
+#if BEER_ENABLED
 void process_motor_flags(void)
 {
   // 只要有任何一个震动标志位被设置，就执行一次震动
@@ -496,3 +498,4 @@ void process_motor_flags(void)
     motor_shake_time = 0;
   }
 }
+#endif

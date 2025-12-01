@@ -11,9 +11,12 @@
 
 void My_GPIO_Init();
 void My_GPIO_DeInit();
+
+#if BEER_ENABLED
 void MOTOR_SET(int state);
 #define MOTOR_ON GPIO_ResetBits(GPIOA, GPIO_Pin_2)
 #define MOTOR_OFF GPIO_SetBits(GPIOA, GPIO_Pin_2)
+#endif
 
 #define LCD_CS_ENABLE GPIO_ResetBits(GPIOC, GPIO_Pin_4)
 #define LCD_CS_DISABLE GPIO_SetBits(GPIOC, GPIO_Pin_4)
