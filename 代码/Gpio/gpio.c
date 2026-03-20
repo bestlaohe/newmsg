@@ -37,8 +37,8 @@ void My_GPIO_Init() {
     // 和lora通信miso
     GPIO_Init_Pin (GPIOC, GPIO_Pin_7, GPIO_Mode_IN_FLOATING);
 
-    // pA2震动模块的
-    GPIO_Init_Pin (GPIOA, GPIO_Pin_2, GPIO_Mode_Out_PP);
+    
+
     // pA1电池电量采集
     GPIO_Init_Pin (GPIOA, GPIO_Pin_1, GPIO_Mode_AIN);
     // pc3调光的pwm
@@ -51,6 +51,8 @@ void My_GPIO_Init() {
     // LCD_SCK_1;  SPI_SDA_1;
     GPIO_Init_Pin (GPIOC, GPIO_Pin_5 | GPIO_Pin_6, GPIO_Mode_AF_PP);
 #if BEER_ENABLED
+    // pA2震动模块的
+    GPIO_Init_Pin (GPIOA, GPIO_Pin_2, GPIO_Mode_Out_PP);
     MOTOR_OFF;  // 关闭电机
 #endif
 

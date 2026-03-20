@@ -202,7 +202,6 @@ typedef struct {
 extern PAINT_TIME sPaint_time;
 
 
-
 //init and Clear
 void Paint_NewImage(UWORD Width, UWORD Height, UWORD Rotate, UWORD Color);
 void Paint_SelectImage(UBYTE *image);

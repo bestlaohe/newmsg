@@ -46,7 +46,7 @@
 // 开启或关闭调试信息输出
 #define DEBUG_ENABLED 0
 
-#define PCB 3
+#define PCB 1
 
 #if DEBUG_ENABLED == 2
 #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)
@@ -82,7 +82,7 @@
 #define ENCODER_ENABLED 1    // 编码器组件使能
 #define WAVE_WHEEL_ENABLED 0 // 波轮器组件使能
 #define BATTERY_ENABLED 1    // 电池组件使能
-#define BEER_ENABLED 1       // 震动组件使能
+#define BEER_ENABLED 0       // 震动组件使能
 #endif
 
 #if PCB == 3
