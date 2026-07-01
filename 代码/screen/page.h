@@ -34,11 +34,14 @@ extern u16 Battery_ADC_Average;
 #define LORASpreadFactor_MAX 12
 #define LORABANDWIDTH_MIN 0
 #define LORABANDWIDTH_MAX 9
+#define ENG_NUMBER_MIN 1
+#define ENG_NUMBER_MAX 27
 
 // 定义设置参数
 typedef enum
 {
   SETTING_SCREEN_LIGHT,
+  SETTING_ENG_NUMBER,
 #if BEER_ENABLED
   SETTING_SHAKE_MODE,
 #endif
@@ -52,6 +55,7 @@ typedef enum
   SETTING_COUNT
 } SettingIndex;
 
+extern u8 eng_number;        // 可选字母个数 a~z，默认5
 extern u8 shake_mode;        // 振动模式，0为off，1为on
 extern u8 Lora_Freq;         // 默认频率设置
 extern u8 Lora_Power;        // 输出功率设置

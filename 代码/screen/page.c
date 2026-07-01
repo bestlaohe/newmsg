@@ -16,8 +16,8 @@
 #define CHAT_UP CHAT_HISTORY_DOWN + 2                                                  // 输入栏的上部分
 #define CHAR_HEIGHT 18                                                                 // 单个字符高度
 #define Y_OFFSET 22                                                                    // 设置页面初始的y轴偏移
-#define ENG_NUMBER 5                                                                   // 英文字母的个数，正常是27
 
+u8 eng_number = 5;         // 英文字母可选个数，默认5（a~e）
 int8_t Englishcount = 0;   // 字符的位号
 int8_t Englishposx = 0;    // x的个数
 int8_t Englishposy = 0;    // y的个数
@@ -29,6 +29,7 @@ u8 total_lines = 0;        // 总的聊天记录行数
 
 Setting settings[SETTING_COUNT] = {
     {"light", (u8 *)&TIM1->CH3CVR, NULL},
+    {"alpha", &eng_number, NULL},
 #if BEER_ENABLED
     {"shake", (u8 *)&shake_mode, NULL},
 #endif
@@ -189,7 +190,7 @@ void handle_chat_event(sFONT *Font)
   // 处理滚动状态
   if (encode_struct.state == ENCODE_EVENT_UP)
   {
-    Englishcount = (Englishcount + 1) % ENG_NUMBER; // 循环计数
+    Englishcount = (Englishcount + 1) % eng_number; // 循环计数
     lora_receive_flag = 2;
     send_wait_time = 250;
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
@@ -197,7 +198,7 @@ void handle_chat_event(sFONT *Font)
   }
   else if (encode_struct.state == ENCODE_EVENT_DOWN)
   {
-    Englishcount = (Englishcount - 1 + ENG_NUMBER) % ENG_NUMBER; // 循环计数
+    Englishcount = (Englishcount - 1 + eng_number) % eng_number; // 循环计数
     lora_receive_flag = 2;
     send_wait_time = 250;
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
@@ -396,6 +397,11 @@ void update_current_setting(int value)
     value = (value < 0) ? 0 : (value > 100) ? 100
                                             : value;
     TIM1->CH3CVR = value;
+    break;
+  case SETTING_ENG_NUMBER:
+    update_setting_value(value, ENG_NUMBER_MIN, ENG_NUMBER_MAX, current_setting);
+    if (Englishcount >= eng_number)
+      Englishcount = eng_number - 1;
     break;
 #if BEER_ENABLED
   case SETTING_SHAKE_MODE:
