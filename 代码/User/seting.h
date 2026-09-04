@@ -46,7 +46,7 @@
 // 开启或关闭调试信息输出
 #define DEBUG_ENABLED 0
 
-#define PCB 1
+#define PCB 3
 
 #if DEBUG_ENABLED == 2
 #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)
