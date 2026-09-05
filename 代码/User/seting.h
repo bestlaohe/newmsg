@@ -46,6 +46,9 @@
 // 开启或关闭调试信息输出
 #define DEBUG_ENABLED 0
 
+// charset for msg input: 1 = digits 1~9, 0 = letters a~z
+#define DIGIT_CHARSET 1
+
 #define PCB 3
 
 #if DEBUG_ENABLED == 2

@@ -17,7 +17,7 @@
 #define CHAR_HEIGHT 18                                                                 // 单个字符高度
 #define Y_OFFSET 22                                                                    // 设置页面初始的y轴偏移
 
-u8 eng_number = 5;         // 英文字母可选个数，默认5（a~e）
+u8 eng_number = ENG_NUMBER_DEFAULT;         // 英文字母可选个数，默认5（a~e）
 int8_t Englishcount = 0;   // 字符的位号
 int8_t Englishposx = 0;    // x的个数
 int8_t Englishposy = 0;    // y的个数
@@ -179,7 +179,7 @@ void handle_chat_event(sFONT *Font)
       DEBUG_PRINT("保持不发送\r\n"); // 因为值没改变
       return;
     }
-    lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
+    lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = CHARSET_BASE + Englishcount;
     DEBUG_PRINT("数组位1=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
     lora_receive_flag = 2;
     send_wait_time = 250;
@@ -191,7 +191,7 @@ void handle_chat_event(sFONT *Font)
     Englishcount = (Englishcount + 1) % eng_number; // 循环计数
     lora_receive_flag = 2;
     send_wait_time = 250;
-    lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
+    lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = CHARSET_BASE + Englishcount;
     DEBUG_PRINT("数组位2=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
   }
   else if (encode_struct.state == ENCODE_EVENT_DOWN)
@@ -199,7 +199,7 @@ void handle_chat_event(sFONT *Font)
     Englishcount = (Englishcount - 1 + eng_number) % eng_number; // 循环计数
     lora_receive_flag = 2;
     send_wait_time = 250;
-    lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
+    lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = CHARSET_BASE + Englishcount;
     DEBUG_PRINT("数组位3=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
   }
 
