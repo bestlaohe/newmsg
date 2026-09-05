@@ -45,6 +45,7 @@ volatile int SleepCounter = 0;
 Encode encode_struct = {ENCODE_EVENT_NONE, 0};
 Key key = {KEY_STATE_IDLE, KEY_EVENT_NONE, 0, 0, 0}; // enable为0是为了长按起来让按键失效，同时开机第一次的按键是会失效的
 Charge charge = {UNCHARGING};
+volatile u16 charge_stable_tick = 0; // charge state debounce (10ms unit), needs 3s stable
 
 void TIM2_IRQHandler()
 {
@@ -192,21 +193,10 @@ void EXTI7_0_IRQHandler(void)
   if (EXTI_GetITStatus(EXTI_Line1) != RESET)
   {
     EXTI_ClearITPendingBit(EXTI_Line1); /* Clear Flag */
-                                        // needMotorShakeCharge = 1;
 
 #if BATTERY_ENABLED
-    if (!CHARGE)
-    {
-      charge.state = CHARGING;
-      DEBUG_PRINT("start chage\r\n");
-    }
-    else
-    {
-      charge.state = UNCHARGING;
-      DEBUG_PRINT("end chage\r\n");
-    }
-    needshowbattary();
-    system_wokeup(); // 系统唤醒
+    charge_stable_tick = 0; // restart debounce on every edge (filters the no-battery pulse)
+    system_wokeup();        // wake from sleep; state is confirmed later by debounce
 #endif
   }
 }
@@ -446,6 +436,24 @@ void TIM1_UP_IRQHandler(void)
         NVIC_SystemReset(); // 立即复位
       }
     }
+#if BATTERY_ENABLED
+    // debounce: update charge state only after 3s stable (300 * 10ms).
+    // filters out the 1~2s "no battery" pulse from TP4057 (edges keep resetting the counter)
+    if (charge_stable_tick < 300)
+    {
+      if (++charge_stable_tick == 300)
+      {
+        ChargeState new_state = (!CHARGE) ? CHARGING : UNCHARGING;
+        if (new_state != charge.state)
+        {
+          charge.state = new_state;
+          DEBUG_PRINT(new_state == CHARGING ? "start chage" : "end chage");
+          needshowbattary();
+        }
+      }
+    }
+#endif
+
 #if BEER_ENABLED
     if (motor_shaking)
     {
