@@ -84,11 +84,9 @@ void handle_lora_msg(sFONT *Font)
 void handle_chat_event(sFONT *Font)
 {
 
-#if LORA_ENABLED
-  handle_lora_msg(Font);
-#endif
 
-  // 发送数据
+
+  // 组合按键发送数据
   if (key.state == KEY_STATE_HOLD
 #if WAVE_WHEEL_ENABLED
       || encode_struct.state == ENCODE_EVENT_UP_LONG || encode_struct.state == ENCODE_EVENT_DOWN_LONG
@@ -204,6 +202,10 @@ void handle_chat_event(sFONT *Font)
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = 'a' + Englishcount;
     DEBUG_PRINT("数组位3=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
   }
+
+  #if LORA_ENABLED
+  handle_lora_msg(Font);
+  #endif
 }
 
 // void handle_chat_history_event()

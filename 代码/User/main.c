@@ -81,6 +81,7 @@ int main(void)
 
     if (!needSleep)
     {
+    // encode_struct.state = ENCODE_EVENT_DOWN;
       show_page();
 
 #if BEER_ENABLED

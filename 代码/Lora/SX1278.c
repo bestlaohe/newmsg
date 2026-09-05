@@ -21,8 +21,8 @@ const u8 sx1276_7_8FreqTbl[][3] =
 // 参数配置部分，其中只有载波频率是可以通过程序更改，其参数设置后为固定值
 u8 Lora_Freq = LORAFREQ_434MHZ;         //  默认频率设置428-439MHz
 u8 Lora_Power = LORAPOWER_20DBM;        //  输出功率设置11，14，17，20
-u8 Lora_SpreadFactor = 7;               //  设置扩频因子在7~12
-u8 Lora_BandWide = LORABW_125KHz;       //  带宽设置
+u8 Lora_SpreadFactor = 8;               //  设置扩频因子在7~12
+u8 Lora_BandWide = LORABW_62_5KHz;       //  带宽设置
 u8 Lora_ErrorCoding = ERROR_CODING_4_5; //  前向纠错4/5 4/6 4/7 4/8
 /********************************************************************/
 

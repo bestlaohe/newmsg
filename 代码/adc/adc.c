@@ -13,23 +13,28 @@
 u16 BattaryBuf[ADC_CONUT] = {0};
 // 关键点的 ADC 值和对应的电池百分比
 // 2.8v屏幕可以亮起来
-#define NUM_POINTS 5
-const uint16_t adc_points[NUM_POINTS] = {519, 525, 539, 580, 620}; // 示例关键点
-const uint8_t percent_points[NUM_POINTS] = {0, 10, 50, 75, 100};   // 对应的百分比
+#define NUM_POINTS 7
+const uint16_t adc_points[NUM_POINTS] = {527, 536, 551, 566, 581, 611, 626}; // 示例关键点
+const uint8_t percent_points[NUM_POINTS] = {5, 15, 25, 45, 65, 90, 100};   // 对应的百分比
 static u8 isFirstBattaryShow = 1;                                  // 电池刷新标志
 
-// percentage=41 578
-//  percentage=32 562
-//  4.15V ≈ 100%=620
-//  3.9V ≈ 75%=580
-//  3.6V ≈ 50%=539
-//  3.0V ≈ 10%=525
-//  2.7V ≈ 0%=519
+//  4.20V ≈ 100%=626
+//  4.10V ≈ 90%=611
+//  3.90V ≈ 65%=581
+//  3.80V ≈ 45%=566
+//  3.70V ≈ 25%=551
+//  3.60V ≈ 15%=536
+//  3.50V ≈ 5%=522
 
 // 函数：使用线性插值获取电池百分比
 uint8_t get_battery_percentage(uint16_t adc_value)
 {
     //  DEBUG_PRINT("adc_value=%d \r\n",adc_value);
+
+    // uint16_t sample_mv = (uint16_t)((uint32_t)adc_value * 3300 / 1024);
+    // uint16_t battery_mv = sample_mv * 2;  // 乘回分压系数
+    // DEBUG_PRINT("adc=%d, sample=%d mV, battery=%d mV (%.2f V)\r\n", 
+    //             adc_value, sample_mv, battery_mv, battery_mv / 1000.0f);
     if (adc_value >= adc_points[NUM_POINTS - 1])
     {
         return percent_points[NUM_POINTS - 1];
@@ -99,12 +104,12 @@ void Battery_Init(void)
     if (!CHARGE)
     {
         charge.state = CHARGING;
-        DEBUG_PRINT("start chage\r\n");
+        DEBUG_PRINT("start chage ini\r\n");
     }
     else
     {
         charge.state = UNCHARGING;
-        DEBUG_PRINT("end chage\r\n");
+        DEBUG_PRINT("end chage ini\r\n");
     }
     needshowbattary();
 }
