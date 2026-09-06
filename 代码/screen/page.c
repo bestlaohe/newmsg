@@ -149,6 +149,7 @@ void handle_chat_event(sFONT *Font)
     }
   }
 
+#if 0 // confirm key disabled
   // 确认输入
   if (key.event == KEY_EVENT_CLICK)
   {
@@ -184,6 +185,7 @@ void handle_chat_event(sFONT *Font)
     lora_receive_flag = 2;
     send_wait_time = 250;
   }
+#endif
 
   // 处理滚动状态
   if (encode_struct.state == ENCODE_EVENT_DOWN)
@@ -338,7 +340,7 @@ void chat_page(sFONT *Font)
     refreshState = 0;
   }
 
-  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR,  CHARSET_BASE, Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
+  Paint_DrawString((LCD_WIDTH - Font24_Num.Width) / 2, (LCD_HEIGHT - Font24_Num.Height) / 2, lora_receive_buf, &Font24_Num, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, '0', 999);
 
   show_history_data(Font);
   handle_chat_event(Font);
