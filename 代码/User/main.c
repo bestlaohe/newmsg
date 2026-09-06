@@ -81,8 +81,14 @@ int main(void)
 
     if (!needSleep)
     {
-    // encode_struct.state = ENCODE_EVENT_DOWN;
+
+#if PRESS_TEST
+    lora_receive_buf[0] =1;
+    encode_struct.state = ENCODE_EVENT_DOWN;
+    key.event = KEY_EVENT_CLICK;
+#endif
       show_page();
+  
 
 #if BEER_ENABLED
       process_motor_flags(); // 处理电机震动标志位

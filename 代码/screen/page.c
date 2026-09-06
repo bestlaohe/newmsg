@@ -174,11 +174,11 @@ void handle_chat_event(sFONT *Font)
     }
     Englishcount = 0; // 重置计数
 
-    if (lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] != 0)
-    {
-      DEBUG_PRINT("保持不发送\r\n"); // 因为值没改变
-      return;
-    }
+    // if (lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] != 0)
+    // {
+    //   DEBUG_PRINT("保持不发送\r\n"); // 因为值没改变，最新值不为0才发送，这个应该是保护
+    //   return;
+    // }
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = CHARSET_BASE + Englishcount;
     DEBUG_PRINT("数组位1=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
     lora_receive_flag = 2;
