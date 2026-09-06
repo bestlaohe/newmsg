@@ -35,14 +35,17 @@ extern u16 Battery_ADC_Average;
 #define LORABANDWIDTH_MIN 0
 #define LORABANDWIDTH_MAX 9
 #define ENG_NUMBER_MIN 1
+
 #if DIGIT_CHARSET
-#define ENG_NUMBER_MAX 9
+#define ENG_NUMBER_MAX 10
 #define CHARSET_BASE '1'
-#define ENG_NUMBER_DEFAULT 9
+#define ENG_NUMBER_DEFAULT 10
+#define front  &Font12_Num
 #else
 #define ENG_NUMBER_MAX 27
 #define CHARSET_BASE 'a'
-#define ENG_NUMBER_DEFAULT 5
+#define ENG_NUMBER_DEFAULT 6
+#define front  &Font12_En
 #endif
 
 // 定义设置参数

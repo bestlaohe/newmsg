@@ -186,7 +186,7 @@ void handle_chat_event(sFONT *Font)
   }
 
   // 处理滚动状态
-  if (encode_struct.state == ENCODE_EVENT_UP)
+  if (encode_struct.state == ENCODE_EVENT_DOWN)
   {
     Englishcount = (Englishcount + 1) % eng_number; // 循环计数
     lora_receive_flag = 2;
@@ -194,7 +194,7 @@ void handle_chat_event(sFONT *Font)
     lora_receive_buf[Englishposx + Englishposy * (LCD_WIDTH / Font->Width)] = CHARSET_BASE + Englishcount;
     DEBUG_PRINT("数组位2=%d \r\n", Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
   }
-  else if (encode_struct.state == ENCODE_EVENT_DOWN)
+  else if (encode_struct.state == ENCODE_EVENT_UP)
   {
     Englishcount = (Englishcount - 1 + eng_number) % eng_number; // 循环计数
     lora_receive_flag = 2;
@@ -338,7 +338,7 @@ void chat_page(sFONT *Font)
     refreshState = 0;
   }
 
-  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, ' ', Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
+  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR,  CHARSET_BASE, Englishposx + Englishposy * (LCD_WIDTH / Font->Width));
 
   show_history_data(Font);
   handle_chat_event(Font);
@@ -372,7 +372,7 @@ void perpare_setting_page(sFONT *Font)
 
     refreshState = 0;
   }
-  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR, ' ', 999);
+  Paint_DrawString(EDGE, OPERATE_DOWN + EDGE, lora_receive_buf, Font, MY_THEME_BACK_COLOR, MY_THEME_COMPONT_COLOR,  CHARSET_BASE, 999);
   show_history_data(Font);
 }
 
@@ -596,7 +596,7 @@ void show_page()
   {
   case PAGE_SEND: // 发送界面
 
-    chat_page(&Font12);
+    chat_page(front);
 
     if (key.event == KEY_EVENT_LONG_CLICK) // 返回
     {
@@ -616,7 +616,7 @@ void show_page()
     //   break;
 
   case PAGE_PERPARE_SETTING: // 准备设置界面
-    perpare_setting_page(&Font12);
+    perpare_setting_page(front);
     if (key.event == KEY_EVENT_CLICK)
     {
       refreshState = 1;

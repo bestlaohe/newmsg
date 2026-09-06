@@ -87,7 +87,7 @@ extern "C"
   // extern sFONT Font20;
   // extern sFONT Font16;
 
-  extern sFONT Font12;
+  // extern sFONT Font12;
   // extern sFONT Font8;
   //  extern sFONT Font8_En;
 
@@ -103,6 +103,7 @@ extern "C"
   extern sFONT Font16_Operate; // 设置的log
   extern sFONT Font16_En;      // 设置页面的字体xyz被我省空间掉***
   extern sFONT Font12_En;      // 主界面字体的宽高
+  extern sFONT Font12_Num;      // 主界面字体的宽高
   // extern cFONT Font12CN;
   // extern cFONT Font24CN;
 
