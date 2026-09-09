@@ -39,7 +39,7 @@ extern u16 Battery_ADC_Average;
 #if DIGIT_CHARSET
 #define ENG_NUMBER_MAX 9
 #define CHARSET_BASE '1'
-#define ENG_NUMBER_DEFAULT 10
+#define ENG_NUMBER_DEFAULT 9
 #define front  &Font12_Num
 #else
 #define ENG_NUMBER_MAX 27
