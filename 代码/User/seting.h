@@ -44,12 +44,14 @@
 #define SLEEP_TIME 30000 * 10 // 大约10s触发一次
 #define WAVE_WHEEL_FRE 100    // 波轮编码器的频率
 // 开启或关闭调试信息输出
-#define DEBUG_ENABLED 0         //调试模式
+
 #define PRESS_TEST 0            //压测
 
-#define DIGIT_CHARSET 1//显示数字还是字符 1 = 数字 1~9, 0 = 字符 a~z
+#define DIGIT_CHARSET 2         // 0=字母精简(默认a~f) 1=数字1~9 2=完整字母a~z
 
 #define PCB 3
+
+#define DEBUG_ENABLED 0         //调试模式
 
 #if DEBUG_ENABLED == 2
 #define DEBUG_PRINT(fmt, ...) printf(fmt, ##__VA_ARGS__)

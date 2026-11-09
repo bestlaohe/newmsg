@@ -36,12 +36,20 @@ extern u16 Battery_ADC_Average;
 #define LORABANDWIDTH_MAX 9
 #define ENG_NUMBER_MIN 1
 
-#if DIGIT_CHARSET
+#if DIGIT_CHARSET == 1
+// 数字版 1~9
 #define ENG_NUMBER_MAX 10
 #define CHARSET_BASE '1'
 #define ENG_NUMBER_DEFAULT 10
 #define front  &Font12_Num
+#elif DIGIT_CHARSET == 2
+// 完整字母 a~z（字库第0格是光标，1~26才是a~z，所以要27）
+#define ENG_NUMBER_MAX 27
+#define CHARSET_BASE 'a'
+#define ENG_NUMBER_DEFAULT 27
+#define front  &Font12_En
 #else
+// DIGIT_CHARSET == 0：字母精简版，默认 a~f，设置里仍可扩到 27
 #define ENG_NUMBER_MAX 27
 #define CHARSET_BASE 'a'
 #define ENG_NUMBER_DEFAULT 6
